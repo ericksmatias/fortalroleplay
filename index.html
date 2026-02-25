@@ -6,11 +6,13 @@
     <title>Fortal Roleplay</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="icon" type="icone" href="logo.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     
     <style>
         /* --- VARIÁVEIS DE CORES (Temas) --- */
         :root {
-            /* Padrão (Light Mode) */
             --sf-pro: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
             --bg-body: #ffffff;
             --bg-sidebar: #f5f5f7;
@@ -25,20 +27,19 @@
             --sidebar-width: 380px;
         }
 
-        /* Dark Mode (Ativado via atributo data-theme="dark") */
         [data-theme="dark"] {
             --bg-body: #000000;
-            --bg-sidebar: #1c1c1e; /* Cinza escuro Apple */
+            --bg-sidebar: #1c1c1e;
             --bg-header: rgba(28, 28, 30, 0.85);
             --border-color: #38383a;
             --text-primary: #f5f5f7;
             --text-secondary: #98989d;
-            --accent-blue: #0a84ff; /* Azul mais brilhante para fundo escuro */
+            --accent-blue: #0a84ff;
             --search-bg: #2c2c2e;
             --item-hover: rgba(255,255,255,0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: var(--sf-pro);
@@ -51,7 +52,7 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* --- HEAD --- */
+        /* ===================== HEADER ===================== */
         header {
             height: var(--header-height);
             background: var(--bg-header);
@@ -66,13 +67,15 @@
             top: 0; left: 0; right: 0;
             z-index: 2000;
             transition: background 0.3s, border-color 0.3s;
+            /* Começa invisível — GSAP anima */
+            opacity: 0;
+            transform: translateY(-10px);
         }
 
-        /* --- LOGO  --- */
         .header-left {
             display: flex;
             align-items: center;
-            width: 200px; /* Reserva espaço garantido */
+            width: 200px;
         }
 
         .logo-placeholder {
@@ -83,7 +86,9 @@
             font-size: 18px;
             color: var(--text-primary);
             text-decoration: none;
+            transition: opacity 0.2s;
         }
+        .logo-placeholder:hover { opacity: 0.7; }
 
         .logo-img {
             height: 32px;
@@ -91,7 +96,6 @@
             display: block;
         }
 
-        /* Fallback visual */
         .logo-missing {
             height: 32px;
             padding: 0 10px;
@@ -105,7 +109,7 @@
             text-transform: uppercase;
         }
 
-        /* --- NAV LINKS (Centro/Direita) --- */
+        /* --- NAV --- */
         .header-nav {
             display: flex;
             gap: 24px;
@@ -118,29 +122,36 @@
             color: var(--text-primary);
             opacity: 0.8;
             transition: opacity 0.2s, color 0.2s;
+            position: relative;
         }
 
-        .header-nav a:hover {
-            opacity: 1;
-            color: var(--accent-blue);
-        }
+        .header-nav a:hover { opacity: 1; color: var(--accent-blue); }
 
         .header-nav a.active {
             opacity: 1;
             font-weight: 600;
         }
 
-        /* --- TOGGLE DARK MODE (Estilo iOS) --- */
+        .header-nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0; right: 0;
+            height: 2px;
+            background: var(--accent-blue);
+            border-radius: 1px;
+        }
+
+        /* --- iOS SWITCH --- */
         .ios-switch {
             position: relative;
             display: inline-block;
             width: 46px;
             height: 26px;
             margin-left: 20px;
+            cursor: pointer;
         }
-
         .ios-switch input { opacity: 0; width: 0; height: 0; }
-
         .slider {
             position: absolute;
             cursor: pointer;
@@ -149,10 +160,7 @@
             transition: .4s;
             border-radius: 34px;
         }
-
-        /* Cor do fundo do switch no Dark Mode */
         [data-theme="dark"] .slider { background-color: #39393d; }
-
         .slider:before {
             position: absolute;
             content: "";
@@ -163,11 +171,10 @@
             border-radius: 50%;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-
-        input:checked + .slider { background-color: #30d158; } /* Verde Apple Ativo */
+        input:checked + .slider { background-color: #30d158; }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* --- LAYOUT PRINCIPAL --- */
+        /* ===================== LAYOUT ===================== */
         main {
             display: flex;
             margin-top: var(--header-height);
@@ -175,7 +182,7 @@
             width: 100%;
         }
 
-        /* --- SIDEBAR --- */
+        /* ===================== SIDEBAR ===================== */
         aside {
             width: var(--sidebar-width);
             background-color: var(--bg-sidebar);
@@ -183,11 +190,17 @@
             display: flex;
             flex-direction: column;
             transition: background 0.3s, border-color 0.3s;
+            /* GSAP */
+            opacity: 0;
+            transform: translateX(-20px);
         }
 
         .search-container {
-            padding: 16px 20px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .ios-search {
@@ -195,48 +208,90 @@
             padding: 10px 12px 10px 36px;
             border-radius: 10px;
             border: none;
-            background-color: var(--search-bg); /* Adapta ao tema */
+            background-color: var(--search-bg);
             color: var(--text-primary);
             font-size: 15px;
             font-family: var(--sf-pro);
-            box-shadow: 0 0 0 1px rgba(0,0,0,0.05); /* Borda sutil */
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.07);
             transition: all 0.2s;
-            
-            /* Ícone Lupa SVG via CSS */
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: 10px center;
         }
-        
-        .ios-search:focus {
-            box-shadow: 0 0 0 2px var(--accent-blue);
+        .ios-search::placeholder { color: var(--text-secondary); }
+        .ios-search:focus { box-shadow: 0 0 0 2px var(--accent-blue); }
+
+        /* Contador de resultados */
+        .results-count {
+            font-size: 11px;
+            color: var(--text-secondary);
+            padding: 0 4px;
+            font-weight: 500;
+            height: 14px;
+            transition: opacity 0.2s;
         }
 
+        /* Filtros de cor */
+        .filter-bar {
+            display: flex;
+            gap: 6px;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .filter-bar::-webkit-scrollbar { display: none; }
+
+        .filter-pill {
+            flex-shrink: 0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border-color);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: var(--sf-pro);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .filter-pill .pill-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .filter-pill:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+        .filter-pill.active { color: white; border-color: transparent; }
+
+        /* Lista */
         .places-list {
             flex: 1;
             overflow-y: auto;
             padding-bottom: 20px;
         }
-
-        /* Scrollbar fina */
-        .places-list::-webkit-scrollbar { width: 6px; }
+        .places-list::-webkit-scrollbar { width: 5px; }
         .places-list::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 3px; }
 
         .place-item {
-            padding: 16px 24px;
+            padding: 14px 20px;
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.15s;
             display: flex;
             align-items: flex-start;
             gap: 14px;
+            /* GSAP stagger */
+            opacity: 0;
+            transform: translateX(-10px);
         }
-
         .place-item:hover { background-color: var(--item-hover); }
-
         .place-item.active {
             background-color: var(--item-hover);
             border-left: 3px solid var(--accent-blue);
+            padding-left: 17px;
         }
 
         .dot-indicator {
@@ -244,28 +299,28 @@
             border-radius: 50%;
             margin-top: 4px;
             flex-shrink: 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
         }
+        .place-item:hover .dot-indicator { transform: scale(1.3); }
 
         .place-content h3 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             color: var(--text-primary);
         }
-
         .place-content span {
-            font-size: 11px;
+            font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 700;
-            opacity: 0.8;
+            opacity: 0.85;
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
-
         .place-content p {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
             line-height: 1.4;
             display: -webkit-box;
@@ -274,59 +329,90 @@
             overflow: hidden;
         }
 
-        /* --- MAPA --- */
+        /* Empty state */
+        .empty-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+            gap: 12px;
+        }
+        .empty-state .empty-icon { font-size: 40px; opacity: 0.4; }
+        .empty-state p { font-size: 14px; }
+
+        /* ===================== MAPA ===================== */
         #map {
             flex: 1;
             height: 100%;
             z-index: 1;
         }
 
-        /* --- POPUPS --- */
+        /* ===================== POPUPS ===================== */
         .leaflet-popup-content-wrapper {
-            background: var(--bg-header); /* Usa o fundo do tema */
+            background: var(--bg-header);
             backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
             color: var(--text-primary);
-            border-radius: 14px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border-radius: 16px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.25);
             padding: 0;
+            border: 1px solid var(--border-color);
         }
         .leaflet-popup-tip { background: var(--bg-header); }
-        
         .leaflet-popup-content { margin: 0; width: 260px !important; padding: 20px; font-family: var(--sf-pro); }
-
-        .popup-category { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
+        .popup-category { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; letter-spacing: 0.5px; }
         .popup-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
-        .popup-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.4; margin-bottom: 16px; }
-        
+        .popup-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px; }
         .popup-btn {
             display: block; width: 100%; padding: 10px 0; text-align: center;
-            background-color: var(--accent-blue); color: white;
-            font-size: 14px; font-weight: 600; border-radius: 8px; text-decoration: none;
+            color: white; font-size: 14px; font-weight: 600;
+            border-radius: 10px; text-decoration: none;
+            transition: opacity 0.2s, transform 0.1s;
         }
-        .popup-btn:hover { opacity: 0.9; }
+        .popup-btn:hover { opacity: 0.88; transform: scale(0.99); }
 
-        /* --- RESPONSIVIDADE --- */
+        /* ===================== TOAST ===================== */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--text-primary);
+            color: var(--bg-body);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 9999;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            opacity: 0;
+        }
+
+        /* ===================== RESPONSIVIDADE ===================== */
         @media (max-width: 768px) {
             main { flex-direction: column-reverse; }
             aside { width: 100%; height: 45%; border-right: none; border-top: 1px solid var(--border-color); }
             #map { height: 55%; }
-            .header-nav { display: none; } /* Esconde links no mobile */
-            .logo-placeholder { font-size: 16px; }
-            .ios-switch { transform: scale(0.8); margin-left: 10px; }
+            .header-nav { display: none; }
+            .logo-placeholder span { display: none; }
+            .ios-switch { transform: scale(0.85); margin-left: 10px; }
+            #toast { bottom: calc(45% + 16px); }
         }
     </style>
 </head>
 <body data-theme="light">
 
-    <header>
+    <header id="main-header">
         <div class="header-left">
-            <a href="#" class="logo-placeholder">
-                <img src="logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
-                
-                <div id="logo-fallback" class="logo-missing" style="display: none;">
-                    Sua Logo
-                </div>
-                
+            <a href="index.html" class="logo-placeholder">
+                <img src="logo.png" alt="Logo" class="logo-img"
+                     onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
+                <div id="logo-fallback" class="logo-missing" style="display:none;">Logo</div>
                 <span style="margin-left: 8px;">Fortal Roleplay</span>
             </a>
         </div>
@@ -335,8 +421,7 @@
             <a href="index.html" class="active">Mapa</a>
             <a href="roteiros.html">Roteiros</a>
             <a href="sobre.html">Sobre</a>
-
-            <label class="ios-switch" title="Alterar Tema">
+            <label class="ios-switch" title="Alternar Tema">
                 <input type="checkbox" id="theme-toggle">
                 <span class="slider"></span>
             </label>
@@ -344,22 +429,52 @@
     </header>
 
     <main>
-        <aside>
+        <aside id="sidebar">
             <div class="search-container">
-                <input type="text" id="searchBox" class="ios-search" placeholder="Buscar local, vibe ou bairro">
+                <input type="text" id="searchBox" class="ios-search" placeholder="Buscar local, vibe ou bairro…">
+                <div class="results-count" id="results-count"></div>
             </div>
+
+            <!-- Filtros por segmento de cor -->
+            <div class="filter-bar" id="filter-bar">
+                <button class="filter-pill active" data-color="all" style="background:#1d1d1f; border-color:#1d1d1f;">
+                    Todos
+                </button>
+                <button class="filter-pill" data-color="#af52de">
+                    <span class="pill-dot" style="background:#af52de;"></span>Cult
+                </button>
+                <button class="filter-pill" data-color="#ff3b30">
+                    <span class="pill-dot" style="background:#ff3b30;"></span>Underground
+                </button>
+                <button class="filter-pill" data-color="#007aff">
+                    <span class="pill-dot" style="background:#007aff;"></span>Elite
+                </button>
+                <button class="filter-pill" data-color="#34c759">
+                    <span class="pill-dot" style="background:#34c759;"></span>Povão
+                </button>
+                <button class="filter-pill" data-color="#ffcc00">
+                    <span class="pill-dot" style="background:#ffcc00;"></span>Neutros
+                </button>
+            </div>
+
             <div id="places-list" class="places-list">
+                <div class="empty-state" id="empty-state">
+                    <div class="empty-icon">🗺️</div>
+                    <p>Nenhum local encontrado.<br>Tenta outra busca.</p>
                 </div>
+            </div>
         </aside>
 
         <div id="map"></div>
     </main>
 
+    <div id="toast"></div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // --- BASE DE DADOS ---
+        // ===================== BASE DE DADOS =====================
         const database = [
-             // --- ESQUERDA + HERDEIRO) ---
+            // --- ESQUERDA + HERDEIRO (Roxo) ---
             { name: "A Quitanda", cat: "Alternativo Chique", color: "#af52de", lat: -3.7385, lon: -38.5051, desc: "Mercado orgânico. Público que curte MPB Lado B." },
             { name: "Budega do Raul", cat: "Universitário Gourmet", color: "#af52de", lat: -3.7422, lon: -38.5305, desc: "Coxinha gourmet no Benfica. Universitário com mesada." },
             { name: "Mormaço Bar", cat: "Cool & Vento", color: "#af52de", lat: -3.7225, lon: -38.5158, desc: "Vento na cara, drinks caros e gente falando de cinema." },
@@ -387,7 +502,7 @@
             { name: "Museu da Fotografia", cat: "Cultura", color: "#af52de", lat: -3.7345, lon: -38.4930, desc: "Ar condicionado gelado e fotos incríveis." },
             { name: "Caixa Cultural", cat: "Exposições", color: "#af52de", lat: -3.7230, lon: -38.5180, desc: "Exposições gratuitas na Praia de Iracema." },
 
-            // --- ESQUERDA + FODIDO (Vermelho/Laranja) ---
+            // --- ESQUERDA + FODIDO (Vermelho) ---
             { name: "Route Fortaleza", cat: "O Caos", color: "#ff3b30", lat: -3.7212, lon: -38.5205, desc: "O abismo. Onde a dignidade morre às 5 da manhã." },
             { name: "Fuzuê Club", cat: "Balada Centro", color: "#ff3b30", lat: -3.7218, lon: -38.5198, desc: "Vizinho do Route. Pop, funk e suor." },
             { name: "Bar do Seu Nonato", cat: "Raiz Intelectual", color: "#ff3b30", lat: -3.7441, lon: -38.5362, desc: "Ovo colorido e panelada. QG dos professores." },
@@ -512,40 +627,63 @@
             { name: "Estátua de Iracema", cat: "Foto", color: "#ffcc00", lat: -3.7200, lon: -38.5100, desc: "A guardiã da praia." }
         ];
 
-        // --- INICIALIZAÇÃO DO MAPA ---
+        // ===================== MAPA =====================
         const map = L.map('map', { zoomControl: false }).setView([-3.73, -38.51], 13);
         let currentLayer;
 
-        // Função para trocar o estilo do mapa (Light/Dark)
         function setMapTiles(theme) {
             if (currentLayer) map.removeLayer(currentLayer);
-            
-            const tileUrl = theme === 'dark' 
+            const tileUrl = theme === 'dark'
                 ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
                 : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-            
             currentLayer = L.tileLayer(tileUrl, {
                 attribution: '© OpenStreetMap, © Carto',
                 maxZoom: 20
             }).addTo(map);
         }
 
-        // Inicia com Light
-        setMapTiles('light');
+        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setMapTiles(isDark ? 'dark' : 'light');
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // --- LOGICA DE RENDERIZAÇÃO ---
+        // ===================== RENDERIZAÇÃO =====================
         const listContainer = document.getElementById('places-list');
         const searchBox = document.getElementById('searchBox');
+        const resultsCount = document.getElementById('results-count');
+        const emptyState = document.getElementById('empty-state');
         let markers = [];
+        let activeColor = 'all';
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            gsap.killTweensOf(toast);
+            gsap.fromTo(toast,
+                { opacity: 0, y: 20 },
+                { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out',
+                  onComplete: () => gsap.to(toast, { opacity: 0, y: -10, duration: 0.4, delay: 2 })
+                }
+            );
+        }
 
         function render(items) {
-            listContainer.innerHTML = '';
+            // Remove items antigos mas mantém empty-state
+            const oldItems = listContainer.querySelectorAll('.place-item');
+            oldItems.forEach(el => el.remove());
             markers.forEach(m => map.removeLayer(m));
             markers = [];
 
-            items.forEach(place => {
-                // Item Lista
+            // Atualizar contador
+            resultsCount.textContent = items.length > 0
+                ? `${items.length} ${items.length === 1 ? 'local' : 'locais'}`
+                : '';
+
+            // Empty state
+            emptyState.style.display = items.length === 0 ? 'flex' : 'none';
+
+            const fragment = document.createDocumentFragment();
+
+            items.forEach((place, index) => {
                 const item = document.createElement('div');
                 item.className = 'place-item';
                 item.innerHTML = `
@@ -556,74 +694,149 @@
                         <p>${place.desc}</p>
                     </div>
                 `;
-                
-                item.addEventListener('click', () => {
-                    document.querySelectorAll('.place-item').forEach(el => el.classList.remove('active'));
-                    item.classList.add('active');
-                    map.flyTo([place.lat, place.lon], 16, { duration: 1.5 });
-                    marker.openPopup();
-                });
 
-                listContainer.appendChild(item);
-
-                // Marcador Mapa
+                // Marcador no mapa
                 const customIcon = L.divIcon({
                     className: 'custom-pin',
-                    html: `<div style="background-color: ${place.color}; width: 14px; height: 14px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);"></div>`,
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10],
-                    popupAnchor: [0, -10]
+                    html: `<div style="background-color:${place.color};width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.35);transition:transform .2s;"></div>`,
+                    iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -12]
                 });
 
                 const marker = L.marker([place.lat, place.lon], { icon: customIcon }).addTo(map);
-                
-                const gmapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + " Fortaleza")}`;
-                const popupContent = `
-                    <div class="popup-category" style="color: ${place.color}">● ${place.cat}</div>
+
+                marker.on('mouseover', function() {
+                    this.getElement().querySelector('div').style.transform = 'scale(1.5)';
+                });
+                marker.on('mouseout', function() {
+                    this.getElement().querySelector('div').style.transform = 'scale(1)';
+                });
+
+                const gmapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' Fortaleza')}`;
+                marker.bindPopup(`
+                    <div class="popup-category" style="color:${place.color}">● ${place.cat}</div>
                     <div class="popup-title">${place.name}</div>
                     <div class="popup-desc">${place.desc}</div>
                     <a href="${gmapsLink}" target="_blank" class="popup-btn" style="background-color:${place.color}">Como chegar</a>
-                `;
-                marker.bindPopup(popupContent);
+                `);
+
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.place-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
+                    map.flyTo([place.lat, place.lon], 16, { duration: 1.2 });
+                    marker.openPopup();
+                    showToast(`📍 ${place.name}`);
+
+                    // Micro-animação no item clicado
+                    gsap.fromTo(item, { scale: 0.98 }, { scale: 1, duration: 0.25, ease: 'back.out(2)' });
+                });
+
                 markers.push(marker);
+                fragment.appendChild(item);
             });
+
+            listContainer.insertBefore(fragment, emptyState);
+
+            // GSAP: anima os itens da lista em stagger
+            if (items.length > 0) {
+                gsap.fromTo('.place-item',
+                    { opacity: 0, x: -10 },
+                    { opacity: 1, x: 0, duration: 0.35, stagger: 0.03, ease: 'power2.out' }
+                );
+            }
         }
 
         render(database);
 
-        // Busca
+        // ===================== BUSCA =====================
+        let searchTimeout;
         searchBox.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = database.filter(place => 
-                place.name.toLowerCase().includes(term) || 
-                place.desc.toLowerCase().includes(term) || 
-                place.cat.toLowerCase().includes(term)
-            );
-            render(filtered);
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const term = e.target.value.toLowerCase();
+                let filtered = database.filter(p =>
+                    p.name.toLowerCase().includes(term) ||
+                    p.desc.toLowerCase().includes(term) ||
+                    p.cat.toLowerCase().includes(term)
+                );
+                if (activeColor !== 'all') {
+                    filtered = filtered.filter(p => p.color === activeColor);
+                }
+                render(filtered);
+            }, 150);
         });
 
-        // --- DARK MODE TOGGLE ---
+        // ===================== FILTROS =====================
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.filter-pill').forEach(p => {
+                    p.classList.remove('active');
+                    p.style.background = '';
+                    p.style.borderColor = '';
+                    p.style.color = '';
+                });
+                pill.classList.add('active');
+                const color = pill.dataset.color;
+
+                if (color === 'all') {
+                    pill.style.background = 'var(--text-primary)';
+                    pill.style.borderColor = 'var(--text-primary)';
+                    pill.style.color = 'var(--bg-body)';
+                } else {
+                    pill.style.background = color;
+                    pill.style.borderColor = color;
+                    pill.style.color = 'white';
+                }
+
+                activeColor = color;
+                const term = searchBox.value.toLowerCase();
+                let filtered = color === 'all' ? database : database.filter(p => p.color === color);
+                if (term) {
+                    filtered = filtered.filter(p =>
+                        p.name.toLowerCase().includes(term) ||
+                        p.desc.toLowerCase().includes(term) ||
+                        p.cat.toLowerCase().includes(term)
+                    );
+                }
+                render(filtered);
+
+                // Animação no pill clicado
+                gsap.fromTo(pill, { scale: 0.92 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
+            });
+        });
+
+        // ===================== DARK MODE =====================
         const toggle = document.getElementById('theme-toggle');
         const body = document.body;
 
-        toggle.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                body.setAttribute('data-theme', 'dark');
-                setMapTiles('dark');
-            } else {
-                body.setAttribute('data-theme', 'light');
-                setMapTiles('light');
-            }
-        });
-
-        // Detectar preferência do sistema ao carregar
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            toggle.checked = true;
-            body.setAttribute('data-theme', 'dark');
-            setMapTiles('dark');
+        function applyTheme(dark) {
+            body.setAttribute('data-theme', dark ? 'dark' : 'light');
+            setMapTiles(dark ? 'dark' : 'light');
+            toggle.checked = dark;
         }
+
+        toggle.addEventListener('change', (e) => applyTheme(e.target.checked));
+
+        if (isDark) applyTheme(true);
+
+        // ===================== GSAP — ANIMAÇÕES DE ENTRADA =====================
+        gsap.registerPlugin(ScrollTrigger);
+
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+        tl.to('#main-header', { opacity: 1, y: 0, duration: 0.6 })
+          .to('#sidebar',     { opacity: 1, x: 0, duration: 0.5 }, '-=0.3')
+          .from('#map',       { opacity: 0, duration: 0.7, ease: 'power2.inOut' }, '-=0.4');
+
+        // Hover sutil nos links do nav
+        document.querySelectorAll('.header-nav a').forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                gsap.to(link, { y: -1, duration: 0.15 });
+            });
+            link.addEventListener('mouseleave', () => {
+                gsap.to(link, { y: 0, duration: 0.15 });
+            });
+        });
 
     </script>
 </body>
-
 </html>
