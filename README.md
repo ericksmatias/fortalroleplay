@@ -2,18 +2,19 @@
 
 > **Uma interface Apple-style para descobrir a alma (e o veneno) de Fortaleza.**
 
+> **Acesse o mapa ao vivo aqui: [Fortal Roleplay](https://ericksmatias.github.io/fortalroleplay)**
+> 
 ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Vanilla JS](https://img.shields.io/badge/Vanilla-JS-yellow.svg)
 ![Leaflet](https://img.shields.io/badge/Leaflet-JS-green.svg)
 ![Apple Design](https://img.shields.io/badge/Design-Apple--Inspired-black.svg)
 
-![Site em tempo real](https://ericksmatias.github.io/fortalroleplay)
 
 O **Fortaleza Roleplay** é um guia interativo, satírico e esteticamente polido dos picos mais icônicos da capital. Esqueça os guias turísticos genéricos; aqui o mapeamento é feito por "vibe" e fauna social.
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 * **Interface iOS/macOS Native:** Design limpo utilizando a tipografia SF Pro, efeitos de vidro (Glassmorphism) com `backdrop-filter` e transições suaves.
 * **Dark Mode Nativo:** Switch estilo iOS que altera dinamicamente o tema da aplicação e os tiles do mapa (CartoDB Light/Dark).
@@ -23,7 +24,7 @@ O **Fortaleza Roleplay** é um guia interativo, satírico e esteticamente polido
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 | Tecnologia | Finalidade |
 | :--- | :--- |
@@ -34,7 +35,7 @@ O **Fortaleza Roleplay** é um guia interativo, satírico e esteticamente polido
 
 ---
 
-## 🎨 As Categorias
+## As Categorias
 
 O projeto divide a cidade em arquétipos sociais para facilitar a sua navegação:
 
@@ -46,7 +47,7 @@ O projeto divide a cidade em arquétipos sociais para facilitar a sua navegaçã
 
 ---
 
-## 🚀 Como Executar
+## Como Executar
 
 Por ser um projeto puramente **Front-end (Vanilla)**, (Por enquanto) você não precisa de `npm install` ou `docker`.
 
@@ -58,7 +59,8 @@ Por ser um projeto puramente **Front-end (Vanilla)**, (Por enquanto) você não 
 
 ---
 
-## 🤝 Contribua (Open-Source)
+
+## Contribua (Open-Source)
 
 Este projeto é **open-source** e aceita contribuições, especialmente para aumentar o nosso banco de dados de locais!
 
@@ -69,6 +71,6 @@ Este projeto é **open-source** e aceita contribuições, especialmente para aum
 
 ---
 
-## 📝 Licença
+## Licença
 
 Este projeto está sob a licença MIT. Sinta-se livre para modificar.
