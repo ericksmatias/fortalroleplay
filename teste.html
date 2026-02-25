@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fortaleza Roleplay</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        /* --- VARIÁVEIS DE CORES (Temas) --- */
+        :root {
+            /* Padrão (Light Mode) */
+            --sf-pro: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            --bg-body: #ffffff;
+            --bg-sidebar: #f5f5f7;
+            --bg-header: rgba(255, 255, 255, 0.85);
+            --border-color: #d2d2d7;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-blue: #0071e3;
+            --search-bg: #ffffff;
+            --item-hover: rgba(0,0,0,0.05);
+            --header-height: 56px;
+            --sidebar-width: 380px;
+        }
+
+        /* Dark Mode (Ativado via atributo data-theme="dark") */
+        [data-theme="dark"] {
+            --bg-body: #000000;
+            --bg-sidebar: #1c1c1e; /* Cinza escuro Apple */
+            --bg-header: rgba(28, 28, 30, 0.85);
+            --border-color: #38383a;
+            --text-primary: #f5f5f7;
+            --text-secondary: #98989d;
+            --accent-blue: #0a84ff; /* Azul mais brilhante para fundo escuro */
+            --search-bg: #2c2c2e;
+            --item-hover: rgba(255,255,255,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+
+        body {
+            font-family: var(--sf-pro);
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* --- HEADER --- */
+        header {
+            height: var(--header-height);
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 2000;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        /* --- LOGO (Esquerda) --- */
+        .header-left {
+            display: flex;
+            align-items: center;
+            width: 200px; /* Reserva espaço garantido */
+        }
+
+        .logo-placeholder {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 32px;
+            width: auto;
+            display: block;
+        }
+
+        /* Fallback visual caso não tenha imagem ainda */
+        .logo-missing {
+            height: 32px;
+            padding: 0 10px;
+            background: var(--bg-sidebar);
+            border: 1px dashed var(--text-secondary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* --- NAV LINKS (Centro/Direita) --- */
+        .header-nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .header-nav a {
+            text-decoration: none;
+            font-size: 13px;
+            color: var(--text-primary);
+            opacity: 0.8;
+            transition: opacity 0.2s, color 0.2s;
+        }
+
+        .header-nav a:hover {
+            opacity: 1;
+            color: var(--accent-blue);
+        }
+
+        .header-nav a.active {
+            opacity: 1;
+            font-weight: 600;
+        }
+
+        /* --- TOGGLE DARK MODE (Estilo iOS) --- */
+        .ios-switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 26px;
+            margin-left: 20px;
+        }
+
+        .ios-switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #e9e9ea;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        /* Cor do fundo do switch no Dark Mode */
+        [data-theme="dark"] .slider { background-color: #39393d; }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px; width: 22px;
+            left: 2px; bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider { background-color: #30d158; } /* Verde Apple Ativo */
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        main {
+            display: flex;
+            margin-top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+            width: 100%;
+        }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .search-container {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .ios-search {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            border-radius: 10px;
+            border: none;
+            background-color: var(--search-bg); /* Adapta ao tema */
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: var(--sf-pro);
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.05); /* Borda sutil */
+            transition: all 0.2s;
+            
+            /* Ícone Lupa SVG via CSS */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 10px center;
+        }
+        
+        .ios-search:focus {
+            box-shadow: 0 0 0 2px var(--accent-blue);
+        }
+
+        .places-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+
+        /* Scrollbar fina */
+        .places-list::-webkit-scrollbar { width: 6px; }
+        .places-list::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 3px; }
+
+        .place-item {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .place-item:hover { background-color: var(--item-hover); }
+
+        .place-item.active {
+            background-color: var(--item-hover);
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .dot-indicator {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            margin-top: 4px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .place-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .place-content span {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            opacity: 0.8;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .place-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* --- MAPA --- */
+        #map {
+            flex: 1;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* --- POPUPS --- */
+        .leaflet-popup-content-wrapper {
+            background: var(--bg-header); /* Usa o fundo do tema */
+            backdrop-filter: saturate(180%) blur(20px);
+            color: var(--text-primary);
+            border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 0;
+        }
+        .leaflet-popup-tip { background: var(--bg-header); }
+        
+        .leaflet-popup-content { margin: 0; width: 260px !important; padding: 20px; font-family: var(--sf-pro); }
+
+        .popup-category { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
+        .popup-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
+        .popup-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.4; margin-bottom: 16px; }
+        
+        .popup-btn {
+            display: block; width: 100%; padding: 10px 0; text-align: center;
+            background-color: var(--accent-blue); color: white;
+            font-size: 14px; font-weight: 600; border-radius: 8px; text-decoration: none;
+        }
+        .popup-btn:hover { opacity: 0.9; }
+
+        /* --- RESPONSIVIDADE --- */
+        @media (max-width: 768px) {
+            main { flex-direction: column-reverse; }
+            aside { width: 100%; height: 45%; border-right: none; border-top: 1px solid var(--border-color); }
+            #map { height: 55%; }
+            .header-nav { display: none; } /* Esconde links no mobile */
+            .logo-placeholder { font-size: 16px; }
+            .ios-switch { transform: scale(0.8); margin-left: 10px; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <header>
+        <div class="header-left">
+            <a href="#" class="logo-placeholder">
+                <img src="logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
+                
+                <div id="logo-fallback" class="logo-missing" style="display: none;">
+                    Sua Logo
+                </div>
+                
+                <span style="margin-left: 8px;">Fortal Roleplay</span>
+            </a>
+        </div>
+        
+        <div class="header-nav">
+            <a href="index.html" class="active">Mapa</a>
+            <a href="roteiros.html">Roteiros</a>
+            <a href="sobre.html">Sobre</a>
+
+            <label class="ios-switch" title="Alterar Tema">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </header>
+
+    <main>
+        <aside>
+            <div class="search-container">
+                <input type="text" id="searchBox" class="ios-search" placeholder="Buscar local, vibe ou bairro">
+            </div>
+            <div id="places-list" class="places-list">
+                </div>
+        </aside>
+
+        <div id="map"></div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // --- BASE DE DADOS ---
+        const database = [
+             // --- ESQUERDA + HERDEIRO) ---
+            { name: "A Quitanda", cat: "Alternativo Chique", color: "#af52de", lat: -3.7385, lon: -38.5051, desc: "Mercado orgânico. Público que curte MPB Lado B." },
+            { name: "Budega do Raul", cat: "Universitário Gourmet", color: "#af52de", lat: -3.7422, lon: -38.5305, desc: "Coxinha gourmet no Benfica. Universitário com mesada." },
+            { name: "Mormaço Bar", cat: "Cool & Vento", color: "#af52de", lat: -3.7225, lon: -38.5158, desc: "Vento na cara, drinks caros e gente falando de cinema." },
+            { name: "Brisa de Fortaleza", cat: "Visual", color: "#af52de", lat: -3.7251, lon: -38.5123, desc: "Vista pro mar pra quem tem iPhone Pro e vota no PSOL." },
+            { name: "Parqland", cat: "Festa Hype", color: "#af52de", lat: -3.7308, lon: -38.5502, desc: "Touro Neon. Gente bonita, suada e muito glitter na Parquelândia." },
+            { name: "Fuzuê Bar", cat: "Esquenta Nobre", color: "#af52de", lat: -3.7284, lon: -38.5015, desc: "Esquenta oficial do Meireles. Gente desconstruída de Uber Black." },
+            { name: "Giz Cozinha Boêmia", cat: "Samba Caviar", color: "#af52de", lat: -3.7317, lon: -38.4982, desc: "Samba de rico. Garçom de gravata e feijoada preço de ouro." },
+            { name: "Teresa & Jorge", cat: "Cult Turístico", color: "#af52de", lat: -3.7239, lon: -38.5101, desc: "Era raiz, virou point turístico. Samba excelente." },
+            { name: "Zelig Drink Bar", cat: "Nova York", color: "#af52de", lat: -3.7340, lon: -38.5020, desc: "Escondido e escuro. Parece bar de filme noir." },
+            { name: "Culinária da Van", cat: "Regional Cult", color: "#af52de", lat: -3.7400, lon: -38.5320, desc: "A chef Van é celebridade. Panelada premiada no Benfica." },
+            { name: "O Mar Menino", cat: "Gastronomia Arte", color: "#af52de", lat: -3.7350, lon: -38.5050, desc: "Comida que parece quadro. Lugar de arquitetos." },
+            { name: "Bulls Beer House", cat: "Rock Pub", color: "#af52de", lat: -3.7380, lon: -38.5030, desc: "Rock e burger na Aldeota. Metaleiros programadores." },
+            { name: "Clandestino", cat: "Jazz & Blues", color: "#af52de", lat: -3.7410, lon: -38.5310, desc: "Jazz no quintal. Vibe intimista no Benfica." },
+            { name: "Hey Joe Food 'n' Bar", cat: "Descolado", color: "#af52de", lat: -3.7330, lon: -38.5080, desc: "Comida saudável e gente tatuada bonita." },
+            { name: "Boozer's Pub", cat: "Hostel Vibe", color: "#af52de", lat: -3.7290, lon: -38.5090, desc: "Gringos e rock clássico. Parece que você tá viajando." },
+            { name: "Cervejaria Capitosa", cat: "Artesanal", color: "#af52de", lat: -3.7375, lon: -38.4990, desc: "Público que discute lúpulo a noite toda." },
+            { name: "Brauhaus", cat: "Alemão", color: "#af52de", lat: -3.7320, lon: -38.5050, desc: "Templo da cerveja importada." },
+            { name: "Mayú", cat: "Alta Gastronomia", color: "#af52de", lat: -3.7340, lon: -38.4970, desc: "Restaurante do Senac. Comida experimental." },
+            { name: "Cinema do Dragão", cat: "Cinefilia", color: "#af52de", lat: -3.7220, lon: -38.5200, desc: "Filmes que ninguém entende e debate sobre semiótica." },
+            { name: "Café Couture", cat: "Jazz & Drinks", color: "#af52de", lat: -3.7335, lon: -38.5040, desc: "Piano e luz vermelha. Boemia afrancesada." },
+            { name: "Brewstone Pub", cat: "Cerveja & Rock", color: "#af52de", lat: -3.7360, lon: -38.5010, desc: "Pub sério. Cerveja própria excelente." },
+            { name: "Amika Coffee", cat: "Café Geek", color: "#af52de", lat: -3.7350, lon: -38.4980, desc: "Café pra trabalhar remoto. Cheio de MacBooks." },
+            { name: "Le Pain Le Café", cat: "Francês", color: "#af52de", lat: -3.7370, lon: -38.4960, desc: "Croissant e ar condicionado. Madames e cults." },
+            { name: "Benévolo", cat: "Gelato", color: "#af52de", lat: -3.7340, lon: -38.5000, desc: "Sorvete e café. Ponto de encontro pós-almoço." },
+            { name: "Museu da Fotografia", cat: "Cultura", color: "#af52de", lat: -3.7345, lon: -38.4930, desc: "Ar condicionado gelado e fotos incríveis." },
+            { name: "Caixa Cultural", cat: "Exposições", color: "#af52de", lat: -3.7230, lon: -38.5180, desc: "Exposições gratuitas na Praia de Iracema." },
+
+            // --- ESQUERDA + FODIDO (Vermelho/Laranja) ---
+            { name: "Route Fortaleza", cat: "O Caos", color: "#ff3b30", lat: -3.7212, lon: -38.5205, desc: "O abismo. Onde a dignidade morre às 5 da manhã." },
+            { name: "Fuzuê Club", cat: "Balada Centro", color: "#ff3b30", lat: -3.7218, lon: -38.5198, desc: "Vizinho do Route. Pop, funk e suor." },
+            { name: "Bar do Seu Nonato", cat: "Raiz Intelectual", color: "#ff3b30", lat: -3.7441, lon: -38.5362, desc: "Ovo colorido e panelada. QG dos professores." },
+            { name: "Bar do Vinil", cat: "Hipster Raiz", color: "#ff3b30", lat: -3.7433, lon: -38.5351, desc: "Bolachão na vitrola. Refúgio hipster do Benfica." },
+            { name: "Rap Bar", cat: "Cena Urbana", color: "#ff3b30", lat: -3.7255, lon: -38.5258, desc: "Rima, skate e cerveja barata no Centro." },
+            { name: "Budega dos Pinhões", cat: "Praça", color: "#ff3b30", lat: -3.7268, lon: -38.5152, desc: "Esquenta pro nada. Bebe em pé na praça." },
+            { name: "Vinil Ambientz", cat: "Nostalgia", color: "#ff3b30", lat: -3.7438, lon: -38.5345, desc: "Mais vinil no Benfica." },
+            { name: "Nomads", cat: "Alternativo", color: "#ff3b30", lat: -3.7405, lon: -38.5321, desc: "Gringo perdido e cerveja em copo de plástico." },
+            { name: "Na Toca do Coelho", cat: "Underground", color: "#ff3b30", lat: -3.7452, lon: -38.5385, desc: "Buraco negro alternativo. Entrou, sumiu." },
+            { name: "Boteco do Peixe", cat: "Universitário", color: "#ff3b30", lat: -3.7388, lon: -38.5309, desc: "Cachaça e estudante liso." },
+            { name: "Pitombeira Bar", cat: "Raiz", color: "#ff3b30", lat: -3.7425, lon: -38.5371, desc: "Mesa bamba e garçom amigo íntimo." },
+            { name: "Covil Rock Bar", cat: "Metal", color: "#ff3b30", lat: -3.7431, lon: -38.5335, desc: "Trevas, preto e metal." },
+            { name: "Bar Galola", cat: "Zueira", color: "#ff3b30", lat: -3.7445, lon: -38.5392, desc: "Zueira sem limites e preços baixos." },
+            { name: "Laje Head Shop", cat: "Fumaça", color: "#ff3b30", lat: -3.7436, lon: -38.5341, desc: "A fumaça sobe, o rock toca." },
+            { name: "Mambembe", cat: "Cultural Caos", color: "#ff3b30", lat: -3.7225, lon: -38.5190, desc: "Festa na rua e liberdade total na PI." },
+            { name: "Chopp do Bixiga", cat: "Clássico Dragão", color: "#ff3b30", lat: -3.7215, lon: -38.5200, desc: "Chopp de vinho famoso e perigoso." },
+            { name: "Praça dos Leões", cat: "Rua", color: "#ff3b30", lat: -3.7280, lon: -38.5270, desc: "Underground real. Cerveja de isopor." },
+            { name: "Raimundo dos Queijos", cat: "Patrimônio", color: "#ff3b30", lat: -3.7260, lon: -38.5280, desc: "Domingo de manhã é lei no Centro." },
+            { name: "Leão do Sul", cat: "Azia Boa", color: "#ff3b30", lat: -3.7275, lon: -38.5275, desc: "Pastel com caldo de cana lendário." },
+            { name: "Moto Libre", cat: "Balada Alt", color: "#ff3b30", lat: -3.7300, lon: -38.5080, desc: "Vibe motoqueira e alternativa." },
+            { name: "Praça da Gentilândia", cat: "Benfica Soul", color: "#ff3b30", lat: -3.7420, lon: -38.5350, desc: "Skate, litrão e debate político." },
+            { name: "Serpentina", cat: "Cerveja Raiz", color: "#ff3b30", lat: -3.7250, lon: -38.5250, desc: "Artesanal no Centro, mesa na calçada." },
+            { name: "Gandaia Club", cat: "LGBTQIA+", color: "#ff3b30", lat: -3.7210, lon: -38.5210, desc: "Templo do pop e do suor." },
+            { name: "Haus", cat: "Eletrônico", color: "#ff3b30", lat: -3.7220, lon: -38.5180, desc: "Techno e óculos escuros às 3 da manhã." },
+            { name: "Level", cat: "Balada Drag", color: "#ff3b30", lat: -3.7218, lon: -38.5170, desc: "Shows de Drag Queen e festa até amanhecer." },
+            { name: "Centro Fashion", cat: "Moda & Caos", color: "#ff3b30", lat: -3.7150, lon: -38.5400, desc: "Onde a sacoleira guerreira faz a moda girar." },
+            { name: "Mercado Central", cat: "Turista & Local", color: "#ff3b30", lat: -3.7240, lon: -38.5230, desc: "Labirinto de renda e castanha." },
+            { name: "Mercado São Sebastião", cat: "Café Nordestino", color: "#ff3b30", lat: -3.7300, lon: -38.5350, desc: "Cuscuz, panelada e gritaria." },
+            { name: "Beco da Poeira", cat: "Hardcore", color: "#ff3b30", lat: -3.7280, lon: -38.5300, desc: "Comércio popular extremo." },
+            { name: "Praça do Ferreira", cat: "Marco Zero", color: "#ff3b30", lat: -3.7270, lon: -38.5270, desc: "O coração da cidade." },
+            { name: "Cabaré da Baixa", cat: "Histórico", color: "#ff3b30", lat: -3.7200, lon: -38.5300, desc: "Boemia antiga da zona portuária." },
+            { name: "Bar do Biel", cat: "Sinuca", color: "#ff3b30", lat: -3.7230, lon: -38.5250, desc: "Sinuca e cerveja barata no Centro." },
+            { name: "Assis da Picanha", cat: "Picanha Raiz", color: "#ff3b30", lat: -3.7320, lon: -38.5400, desc: "Picanha boa e barata." },
+            { name: "Churrascaria O Osmar", cat: "Fartura", color: "#ff3b30", lat: -3.7500, lon: -38.5500, desc: "Ponto de taxistas. Comida muita e barata." },
+
+            // --- DIREITA + HERDEIRO (Azul) ---
+            { name: "Moleskine / Moleska", cat: "Elite", color: "#007aff", lat: -3.7325, lon: -38.4928, desc: "QG da Elite. Fecha contrato milionário." },
+            { name: "Hoots Gastropub", cat: "Rock de Rico", color: "#007aff", lat: -3.7338, lon: -38.4955, desc: "Rock pra quem anda de blindado." },
+            { name: "Austin Pub", cat: "Sertanejo Elite", color: "#007aff", lat: -3.7342, lon: -38.4901, desc: "Templo do Sapatênis e paquera." },
+            { name: "Cervejaria Turatti", cat: "Família Rica", color: "#007aff", lat: -3.7351, lon: -38.4855, desc: "Disney de Bêbado Rico." },
+            { name: "Bang's Sul", cat: "Faroeste Gourmet", color: "#007aff", lat: -3.7805, lon: -38.4802, desc: "Carne defumada cara na Zona Sul." },
+            { name: "Floresta Complexo", cat: "Cover", color: "#007aff", lat: -3.7365, lon: -38.4988, desc: "Rock dos anos 80 pra tiozões." },
+            { name: "Donkey Head", cat: "Cervejeiro", color: "#007aff", lat: -3.7371, lon: -38.5005, desc: "Cerveja boa na Aldeota." },
+            { name: "Boteco do Ciço", cat: "Fake Raiz", color: "#007aff", lat: -3.7368, lon: -38.5022, desc: "Parece pobre, mas fica no m² mais caro." },
+            { name: "Colosso Fortaleza", cat: "Super Elite", color: "#007aff", lat: -3.7552, lon: -38.4891, desc: "Wakeboard e combo de vodka caro no Edson Queiroz." },
+            { name: "Zoi Restaurante", cat: "Jantar de Negócios", color: "#007aff", lat: -3.7555, lon: -38.4895, desc: "Mediterrâneo pra impressionar." },
+            { name: "Iate Clube", cat: "Old Money", color: "#007aff", lat: -3.7208, lon: -38.4825, desc: "Donos da cidade estacionam seus barcos." },
+            { name: "Coco Bambu (Frutos)", cat: "Embaixada", color: "#007aff", lat: -3.7302, lon: -38.4955, desc: "A catedral do camarão." },
+            { name: "Santa Grelha", cat: "Carne de Ouro", color: "#007aff", lat: -3.7345, lon: -38.4981, desc: "Onde o empresário almoça." },
+            { name: "Ryori Sushi", cat: "Japa de Rico", color: "#007aff", lat: -3.7358, lon: -38.4922, desc: "Sushi com trufa branca." },
+            { name: "Ponza Frutos do Mar", cat: "Sofisticação", color: "#007aff", lat: -3.7330, lon: -38.4960, desc: "Ambiente azul e comida chique." },
+            { name: "Vibe do Lago", cat: "Lago Jacarey", color: "#007aff", lat: -3.7955, lon: -38.4850, desc: "O point da Zona Sul. Famílias ricas." },
+            { name: "Cabaña del Primo", cat: "Argentino", color: "#007aff", lat: -3.7360, lon: -38.4910, desc: "Parrilla porteña no Jardins Open Mall." },
+            { name: "Geppos Italiano", cat: "Jardins Open Mall", color: "#007aff", lat: -3.7355, lon: -38.4905, desc: "Massa e vinho. Fingir que tá na Europa." },
+            { name: "Illa Mare", cat: "Beira Mar Elite", color: "#007aff", lat: -3.7240, lon: -38.4880, desc: "Restaurante flutuante com preço pra turista." },
+            { name: "Vignoli", cat: "Pizza de Rico", color: "#007aff", lat: -3.7370, lon: -38.4950, desc: "Pizza fina. Coma com luvas." },
+            { name: "Samba do Vila", cat: "Pagode de Elite", color: "#007aff", lat: -3.7380, lon: -38.4990, desc: "Pagode pra quem usa sapatênis." },
+            { name: "Living", cat: "Balada Playba", color: "#007aff", lat: -3.7335, lon: -38.4940, desc: "Eletrônico e funk na Aldeota." },
+            { name: "Soho", cat: "Asiático", color: "#007aff", lat: -3.7390, lon: -38.4850, desc: "Japa moderno no RioMar." },
+            { name: "Medit", cat: "Alta Gastronomia", color: "#007aff", lat: -3.7350, lon: -38.4900, desc: "Um dos melhores da cidade." },
+            { name: "L'Ô Restaurante", cat: "Eventos", color: "#007aff", lat: -3.7250, lon: -38.5150, desc: "Oásis de riqueza no Dragão." },
+            { name: "Ideal Clube", cat: "Tradicional", color: "#007aff", lat: -3.7280, lon: -38.5050, desc: "Clube da alta sociedade." },
+            { name: "Misaki", cat: "Japa Fusion", color: "#007aff", lat: -3.7365, lon: -38.4915, desc: "Lagosta e ouro." },
+            { name: "Picanha do Cowboy", cat: "Clássico", color: "#007aff", lat: -3.7350, lon: -38.5000, desc: "Picanha honesta em área nobre." },
+
+            // --- DIREITA + POVÃO (Verde) ---
+            { name: "Divina Picanha", cat: "Família Tradicional", color: "#34c759", lat: -3.7705, lon: -38.4851, desc: "Almoço de domingo na Sul." },
+            { name: "Paraíba Raiz", cat: "Butequeiro", color: "#34c759", lat: -3.7439, lon: -38.5358, desc: "Foco é beber litrão barato." },
+            { name: "Bar do Railson", cat: "Bairro", color: "#34c759", lat: -3.7502, lon: -38.5405, desc: "Sinuca e emoção no Benfica." },
+            { name: "Kosmika Club", cat: "Pop Glitter", color: "#34c759", lat: -3.7245, lon: -38.5201, desc: "Pop e glitter no Centro." },
+            { name: "Sr. Petisco", cat: "Comida", color: "#34c759", lat: -3.7551, lon: -38.5508, desc: "Comida de boteco honesta." },
+            { name: "Bar do Seu Carlos", cat: "Lenda", color: "#34c759", lat: -3.7602, lon: -38.5601, desc: "Lenda do Montese." },
+            { name: "Bar do Animaw", cat: "Bicho Solto", color: "#34c759", lat: -3.7585, lon: -38.5552, desc: "Cerveja trincando e zero etiqueta." },
+            { name: "Tony Do Orós", cat: "Carne de Sol", color: "#34c759", lat: -3.7658, lon: -38.5705, desc: "Melhor carne de sol da galáxia." },
+            { name: "Bar da Loura", cat: "Centro Raiz", color: "#34c759", lat: -3.7252, lon: -38.5281, desc: "Puro suco do Centro." },
+            { name: "Carneiro do Ordones", cat: "Fartura", color: "#34c759", lat: -3.7355, lon: -38.5558, desc: "Catedral da carne na Parquelândia." },
+            { name: "Bar do Mincharia", cat: "Praia Raiz", color: "#34c759", lat: -3.7205, lon: -38.5105, desc: "Pé na areia na PI." },
+            { name: "Cantinho do Frango", cat: "Patrimônio", color: "#34c759", lat: -3.7360, lon: -38.5050, desc: "Frango desossado e vinil." },
+            { name: "Kina do Feijão Verde", cat: "Regional", color: "#34c759", lat: -3.7300, lon: -38.5150, desc: "O melhor feijão verde." },
+            { name: "Carneiro do Tércio", cat: "Zona Sul", color: "#34c759", lat: -3.7800, lon: -38.4900, desc: "Carneiro gigante na Sul." },
+            { name: "Rei da Panelada", cat: "Cura Ressaca", color: "#34c759", lat: -3.7500, lon: -38.5200, desc: "A cura está aqui." },
+            { name: "Lá na Roça", cat: "Sertão", color: "#34c759", lat: -3.7900, lon: -38.4800, desc: "Buffet cearense no Eusébio." },
+            { name: "Colher de Pau", cat: "Turista Raiz", color: "#34c759", lat: -3.7360, lon: -38.4880, desc: "Baião de dois sério na Varjota." },
+            { name: "Arre Égua", cat: "Forró Antigo", color: "#34c759", lat: -3.7370, lon: -38.4850, desc: "Vila sertaneja turística." },
+            { name: "Kukukaya", cat: "Forró Raiz", color: "#34c759", lat: -3.7450, lon: -38.5250, desc: "Dançar agarradinho." },
+            { name: "Pirata Bar", cat: "Segunda-feira", color: "#34c759", lat: -3.7200, lon: -38.5150, desc: "Segunda mais louca do mundo." },
+            { name: "Lupus Bier", cat: "Humor", color: "#34c759", lat: -3.7210, lon: -38.5160, desc: "Show de humor e Rossicléa." },
+            { name: "Chico do Caranguejo", cat: "Praia Futuro", color: "#34c759", lat: -3.7541, lon: -38.4450, desc: "Caranguejo e show." },
+            { name: "Crocobeach", cat: "Resort", color: "#34c759", lat: -3.7330, lon: -38.4620, desc: "Hotel na areia." },
+            { name: "Mercado dos Peixes", cat: "Pôr do Sol", color: "#34c759", lat: -3.7216, lon: -38.4798, desc: "Camarão fresco na hora." },
+            { name: "Orbita Blue", cat: "Praia Hype", color: "#34c759", lat: -3.7310, lon: -38.4650, desc: "Eletrônica e gente bonita na PF." },
+            { name: "Santa Praia", cat: "Beach Tennis", color: "#34c759", lat: -3.7320, lon: -38.4630, desc: "Suar e beber." },
+            { name: "Pastel na Hora", cat: "Lanche", color: "#34c759", lat: -3.7350, lon: -38.5050, desc: "Pastel gigante." },
+            { name: "Beira Mar Grill", cat: "Churrasco", color: "#34c759", lat: -3.7250, lon: -38.4900, desc: "Rodízio na orla." },
+            { name: "Coco Bambu Sul", cat: "Evento", color: "#34c759", lat: -3.7850, lon: -38.4800, desc: "Maior restaurante do Brasil." },
+            { name: "Ordones Sandry", cat: "Variação", color: "#34c759", lat: -3.7360, lon: -38.5540, desc: "Versão premium do Ordones." },
+            { name: "Tatu Bola", cat: "Balada Sertaneja", color: "#34c759", lat: -3.7340, lon: -38.4930, desc: "Paquera na semana." },
+            { name: "Boteco Praia", cat: "Vista", color: "#34c759", lat: -3.7220, lon: -38.4950, desc: "Prédio na orla com vista." },
+            { name: "Alpendre", cat: "Cultural", color: "#34c759", lat: -3.7280, lon: -38.5120, desc: "Cerveja de garrafa na calçada." },
+            { name: "Pasto & Pizza", cat: "Rodízio", color: "#34c759", lat: -3.7350, lon: -38.4950, desc: "Pizza infinita." },
+            { name: "Náutico Clube", cat: "Clube", color: "#34c759", lat: -3.7230, lon: -38.4920, desc: "Clube da orla." },
+            { name: "Círculo Militar", cat: "Clube", color: "#34c759", lat: -3.7250, lon: -38.4950, desc: "Eventos militares e vista." },
+            { name: "AABB", cat: "Clube", color: "#34c759", lat: -3.7300, lon: -38.4850, desc: "Churrasco de domingo." },
+            { name: "BNB Clube", cat: "Clube", color: "#34c759", lat: -3.7320, lon: -38.5000, desc: "Festas juninas épicas." },
+            { name: "Parque do Cocó", cat: "Natureza", color: "#34c759", lat: -3.7450, lon: -38.4850, desc: "Piquenique e trilha." },
+            { name: "Padaria Costa Mendes", cat: "Montese", color: "#34c759", lat: -3.7600, lon: -38.5400, desc: "Pão de coco lendário." },
+            { name: "Empório Delitália", cat: "Padaria Rica", color: "#34c759", lat: -3.7360, lon: -38.4950, desc: "Presunto de Parma às 22h." },
+
+            // --- NEUTROS & MALLS (Amarelo) ---
+            { name: "Boteco do Lee", cat: "Neutro", color: "#ffcc00", lat: -3.7305, lon: -38.5208, desc: "O purgatório." },
+            { name: "Bar da Tetê", cat: "Indefinido", color: "#ffcc00", lat: -3.7321, lon: -38.5222, desc: "Ninguém define o público." },
+            { name: "Relativo Bar", cat: "Depende", color: "#ffcc00", lat: -3.7315, lon: -38.5215, desc: "Tudo é relativo." },
+            { name: "Shopping Iguatemi", cat: "O Mall", color: "#ffcc00", lat: -3.7550, lon: -38.4880, desc: "Onde todo mundo se encontra." },
+            { name: "Shopping RioMar", cat: "O Novo Rico", color: "#ffcc00", lat: -3.7400, lon: -38.4750, desc: "Gigante e frio." },
+            { name: "North Shopping", cat: "O do Povo", color: "#ffcc00", lat: -3.7350, lon: -38.5600, desc: "Formigueiro na Bezerra." },
+            { name: "Shopping Benfica", cat: "Diversidade", color: "#ffcc00", lat: -3.7420, lon: -38.5380, desc: "Otakus e vovós." },
+            { name: "Shopping Del Paseo", cat: "Compacto", color: "#ffcc00", lat: -3.7350, lon: -38.4980, desc: "Shopping de rico velho." },
+            { name: "Via Sul Shopping", cat: "Zona Sul", color: "#ffcc00", lat: -3.7900, lon: -38.4850, desc: "Shopping da Seis Bocas." },
+            { name: "Grand Shopping", cat: "Messejana", color: "#ffcc00", lat: -3.8100, lon: -38.4700, desc: "Salvou Messejana." },
+            { name: "Pão de Açúcar Náutico", cat: "Meeting Point", color: "#ffcc00", lat: -3.7240, lon: -38.4930, desc: "Ponto de encontro." },
+            { name: "Feirinha da Beira Mar", cat: "Turismo", color: "#ffcc00", lat: -3.7230, lon: -38.4900, desc: "Artesanato e castanha." },
+            { name: "Estátua de Iracema", cat: "Foto", color: "#ffcc00", lat: -3.7200, lon: -38.5100, desc: "A guardiã da praia." }
+        ];
+
+        // --- INICIALIZAÇÃO DO MAPA ---
+        const map = L.map('map', { zoomControl: false }).setView([-3.73, -38.51], 13);
+        let currentLayer;
+
+        // Função para trocar o estilo do mapa (Light/Dark)
+        function setMapTiles(theme) {
+            if (currentLayer) map.removeLayer(currentLayer);
+            
+            const tileUrl = theme === 'dark' 
+                ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+            
+            currentLayer = L.tileLayer(tileUrl, {
+                attribution: '© OpenStreetMap, © Carto',
+                maxZoom: 20
+            }).addTo(map);
+        }
+
+        // Inicia com Light
+        setMapTiles('light');
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // --- LOGICA DE RENDERIZAÇÃO ---
+        const listContainer = document.getElementById('places-list');
+        const searchBox = document.getElementById('searchBox');
+        let markers = [];
+
+        function render(items) {
+            listContainer.innerHTML = '';
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            items.forEach(place => {
+                // Item Lista
+                const item = document.createElement('div');
+                item.className = 'place-item';
+                item.innerHTML = `
+                    <div class="dot-indicator" style="background-color: ${place.color}"></div>
+                    <div class="place-content">
+                        <span style="color: ${place.color}">${place.cat}</span>
+                        <h3>${place.name}</h3>
+                        <p>${place.desc}</p>
+                    </div>
+                `;
+                
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.place-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
+                    map.flyTo([place.lat, place.lon], 16, { duration: 1.5 });
+                    marker.openPopup();
+                });
+
+                listContainer.appendChild(item);
+
+                // Marcador Mapa
+                const customIcon = L.divIcon({
+                    className: 'custom-pin',
+                    html: `<div style="background-color: ${place.color}; width: 14px; height: 14px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);"></div>`,
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10],
+                    popupAnchor: [0, -10]
+                });
+
+                const marker = L.marker([place.lat, place.lon], { icon: customIcon }).addTo(map);
+                
+                const gmapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + " Fortaleza")}`;
+                const popupContent = `
+                    <div class="popup-category" style="color: ${place.color}">● ${place.cat}</div>
+                    <div class="popup-title">${place.name}</div>
+                    <div class="popup-desc">${place.desc}</div>
+                    <a href="${gmapsLink}" target="_blank" class="popup-btn" style="background-color:${place.color}">Como chegar</a>
+                `;
+                marker.bindPopup(popupContent);
+                markers.push(marker);
+            });
+        }
+
+        render(database);
+
+        // Busca
+        searchBox.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = database.filter(place => 
+                place.name.toLowerCase().includes(term) || 
+                place.desc.toLowerCase().includes(term) || 
+                place.cat.toLowerCase().includes(term)
+            );
+            render(filtered);
+        });
+
+        // --- DARK MODE TOGGLE ---
+        const toggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        toggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                body.setAttribute('data-theme', 'dark');
+                setMapTiles('dark');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                setMapTiles('light');
+            }
+        });
+
+        // Detectar preferência do sistema ao carregar
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            toggle.checked = true;
+            body.setAttribute('data-theme', 'dark');
+            setMapTiles('dark');
+        }
+
+    </script>
+</body>
+</html>
