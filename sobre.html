@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Informações Legais - Fortaleza Roleplay</title>
-    
+    <title>Fortal Roleplay — Sobre</title>
+
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
     <style>
-        /* --- VARIÁVEIS DE CORES (Temas) --- */
+        /* ===================== VARIÁVEIS ===================== */
         :root {
-            /* Padrão (Light Mode) */
             --sf-pro: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
             --bg-body: #ffffff;
             --bg-sidebar: #f5f5f7;
@@ -20,10 +23,8 @@
             --search-bg: #ffffff;
             --item-hover: rgba(0,0,0,0.05);
             --header-height: 56px;
-            --sidebar-width: 280px; /* Reduzido para o menu legal */
+            --sidebar-width: 280px;
         }
-
-        /* Dark Mode */
         [data-theme="dark"] {
             --bg-body: #000000;
             --bg-sidebar: #1c1c1e;
@@ -36,7 +37,7 @@
             --item-hover: rgba(255,255,255,0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: var(--sf-pro);
@@ -49,42 +50,61 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* --- HEADER (Idêntico ao original) --- */
+        /* ===================== HEADER ===================== */
         header {
             height: var(--header-height);
             background: var(--bg-header);
             backdrop-filter: saturate(180%) blur(20px);
             -webkit-backdrop-filter: saturate(180%) blur(20px);
             border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center;
             justify-content: space-between;
             padding: 0 24px;
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 2000;
             transition: background 0.3s, border-color 0.3s;
+            opacity: 0;
+            transform: translateY(-10px);
         }
-
         .header-left { display: flex; align-items: center; width: 200px; }
-        .logo-placeholder { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; color: var(--text-primary); text-decoration: none; }
+        .logo-placeholder {
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 600; font-size: 18px;
+            color: var(--text-primary); text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .logo-placeholder:hover { opacity: 0.7; }
         .logo-img { height: 32px; width: auto; display: block; }
-        .logo-missing { height: 32px; padding: 0 10px; background: var(--bg-sidebar); border: 1px dashed var(--text-secondary); border-radius: 6px; display: flex; align-items: center; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; }
-
+        .logo-missing {
+            height: 32px; padding: 0 10px;
+            background: var(--bg-sidebar);
+            border: 1px dashed var(--text-secondary);
+            border-radius: 6px; display: flex; align-items: center;
+            font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+        }
         .header-nav { display: flex; gap: 24px; align-items: center; }
-        .header-nav a { text-decoration: none; font-size: 13px; color: var(--text-primary); opacity: 0.8; transition: opacity 0.2s, color 0.2s; }
+        .header-nav a {
+            text-decoration: none; font-size: 13px;
+            color: var(--text-primary); opacity: 0.8;
+            transition: opacity 0.2s, color 0.2s;
+            position: relative;
+        }
         .header-nav a:hover { opacity: 1; color: var(--accent-blue); }
         .header-nav a.active { opacity: 1; font-weight: 600; }
-
-        .ios-switch { position: relative; display: inline-block; width: 46px; height: 26px; margin-left: 20px; }
+        .header-nav a.active::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+            height: 2px; background: var(--accent-blue); border-radius: 1px;
+        }
+        .ios-switch { position: relative; display: inline-block; width: 46px; height: 26px; margin-left: 20px; cursor: pointer; }
         .ios-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e9e9ea; transition: .4s; border-radius: 34px; }
+        .slider { position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0; background-color: #e9e9ea; transition:.4s; border-radius:34px; }
         [data-theme="dark"] .slider { background-color: #39393d; }
-        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .slider:before { position:absolute; content:""; height:22px; width:22px; left:2px; bottom:2px; background-color:white; transition:.4s; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.2); }
         input:checked + .slider { background-color: #30d158; }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* --- LAYOUT LEGAL (Estilo Apple) --- */
+        /* ===================== LAYOUT ===================== */
         main {
             display: flex;
             margin-top: var(--header-height);
@@ -92,152 +112,287 @@
             width: 100%;
         }
 
-        /* Menu Lateral Legal */
+        /* ===================== SIDEBAR ===================== */
         aside {
             width: var(--sidebar-width);
             background-color: var(--bg-sidebar);
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            padding-top: 20px;
+            padding-top: 24px;
             transition: background 0.3s, border-color 0.3s;
+            opacity: 0;
+            transform: translateX(-16px);
+            flex-shrink: 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 32px;
         }
 
         .legal-menu-title {
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 11px; font-weight: 700;
             color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 0 24px 10px 24px;
+            text-transform: uppercase; letter-spacing: 0.7px;
+            padding: 0 20px 10px 20px;
         }
 
-        .legal-nav {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-        }
-
+        .legal-nav { list-style: none; }
         .legal-nav li a {
-            display: block;
-            padding: 12px 24px;
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 20px;
             font-size: 14px;
             color: var(--text-primary);
             text-decoration: none;
             border-left: 3px solid transparent;
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.15s, color 0.15s;
+            border-radius: 0 8px 8px 0;
+            margin-right: 12px;
         }
-
-        .legal-nav li a:hover {
-            background-color: var(--item-hover);
+        .legal-nav li a .nav-icon {
+            font-size: 15px;
+            width: 20px; text-align: center; flex-shrink: 0;
+            opacity: 0.6;
+            transition: opacity 0.15s;
         }
-
+        .legal-nav li a:hover { background-color: var(--item-hover); }
+        .legal-nav li a:hover .nav-icon { opacity: 1; }
         .legal-nav li a.active {
             font-weight: 600;
             border-left-color: var(--accent-blue);
             background-color: var(--item-hover);
+            color: var(--accent-blue);
         }
+        .legal-nav li a.active .nav-icon { opacity: 1; }
 
-        /* Área de Conteúdo Jurídico */
+        /* Rodapé da sidebar */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        .sidebar-footer p {
+            font-size: 11px; color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .sidebar-footer a { color: var(--accent-blue); text-decoration: none; }
+
+        /* ===================== CONTEÚDO ===================== */
         .legal-content-wrapper {
             flex: 1;
             overflow-y: auto;
             background-color: var(--bg-body);
             display: flex;
             justify-content: center;
+            opacity: 0;
         }
-
-        /* Scrollbar fina */
-        .legal-content-wrapper::-webkit-scrollbar { width: 8px; }
-        .legal-content-wrapper::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 4px; }
+        .legal-content-wrapper::-webkit-scrollbar { width: 6px; }
+        .legal-content-wrapper::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.25); border-radius: 3px; }
 
         .legal-document {
-            max-width: 780px;
+            max-width: 760px;
             width: 100%;
-            padding: 60px 40px;
+            padding: 52px 48px 80px 48px;
         }
 
-        .legal-document h1 {
-            font-size: 40px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin-bottom: 10px;
-            color: var(--text-primary);
-        }
-
-        .legal-document .last-updated {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 40px;
+        /* Hero do documento */
+        .doc-hero {
+            margin-bottom: 48px;
+            padding-bottom: 32px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
         }
-
-        .legal-document h2 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-top: 40px;
-            margin-bottom: 16px;
-            color: var(--text-primary);
+        .doc-hero-eyebrow {
+            font-size: 12px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.7px;
+            color: var(--accent-blue); margin-bottom: 10px;
         }
-
-        .legal-document p {
-            font-size: 15px;
-            line-height: 1.6;
-            color: var(--text-primary);
-            margin-bottom: 16px;
-            opacity: 0.85;
-        }
-
-        .legal-document strong {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .legal-document ul {
-            margin-left: 20px;
+        .doc-hero h1 {
+            font-size: 42px; font-weight: 700;
+            letter-spacing: -1px; line-height: 1.1;
             margin-bottom: 16px;
         }
+        .doc-hero .lead {
+            font-size: 17px; line-height: 1.65;
+            color: var(--text-secondary);
+            max-width: 580px;
+        }
+        .doc-meta {
+            display: flex; gap: 24px; margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .doc-meta-item {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12px; color: var(--text-secondary);
+        }
+        .doc-meta-item span { font-weight: 600; color: var(--text-primary); }
 
-        .legal-document li {
-            font-size: 15px;
-            line-height: 1.6;
-            color: var(--text-primary);
-            opacity: 0.85;
-            margin-bottom: 8px;
+        /* Seções do documento */
+        .doc-section {
+            margin-bottom: 56px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .doc-section-header {
+            display: flex; align-items: flex-start; gap: 16px;
+            margin-bottom: 20px;
+        }
+        .section-number {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700; flex-shrink: 0;
+            color: var(--accent-blue); margin-top: 2px;
+        }
+        .section-heading-group {}
+        .doc-section h2 {
+            font-size: 22px; font-weight: 700;
+            letter-spacing: -0.3px; line-height: 1.2;
+            color: var(--text-primary); margin-bottom: 4px;
+        }
+        .doc-section .section-sub {
+            font-size: 12px; color: var(--text-secondary);
+            font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px;
         }
 
-        /* --- RESPONSIVIDADE --- */
+        /* Corpo do texto */
+        .doc-body { padding-left: 52px; }
+        .doc-section p {
+            font-size: 15px; line-height: 1.72;
+            color: var(--text-primary); opacity: 0.88;
+            margin-bottom: 18px;
+        }
+        .doc-section p:last-child { margin-bottom: 0; }
+        .doc-section strong { font-weight: 600; color: var(--text-primary); opacity: 1; }
+        .doc-section em { font-style: italic; }
+        .doc-section a { color: var(--accent-blue); text-decoration: none; }
+        .doc-section a:hover { text-decoration: underline; }
+
+        /* Lista legal */
+        .legal-list {
+            list-style: none;
+            margin-bottom: 18px;
+        }
+        .legal-list li {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 15px; line-height: 1.6;
+            color: var(--text-primary); opacity: 0.88;
+        }
+        .legal-list li:last-child { border-bottom: none; }
+        .legal-list li::before {
+            content: '✓';
+            color: #30d158; font-weight: 700; font-size: 13px;
+            margin-top: 2px; flex-shrink: 0;
+        }
+
+        /* Callout / Nota de destaque */
+        .callout {
+            border-left: 3px solid var(--accent-blue);
+            background: rgba(0, 113, 227, 0.06);
+            border-radius: 0 10px 10px 0;
+            padding: 16px 18px;
+            margin: 20px 0;
+        }
+        [data-theme="dark"] .callout { background: rgba(10, 132, 255, 0.1); }
+        .callout p {
+            font-size: 14px; line-height: 1.6;
+            color: var(--text-primary); opacity: 1 !important;
+            margin: 0 !important;
+        }
+        .callout strong { color: var(--accent-blue); }
+
+        /* Callout alerta */
+        .callout-warn {
+            border-left-color: #ff9f0a;
+            background: rgba(255, 159, 10, 0.06);
+        }
+        [data-theme="dark"] .callout-warn { background: rgba(255, 159, 10, 0.1); }
+        .callout-warn strong { color: #ff9f0a; }
+
+        /* Tag de artigo */
+        .law-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: var(--bg-sidebar); border: 1px solid var(--border-color);
+            border-radius: 6px; padding: 3px 10px;
+            font-size: 12px; font-weight: 600;
+            color: var(--text-secondary); margin: 2px 3px 2px 0;
+        }
+
+        /* Divisor de seção */
+        .section-divider {
+            height: 1px; background: var(--border-color);
+            margin: 48px 0;
+        }
+
+        /* Cartão de contato */
+        .contact-cards {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 14px; margin-top: 20px;
+        }
+        .contact-card {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border-color);
+            border-radius: 14px; padding: 18px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .contact-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        [data-theme="dark"] .contact-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+        .contact-card-icon { font-size: 26px; margin-bottom: 10px; }
+        .contact-card-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .contact-card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+
+        /* ===================== RESPONSIVIDADE ===================== */
         @media (max-width: 768px) {
+            body { overflow: hidden; }
             main { flex-direction: column; }
-            aside { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; flex-shrink: 0; }
-            .legal-nav { flex-direction: row; overflow-x: auto; white-space: nowrap; padding-bottom: 5px; }
-            .legal-nav li a { padding: 10px 16px; border-left: none; border-bottom: 2px solid transparent; font-size: 13px; }
-            .legal-nav li a.active { border-left-color: transparent; border-bottom-color: var(--accent-blue); }
+            aside {
+                width: 100%; height: auto; max-height: 160px;
+                border-right: none; border-bottom: 1px solid var(--border-color);
+                padding-top: 12px; flex-shrink: 0;
+            }
+            .sidebar-footer { display: none; }
+            .legal-nav { flex-direction: row; overflow-x: auto; padding-bottom: 6px; white-space: nowrap; padding-left: 12px; }
+            .legal-nav li a {
+                padding: 8px 14px; border-left: none; border-radius: 20px; margin-right: 4px;
+                border-bottom: 2px solid transparent; font-size: 13px;
+            }
+            .legal-nav li a.active {
+                border-left-color: transparent;
+                background: rgba(0,113,227,0.1); color: var(--accent-blue);
+            }
             .header-nav { display: none; }
-            .ios-switch { transform: scale(0.8); margin-left: 10px; }
-            .legal-document { padding: 30px 20px; }
-            .legal-document h1 { font-size: 28px; }
+            .ios-switch { transform: scale(0.85); margin-left: 10px; }
+            .logo-placeholder span { display: none; }
+            .legal-document { padding: 28px 20px 60px; }
+            .doc-hero h1 { font-size: 30px; }
+            .doc-body { padding-left: 0; }
+            .doc-section-header { gap: 12px; }
+            .contact-cards { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body data-theme="light">
 
-    <header>
+    <header id="main-header">
         <div class="header-left">
             <a href="index.html" class="logo-placeholder">
-                <img src="logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
-                <div id="logo-fallback" class="logo-missing" style="display: none;">Sua Logo</div>
+                <img src="logo.png" alt="Logo" class="logo-img"
+                     onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
+                <div id="logo-fallback" class="logo-missing" style="display:none;">Logo</div>
                 <span style="margin-left: 8px;">Fortal Roleplay</span>
             </a>
         </div>
-        
         <div class="header-nav">
             <a href="index.html">Mapa</a>
             <a href="roteiros.html">Roteiros</a>
             <a href="sobre.html" class="active">Sobre</a>
-
-            <label class="ios-switch" title="Alterar Tema">
+            <label class="ios-switch" title="Alternar Tema">
                 <input type="checkbox" id="theme-toggle">
                 <span class="slider"></span>
             </label>
@@ -245,74 +400,315 @@
     </header>
 
     <main>
-        <aside>
-            <div class="legal-menu-title">Legal</div>
-            <ul class="legal-nav">
-                <li><a href="#termos" class="active" onclick="setActive(this)">Termos de Uso</a></li>
-                <li><a href="#base-legal" onclick="setActive(this)">Base Legal e Crítica</a></li>
-                <li><a href="#privacidade" onclick="setActive(this)">Política de Privacidade</a></li>
-                <li><a href="#contato" onclick="setActive(this)">Direito de Resposta</a></li>
-            </ul>
+        <aside id="sidebar">
+            <div class="sidebar-section">
+                <div class="legal-menu-title">Documento</div>
+                <ul class="legal-nav">
+                    <li><a href="#natureza"   class="nav-link active" data-target="natureza">  <span class="nav-icon">📌</span> Natureza do Projeto</a></li>
+                    <li><a href="#liberdade"  class="nav-link"        data-target="liberdade"> <span class="nav-icon">⚖️</span> Liberdade de Expressão</a></li>
+                    <li><a href="#satira"     class="nav-link"        data-target="satira">    <span class="nav-icon">🎭</span> Sátira e Humor</a></li>
+                    <li><a href="#privacidade" class="nav-link"       data-target="privacidade"><span class="nav-icon">🔒</span> Privacidade & LGPD</a></li>
+                    <li><a href="#marco-civil" class="nav-link"       data-target="marco-civil"><span class="nav-icon">🌐</span> Marco Civil</a></li>
+                    <li><a href="#editorial"  class="nav-link"        data-target="editorial"> <span class="nav-icon">✍️</span> Linha Editorial</a></li>
+                    <li><a href="#contato"    class="nav-link"        data-target="contato">   <span class="nav-icon">💬</span> Contato & Resposta</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <p>Fortal Roleplay © 2026<br>
+                Feito com afeto e ceticismo saudável.<br>
+                <a href="index.html">← Voltar ao Mapa</a></p>
+            </div>
         </aside>
 
-        <div class="legal-content-wrapper">
+        <div class="legal-content-wrapper" id="content-wrapper">
             <div class="legal-document">
-                <h1>Termos e Condições Legais</h1>
-                <div class="last-updated">Última atualização: Fevereiro de 2026</div>
 
-                <p>Bem-vindo ao Fortal Roleplay. Os termos a seguir ditam as regras de uso, a base jurídica de nossa atuação e as nossas políticas de dados. Ao utilizar este serviço, você concorda com as disposições estabelecidas neste documento.</p>
+                <!-- HERO -->
+                <div class="doc-hero">
+                    <div class="doc-hero-eyebrow">Termos, Políticas & Manifesto</div>
+                    <h1>Sobre o Fortal Roleplay</h1>
+                    <p class="lead">Tudo que você precisa saber sobre o que somos, o que não somos, o que fazemos com seus dados (spoiler: nada) e por que a Constituição Federal está do nosso lado quando falamos que o Route é o abismo.</p>
+                    <div class="doc-meta">
+                        <div class="doc-meta-item">📅 Última atualização: <span>Fevereiro de 2026</span></div>
+                        <div class="doc-meta-item">📍 Jurisdição: <span>Brasil</span></div>
+                        <div class="doc-meta-item">🗺️ Locais mapeados: <span>+130</span></div>
+                    </div>
+                </div>
 
-                <h2 id="termos">1. Natureza do Serviço e Finalidade</h2>
-                <p>O Fortal Roleplay é um projeto de mapeamento cultural independente, cujo objetivo é realizar uma <strong>crônica urbana e satírica</strong> sobre as dinâmicas sociais, espaços de convivência e a "fauna local" da cidade de Fortaleza, Ceará. Todo o conteúdo presente na plataforma é redigido sob a ótica do humor, da hipérbole e do entretenimento sociocultural.</p>
-                <p>As descrições dos estabelecimentos constituem <strong>juízos de valor estritamente subjetivos</strong> e percepções artísticas da equipe editorial. Não configuram (e não devem ser interpretadas como) análises técnicas, sanitárias, financeiras ou laudos de qualidade sobre os serviços prestados pelas empresas citadas.</p>
+                <!-- 1. NATUREZA -->
+                <div class="doc-section" id="natureza">
+                    <div class="doc-section-header">
+                        <div class="section-number">1</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">O que é isso aqui</div>
+                            <h2>Natureza do Projeto e Finalidade</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>O <strong>Fortal Roleplay</strong> é um projeto de mapeamento cultural independente, não-comercial e sem fins lucrativos, dedicado a realizar uma <strong>crônica urbana, sociológica e satírica</strong> sobre as dinâmicas de classe, comportamento social e os espaços de convivência da cidade de Fortaleza, Ceará. Nasceu da observação — às vezes espantada, às vezes divertida — de como a cidade se organiza em tribos, territórios e rituais próprios.</p>
+                        <p>O projeto não é um guia turístico convencional. Não há estrelas, não há notas, não há ranqueamento técnico de qualidade gastronômica ou sanitária. O que existe é uma <strong>leitura cultural e bem-humorada</strong> da cidade, filtrada pela perspectiva editorial de quem a vive cotidianamente. Cada descrição é uma crônica em miniatura — um retrato impressionista, não um laudo técnico.</p>
+                        <p>Todo o conteúdo presente na plataforma é redigido sob a ótica do humor, da hipérbole, da ironia e do entretenimento sociocultural. As descrições dos estabelecimentos constituem <strong>juízos de valor estritamente subjetivos e percepções artísticas</strong> da equipe editorial. Não configuram — e não devem ser interpretadas como — análises técnicas, sanitárias, financeiras, laudos de qualidade ou recomendações profissionais de qualquer natureza sobre os serviços prestados pelas empresas citadas.</p>
+                        <div class="callout">
+                            <p><strong>Em síntese:</strong> somos uma crônica da cidade, não um Tripadvisor. Se seu estabelecimento aparece aqui, é porque faz parte do tecido cultural de Fortaleza — e isso, em geral, é um elogio disfarçado de piada.</p>
+                        </div>
+                    </div>
+                </div>
 
-                <h2 id="base-legal">2. Base Legal, Liberdade de Expressão e "Animus Jocandi"</h2>
-                <p>O conteúdo veiculado nesta plataforma encontra amparo jurídico no <strong>Direito Constitucional à Liberdade de Expressão e de Crítica</strong>, assegurado pelo Artigo 5º, incisos IV e IX, da Constituição Federal da República Federativa do Brasil.</p>
-                <p>Declaramos expressamente que os textos redigidos possuem o chamado <em>animus jocandi</em> (a intenção de brincar, satirizar e fazer humor) e o <em>animus criticandi</em> (intenção de criticar comportamentos sociais). Sob o entendimento consolidado do Supremo Tribunal Federal (STF), a sátira é uma manifestação essencial do pensamento e do escrutínio social, sendo incabível a censura prévia.</p>
-                <p>Ressaltamos que <strong>não praticamos imputação de crimes (calúnia) nem alegações factuais falsas (difamação técnica)</strong> contra pessoas jurídicas ou físicas. As menções a estereótipos (ex: "dentistas de HB20", "herdeiros", "galera suada") são figuras de linguagem genéricas, não direcionadas a indivíduos específicos, impossibilitando a configuração de dano moral a terceiros (ausência de lesão à honra subjetiva) ou dano à honra objetiva das empresas (Súmula 227 do STJ).</p>
+                <div class="section-divider"></div>
 
-                <h2 id="privacidade">3. Política de Privacidade e LGPD (Zero Coleta de Dados)</h2>
-                <p>A privacidade dos nossos usuários é um princípio inegociável. Em estrita conformidade com a Lei Geral de Proteção de Dados Pessoais (LGPD - Lei nº 13.709/2018), o Fortal Roleplay estabelece que:</p>
-                <ul>
-                    <li><strong>Não utilizamos Cookies:</strong> Nenhuma informação de navegação é armazenada no seu dispositivo.</li>
-                    <li><strong>Não coletamos Dados Pessoais:</strong> Não solicitamos cadastro, e-mail, nome ou qualquer dado de identificação para a utilização do mapa interativo.</li>
-                    <li><strong>Não rastreamos Localização:</strong> O uso do mapa é renderizado localmente no seu dispositivo. Não recebemos nem armazenamos as coordenadas de GPS dos usuários.</li>
-                </ul>
+                <!-- 2. LIBERDADE DE EXPRESSÃO -->
+                <div class="doc-section" id="liberdade">
+                    <div class="doc-section-header">
+                        <div class="section-number">2</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">Fundamentos jurídicos</div>
+                            <h2>Liberdade de Expressão e Base Legal</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>O conteúdo veiculado nesta plataforma encontra amparo jurídico no <strong>Direito Constitucional à Liberdade de Expressão, de Manifestação do Pensamento e de Criação Intelectual</strong>, assegurado pelo Artigo 5º, incisos IV, IX e XIV, da Constituição Federal da República Federativa do Brasil de 1988.</p>
+                        <p>A liberdade de expressão, conforme consolidada pela jurisprudência do Supremo Tribunal Federal — especialmente no julgamento da ADPF 130, que declarou inconstitucional a Lei de Imprensa —, é um dos pilares fundamentais do Estado Democrático de Direito brasileiro. O STF reafirmou que o direito à crítica, à sátira e ao humor integram o núcleo essencial dessa liberdade, sendo vedada qualquer forma de censura prévia, mesmo quando o conteúdo cause desconforto a terceiros.</p>
+                        <p>Destacamos que nossa atividade se enquadra também na <strong>liberdade de imprensa e de crítica jornalística e cultural</strong>, campo em que a fronteira entre o opinativo e o informativo é historicamente tutelada com generosidade pelo ordenamento jurídico brasileiro, em linha com os padrões internacionais de direitos humanos estabelecidos pela Convenção Americana sobre Direitos Humanos (Pacto de São José da Costa Rica).</p>
+                        <p>As bases legais aplicáveis são:</p>
+                        <ul class="legal-list">
+                            <li><strong>Art. 5º, IV, CF/88</strong> — É livre a manifestação do pensamento, sendo vedado o anonimato. (Declaramos expressamente nossa identidade nos canais oficiais.)</li>
+                            <li><strong>Art. 5º, IX, CF/88</strong> — É livre a expressão da atividade intelectual, artística, científica e de comunicação, independentemente de censura ou licença.</li>
+                            <li><strong>Art. 220, CF/88</strong> — A manifestação do pensamento, a criação, a expressão e a informação não sofrerão qualquer restrição, observando-se o disposto nesta Constituição.</li>
+                            <li><strong>ADPF 130/STF</strong> — Reconhece a inconstitucionalidade de censura prévia à imprensa e à crítica, mesmo quando ofensiva ou desconfortável para os retratados.</li>
+                        </ul>
+                    </div>
+                </div>
 
-                <h2 id="contato">4. Marco Civil da Internet e Direito de Resposta</h2>
-                <p>O Fortal Roleplay atua como um provedor de aplicação de internet. Nos termos do <strong>Artigo 19 do Marco Civil da Internet (Lei nº 12.965/2014)</strong>, a plataforma apenas poderá ser responsabilizada civilmente por danos decorrentes de conteúdo gerado caso, após ordem judicial específica e válida, não tome as providências para tornar o conteúdo indisponível.</p>
-                <p>Ainda assim, prezamos pelo debate democrático e pela boa-fé. Caso o representante legal de um estabelecimento citado sinta que a hipérbole ou a sátira ultrapassou os limites do conforto institucional, oferecemos o <strong>Direito de Resposta</strong> amigável.</p>
-                <p>Para solicitar a inclusão de uma nota de esclarecimento do estabelecimento, ou dialogar sobre a moderação de um descritivo específico, entre em contato através dos nossos canais oficiais nas redes sociais. Avaliaremos o pleito de forma administrativa, priorizando sempre a resolução extrajudicial e o bom humor.</p>
+                <div class="section-divider"></div>
 
-                <br><br><br>
-            </div>
-        </div>
+                <!-- 3. SÁTIRA -->
+                <div class="doc-section" id="satira">
+                    <div class="doc-section-header">
+                        <div class="section-number">3</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">Animus Jocandi e Criticandi</div>
+                            <h2>Sátira, Humor e Crônica Social</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>Declaramos expressamente que todos os textos redigidos nesta plataforma possuem o chamado <em><strong>animus jocandi</strong></em> — a intenção de brincar, satirizar, ironizar e fazer humor — e o <em><strong>animus criticandi</strong></em> — a intenção de criticar comportamentos sociais coletivos, dinâmicas de classe e tribos urbanas, e não de atacar indivíduos específicos.</p>
+                        <p>A sátira é um dos gêneros literários mais antigos e politicamente relevantes da história humana, de Aristófanes a Millôr Fernandes. No Brasil, o gênero encontra proteção explícita na Constituição e foi amplamente reconhecido pelo STF como manifestação legítima do pensamento crítico. Uma piada sobre "herdeiros de Sapatênis" não é um ataque a nenhuma pessoa física específica — é a observação irônica de um <strong>fenômeno sociocultural coletivo</strong> que qualquer morador de Fortaleza reconhece instantaneamente.</p>
+                        <p>Ressaltamos que <strong>não praticamos imputação de crimes (calúnia)</strong>, conforme tipificado no Art. 138 do Código Penal, <strong>nem fazemos alegações factuais falsas (difamação técnica)</strong> contra pessoas jurídicas ou físicas, conforme o Art. 139 do CP. As menções a estereótipos e perfis de público — como "dentistas de HB20", "galera suada", "Uber Black desconstruído" — são figuras de linguagem genéricas, referentes a grupos sociais, <strong>não direcionadas a nenhum indivíduo identificável</strong>.</p>
+                        <div class="callout-warn callout">
+                            <p><strong>Importante:</strong> A ausência de identificação de pessoa natural específica inviabiliza, por si só, a configuração de dano moral individual (ausência de lesão à honra subjetiva) e de dano à honra objetiva de pessoa jurídica, nos termos da Súmula 227 do STJ, que reconhece que empresas possuem honra objetiva, mas cuja proteção pressupõe alegação factual lesiva e falsa — não humor e opinião.</p>
+                        </div>
+                        <p>A crítica cultural e o humor social, quando claramente identificados como tal, <strong>não geram direito a indenização</strong> por dano moral na jurisprudência majoritária dos tribunais brasileiros, salvo em casos de excesso manifesto — o que avaliamos criteriosamente em nossa curadoria editorial.</p>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 4. PRIVACIDADE -->
+                <div class="doc-section" id="privacidade">
+                    <div class="doc-section-header">
+                        <div class="section-number">4</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">LGPD e dados pessoais</div>
+                            <h2>Política de Privacidade — Zero Coleta</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>A privacidade dos nossos usuários é um princípio inegociável. Em estrita conformidade com a <strong>Lei Geral de Proteção de Dados Pessoais — LGPD (Lei nº 13.709/2018)</strong> e com o <strong>Regulamento Geral de Proteção de Dados da União Europeia (GDPR)</strong>, o Fortal Roleplay adota uma política de coleta zero.</p>
+                        <p>Nossa posição é filosófica, não apenas jurídica: acreditamos que um serviço de entretenimento e cultura não tem nenhuma razão legítima para conhecer quem você é, de onde acessa ou o que faz no seu tempo livre. Você usa o mapa. Ponto final.</p>
+                        <ul class="legal-list">
+                            <li><strong>Sem Cookies:</strong> Nenhum cookie é gravado no seu dispositivo — nem de sessão, nem de análise, nem de rastreamento de comportamento.</li>
+                            <li><strong>Sem dados pessoais:</strong> Não há cadastro, login, e-mail, nome ou qualquer campo de identificação para utilizar o mapa ou os roteiros.</li>
+                            <li><strong>Sem rastreamento de localização:</strong> O mapa é renderizado inteiramente no seu dispositivo. Nossas coordenadas geográficas são fictícias e decorativas; as suas, não recebemos nem armazenamos.</li>
+                            <li><strong>Sem analytics de terceiros:</strong> Não utilizamos Google Analytics, Meta Pixel, Hotjar ou qualquer outra ferramenta de rastreamento de comportamento de usuário.</li>
+                            <li><strong>Sem publicidade direcionada:</strong> Não vendemos, alugamos ou compartilhamos dados com anunciantes, porque simplesmente não temos dados para vender.</li>
+                            <li><strong>Código aberto e auditável:</strong> Nossa plataforma é client-side. Qualquer desenvolvedor pode inspecionar o código-fonte e verificar que não há chamadas externas suspeitas.</li>
+                        </ul>
+                        <div class="callout">
+                            <p><strong>Base legal (LGPD):</strong> Por não coletarmos nenhum dado pessoal, não há tratamento de dados a declarar, hipótese de tratamento a justificar, nem titular de dados cujos direitos precisem ser exercidos. Nossa conformidade com a LGPD é estrutural.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 5. MARCO CIVIL -->
+                <div class="doc-section" id="marco-civil">
+                    <div class="doc-section-header">
+                        <div class="section-number">5</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">Responsabilidade civil online</div>
+                            <h2>Marco Civil da Internet</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>O Fortal Roleplay atua como provedor de aplicação de internet nos termos da <strong>Lei nº 12.965/2014 — Marco Civil da Internet</strong>. Todo o conteúdo publicado é de autoria da equipe editorial e não contempla conteúdo gerado por usuários, o que afasta, por definição, grande parte das hipóteses de responsabilidade civil previstas no diploma legal.</p>
+                        <p>Nos termos do <strong>Artigo 19 do Marco Civil</strong>, a plataforma apenas poderá ser responsabilizada civilmente por danos decorrentes de conteúdo caso, após <em>ordem judicial específica, fundamentada e válida</em>, não tome as providências técnicas para tornar o conteúdo indisponível no prazo determinado. A mera notificação extrajudicial ou a ameaça de processo não configuram obrigação legal de retirada imediata de conteúdo.</p>
+                        <p>Isso não significa que somos intransigentes. Pelo contrário — nossa política editorial prevê análise cuidadosa de qualquer solicitação de revisão de conteúdo, conforme detalhado na seção de Contato abaixo. Preferimos o diálogo ao litígio, e o bom senso à trincheira jurídica.</p>
+                        <p>Destacamos ainda:</p>
+                        <ul class="legal-list">
+                            <li><strong>Art. 3º, I, Marco Civil:</strong> A disciplina do uso da internet no Brasil tem como fundamento a garantia da liberdade de expressão, comunicação e manifestação de pensamento.</li>
+                            <li><strong>Art. 8º, Marco Civil:</strong> A garantia do direito à privacidade e à liberdade de expressão nas comunicações é condição para o pleno exercício do direito de acesso à internet.</li>
+                            <li><strong>Art. 19, Marco Civil:</strong> Responsabilidade civil dos provedores condicionada a descumprimento de ordem judicial específica — não a notificações extrajudiciais.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 6. LINHA EDITORIAL -->
+                <div class="doc-section" id="editorial">
+                    <div class="doc-section-header">
+                        <div class="section-number">6</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">Critérios e valores</div>
+                            <h2>Linha Editorial e Critérios de Curadoria</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>O Fortal Roleplay tem uma voz editorial deliberadamente opinativa, irônica e desrespeitosa com a pose — mas nunca com a dignidade humana. Existe uma diferença fundamental entre <strong>zoar o fenômeno sociocultural</strong> (o "herdeiro de sapatênis" como tipo social) e atacar um indivíduo real com nome e sobrenome. Operamos apenas no primeiro campo.</p>
+                        <p>Nossa curadoria obedece a princípios editoriais claros:</p>
+                        <ul class="legal-list">
+                            <li><strong>Sem calúnia ou difamação técnica:</strong> Não imputamos crimes. Não fazemos alegações factuais falsas. Piadas sobre "onde a dignidade morre às 5 da manhã" são hipérbole literária, não descrição factual de estabelecimento insalubre.</li>
+                            <li><strong>Sem discriminação vedada pela lei:</strong> Não produzimos conteúdo que caracterize discriminação por origem étnica, gênero, orientação sexual, religião ou deficiência. Satirizamos comportamentos e dinâmicas de classe, não identidades protegidas.</li>
+                            <li><strong>Sem identificação de indivíduos:</strong> Descrições referem-se a perfis de público, nunca a pessoas físicas identificáveis. "Galera de Uber Black" não é ninguém em particular — é um arquétipo que Fortaleza entende sem precisar de manual.</li>
+                            <li><strong>Com equilíbrio temático:</strong> O mapa retrata todo o espectro social da cidade — do Bar do Railson ao Iate Clube, do Route à Santa Grelha. Ninguém está acima da crônica, ninguém está abaixo dela.</li>
+                            <li><strong>Com revisão contínua:</strong> O conteúdo é revisado periodicamente. Locais fechados são removidos. Novos estabelecimentos são adicionados. O humor não é eterno, mas o mapa tenta ser atual.</li>
+                        </ul>
+                        <p>Acreditamos que Fortaleza é uma cidade extraordinária — generosa, quente, caótica e absolutamente única. O Fortal Roleplay é, antes de tudo, um ato de carinho com a cidade. Rir de si mesmo é sinal de maturidade. E Fortaleza, quando quer, é muito madura.</p>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 7. CONTATO -->
+                <div class="doc-section" id="contato">
+                    <div class="doc-section-header">
+                        <div class="section-number">7</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">Direito de resposta e diálogo</div>
+                            <h2>Contato, Resposta e Revisão de Conteúdo</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>Prezamos pelo debate democrático, pela boa-fé e pela resolução amigável de qualquer desconforto que nosso conteúdo possa eventualmente gerar. A equipe editorial está disponível para receber manifestações de estabelecimentos, representantes legais, jornalistas e usuários.</p>
+                        <p>Se você representa um estabelecimento citado e acredita que a descrição ultrapassa os limites do humor razoável, ou se deseja solicitar a inclusão de uma <strong>nota de esclarecimento</strong> ao lado do descritivo, entre em contato pelos nossos canais. Analisaremos o pedido com atenção e boa-fé, priorizando sempre a resolução extrajudicial.</p>
+                        <div class="callout">
+                            <p><strong>Prazo de análise:</strong> Solicitações devidamente fundamentadas são analisadas em até 7 dias úteis. Não respondemos a notificações extrajudiciais genéricas sem identificação do conteúdo específico e da fundamentação do pedido.</p>
+                        </div>
+                        <p>Para solicitações urgentes, demandas imprensas ou colaborações editoriais, utilize os canais abaixo:</p>
+                        <div class="contact-cards">
+                            <div class="contact-card">
+                                <div class="contact-card-icon">📸</div>
+                                <div class="contact-card-title">Instagram</div>
+                                <div class="contact-card-desc">Canal principal. DMs abertas para diálogo e colaboração editorial.</div>
+                            </div>
+                            <div class="contact-card">
+                                <div class="contact-card-icon">✉️</div>
+                                <div class="contact-card-title">E-mail Editorial</div>
+                                <div class="contact-card-desc">Para solicitações formais, direito de resposta e notificações legais.</div>
+                            </div>
+                            <div class="contact-card">
+                                <div class="contact-card-icon">🗺️</div>
+                                <div class="contact-card-title">Sugerir um Local</div>
+                                <div class="contact-card-desc">Conhece um lugar que merece estar no mapa? Nos conta via Instagram.</div>
+                            </div>
+                            <div class="contact-card">
+                                <div class="contact-card-icon">🤝</div>
+                                <div class="contact-card-title">Parcerias</div>
+                                <div class="contact-card-desc">Projetos culturais, eventos e iniciativas alinhadas à nossa missão.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /legal-document -->
+        </div><!-- /content-wrapper -->
     </main>
 
     <script>
-        // --- Lógica para o Menu Lateral ---
-        function setActive(element) {
-            document.querySelectorAll('.legal-nav a').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
-        }
+        gsap.registerPlugin(ScrollTrigger);
 
-        // --- DARK MODE TOGGLE (Mesma lógica do original) ---
+        // ===== DARK MODE =====
         const toggle = document.getElementById('theme-toggle');
-        const body = document.body;
+        const body   = document.body;
+        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-        toggle.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                body.setAttribute('data-theme', 'dark');
-            } else {
-                body.setAttribute('data-theme', 'light');
-            }
+        function applyTheme(dark) {
+            body.setAttribute('data-theme', dark ? 'dark' : 'light');
+            toggle.checked = dark;
+        }
+        toggle.addEventListener('change', e => applyTheme(e.target.checked));
+        if (isDark) applyTheme(true);
+
+        // ===== GSAP ENTRADA =====
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        tl.to('#main-header',       { opacity: 1, y: 0, duration: 0.55 })
+          .to('#sidebar',           { opacity: 1, x: 0, duration: 0.5 }, '-=0.3')
+          .to('#content-wrapper',   { opacity: 1, duration: 0.5 }, '-=0.3');
+
+        // Seções do documento animam ao entrar na viewport
+        document.querySelectorAll('.doc-section').forEach(section => {
+            gsap.to(section, {
+                opacity: 1, y: 0, duration: 0.65, ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: section,
+                    scroller: '#content-wrapper',
+                    start: 'top 88%',
+                    toggleActions: 'play none none none'
+                }
+            });
         });
 
-        // Detectar preferência do sistema ao carregar
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            toggle.checked = true;
-            body.setAttribute('data-theme', 'dark');
+        // Hover nos links do nav principal
+        document.querySelectorAll('.header-nav a').forEach(link => {
+            link.addEventListener('mouseenter', () => gsap.to(link, { y: -1, duration: 0.15 }));
+            link.addEventListener('mouseleave', () => gsap.to(link, { y: 0,  duration: 0.15 }));
+        });
+
+        // Hover nos cartões de contato
+        document.querySelectorAll('.contact-card').forEach(card => {
+            card.addEventListener('mouseenter', () => gsap.to(card, { scale: 1.02, duration: 0.2, ease: 'power2.out' }));
+            card.addEventListener('mouseleave', () => gsap.to(card, { scale: 1,    duration: 0.2 }));
+        });
+
+        // ===== NAVEGAÇÃO SIDEBAR — Scroll Spy =====
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.doc-section');
+        const wrapper  = document.getElementById('content-wrapper');
+
+        function setActiveLink(id) {
+            navLinks.forEach(link => {
+                const isActive = link.dataset.target === id;
+                link.classList.toggle('active', isActive);
+                if (isActive) {
+                    gsap.fromTo(link, { x: -4 }, { x: 0, duration: 0.25, ease: 'power2.out' });
+                }
+            });
         }
+
+        // Clique na nav
+        navLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.getElementById(link.dataset.target);
+                if (target) {
+                    wrapper.scrollTo({ top: target.offsetTop - 32, behavior: 'smooth' });
+                    setActiveLink(link.dataset.target);
+                }
+            });
+        });
+
+        // Scroll spy
+        wrapper.addEventListener('scroll', () => {
+            let current = sections[0].id;
+            sections.forEach(section => {
+                if (wrapper.scrollTop + 120 >= section.offsetTop) {
+                    current = section.id;
+                }
+            });
+            setActiveLink(current);
+        }, { passive: true });
     </script>
 </body>
 </html>
