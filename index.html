@@ -94,10 +94,10 @@
             height: 48px;
             width: auto;
             display: block;
-            filter: drop-shadow(0 0 6px rgba(255,255,255,0.9)) drop-shadow(0 0 12px rgba(255,255,255,0.6)) brightness(0) invert(1);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
         }
         [data-theme="dark"] .logo-img {
-            filter: drop-shadow(0 0 6px rgba(255,255,255,0.7)) drop-shadow(0 0 14px rgba(255,255,255,0.4)) brightness(0) invert(1);
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.15));
         }
 
         .logo-missing {
@@ -502,124 +502,120 @@
             .tab-item .mini-switch input:checked + .mini-slider::before { transform: translateX(14px); }
         }
 
-        /* ===================== RESPONSIVIDADE ===================== */
+        /* ===================== RESPONSIVIDADE — APPLE MAPS STYLE ===================== */
         @media (max-width: 768px) {
-            :root {
-                --header-height: 52px;
-                --sidebar-width: 100%;
-            }
+
+            :root { --header-height: 52px; }
 
             body { overflow: hidden; }
 
-            header {
-                padding: 0 16px;
-            }
-
+            header { padding: 0 16px; }
             .header-left { width: auto; flex: 1; }
-
             .logo-img { height: 38px; }
-
             .header-nav { display: none; }
+            .ios-switch { transform: scale(0.85); margin-left: 10px; }
 
-            .ios-switch { 
-                transform: scale(0.85); 
-                margin-left: 10px; 
-            }
-
-            main { 
-                flex-direction: column; 
-                height: calc(100vh - var(--header-height) - 56px - env(safe-area-inset-bottom));
+            /* Main ocupa tela inteira abaixo do header */
+            main {
                 position: relative;
-            }
-
-            /* MAP takes full height on mobile */
-            #map { 
-                height: 50vh;
-                width: 100%;
-                z-index: 1;
-                flex: none;
-            }
-
-            /* SIDEBAR slides up from bottom */
-            aside {
-                width: 100%;
-                height: 50vh;
-                border-right: none;
-                border-top: 1px solid var(--border-color);
-                flex-direction: column;
-                border-radius: 16px 16px 0 0;
+                height: calc(100dvh - var(--header-height));
                 overflow: hidden;
-                flex: none;
             }
 
-            /* Handle bar on top of sidebar */
+            /* MAPA: fundo total, como Apple Maps */
+            #map {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+            }
+
+            /* Controles do mapa acima da tab bar */
+            .leaflet-bottom.leaflet-right {
+                bottom: calc(56px + env(safe-area-inset-bottom) + 8px);
+                right: 12px;
+            }
+
+            /* ── BOTTOM SHEET ── */
+            aside {
+                position: absolute;
+                bottom: calc(56px + env(safe-area-inset-bottom));
+                left: 0;
+                right: 0;
+                z-index: 100;
+
+                /* Altura máxima quando expandido */
+                max-height: calc(100dvh - var(--header-height) - 56px - env(safe-area-inset-bottom) - 20px);
+
+                background: var(--bg-header);
+                backdrop-filter: saturate(180%) blur(24px);
+                -webkit-backdrop-filter: saturate(180%) blur(24px);
+                border: 1px solid var(--border-color);
+                border-radius: 20px 20px 0 0;
+                box-shadow: 0 -4px 32px rgba(0,0,0,0.18);
+
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+
+                /* Posição inicial: peek (só handle + busca visíveis) */
+                transform: translateY(calc(100% - 130px));
+                transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
+                will-change: transform;
+                touch-action: none;
+            }
+
+            /* Estados do sheet */
+            aside.sheet-mid      { transform: translateY(40%); }
+            aside.sheet-expanded { transform: translateY(0);   }
+            aside.sheet-peek     { transform: translateY(calc(100% - 130px)); }
+
+            /* Handle de arraste */
             aside::before {
                 content: '';
                 display: block;
                 width: 36px;
                 height: 4px;
-                background: var(--border-color);
+                background: var(--text-secondary);
+                opacity: 0.3;
                 border-radius: 2px;
-                margin: 8px auto 4px;
+                margin: 10px auto 6px;
                 flex-shrink: 0;
             }
 
-            .search-container {
-                padding: 8px 12px;
-            }
+            .search-container { padding: 6px 12px 8px; }
 
             .ios-search {
                 font-size: 14px;
-                padding: 8px 10px 8px 34px;
+                padding: 9px 10px 9px 34px;
             }
 
-            .filter-bar {
-                padding: 6px 12px;
-                gap: 5px;
-            }
+            .filter-bar  { padding: 6px 12px; gap: 5px; }
+            .filter-pill { padding: 4px 10px; font-size: 10px; }
 
-            .filter-pill {
-                padding: 3px 10px;
-                font-size: 10px;
-            }
+            .places-list { overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-            .place-item {
-                padding: 10px 14px;
-                gap: 10px;
-            }
+            .place-item         { padding: 10px 14px; gap: 10px; }
+            .place-content h3   { font-size: 14px; }
+            .place-content p    { font-size: 11px; }
 
-            .place-content h3 {
-                font-size: 14px;
-            }
-
-            .place-content p {
-                font-size: 11px;
-            }
-
-            /* Toast above sidebar */
-            #toast { 
-                bottom: calc(50vh + 56px + 16px);
+            /* Toast flutua sobre o mapa */
+            #toast {
+                bottom: calc(56px + env(safe-area-inset-bottom) + 140px);
                 font-size: 12px;
                 padding: 8px 16px;
             }
 
-            /* Leaflet controls above tab bar */
-            .leaflet-bottom.leaflet-right {
-                bottom: calc(50vh + 8px);
-            }
-
-            /* Popup adjustments */
-            .leaflet-popup-content {
-                width: 220px !important;
-                padding: 14px;
-            }
-            .popup-title { font-size: 15px; }
-            .popup-desc { font-size: 12px; margin-bottom: 12px; }
+            /* Popup menor */
+            .leaflet-popup-content { width: 210px !important; padding: 14px; }
+            .popup-title  { font-size: 15px; }
+            .popup-desc   { font-size: 12px; margin-bottom: 10px; }
         }
 
         @media (max-width: 400px) {
             .filter-pill { padding: 3px 8px; font-size: 9px; }
-            .place-item { padding: 8px 12px; }
+            .place-item  { padding: 8px 12px; }
         }
     </style>
 </head>
@@ -884,6 +880,7 @@
 
         // ===================== MAPA =====================
         const map = L.map('map', { zoomControl: false }).setView([-3.73, -38.51], 13);
+        window._leafletMap = map;
         let currentLayer;
 
         function setMapTiles(theme) {
@@ -1087,8 +1084,92 @@
           .to('#sidebar',     { opacity: 1, x: 0, duration: 0.5 }, '-=0.3')
           .from('#map',       { opacity: 0, duration: 0.7, ease: 'power2.inOut' }, '-=0.4');
 
-        // Hover sutil nos links do nav
-        document.querySelectorAll('.header-nav a').forEach(link => {
+        // ===================== BOTTOM SHEET (mobile) =====================
+        (function() {
+            if (window.innerWidth > 768) return;
+
+            const sheet   = document.getElementById('sidebar');
+            const mapEl   = document.getElementById('map');
+            if (!sheet) return;
+
+            // Posições: peek | mid | expanded
+            const STATES = ['sheet-peek', 'sheet-mid', 'sheet-expanded'];
+            let currentState = 0; // começa em peek
+
+            function applyState(idx, animate) {
+                STATES.forEach(s => sheet.classList.remove(s));
+                if (!animate) sheet.style.transition = 'none';
+                sheet.classList.add(STATES[idx]);
+                if (!animate) requestAnimationFrame(() => sheet.style.transition = '');
+                currentState = idx;
+                // Invalida o mapa Leaflet quando o sheet muda de tamanho
+                setTimeout(() => { if (window._leafletMap) window._leafletMap.invalidateSize(); }, 450);
+            }
+
+            applyState(0, false);
+
+            // ── Drag com touch ──
+            let startY = 0, startTranslate = 0, isDragging = false;
+
+            function getTranslateY() {
+                const style = window.getComputedStyle(sheet);
+                const matrix = new WebKitCSSMatrix(style.transform);
+                return matrix.m42;
+            }
+
+            sheet.addEventListener('touchstart', e => {
+                // Só inicia drag no handle (primeiros 60px do sheet)
+                const touch = e.touches[0];
+                const rect  = sheet.getBoundingClientRect();
+                if (touch.clientY - rect.top > 60 && currentState === 2) return; // expanded + scroll interno
+                isDragging  = true;
+                startY      = touch.clientY;
+                startTranslate = getTranslateY();
+                sheet.style.transition = 'none';
+            }, { passive: true });
+
+            sheet.addEventListener('touchmove', e => {
+                if (!isDragging) return;
+                const delta = e.touches[0].clientY - startY;
+                const newY  = Math.max(0, startTranslate + delta);
+                sheet.style.transform = `translateY(${newY}px)`;
+            }, { passive: true });
+
+            sheet.addEventListener('touchend', e => {
+                if (!isDragging) return;
+                isDragging = false;
+                sheet.style.transition = '';
+
+                const delta = e.changedTouches[0].clientY - startY;
+                const speed = delta; // positivo = para baixo
+
+                if (speed < -40)      applyState(Math.min(currentState + 1, 2), true); // sobe
+                else if (speed > 40)  applyState(Math.max(currentState - 1, 0), true); // desce
+                else                  applyState(currentState, true); // snap de volta
+            }, { passive: true });
+
+            // Toque no handle sobe/desce um nível
+            sheet.addEventListener('click', e => {
+                const rect = sheet.getBoundingClientRect();
+                if (e.clientY - rect.top <= 28) { // área do handle
+                    if (currentState < 2) applyState(currentState + 1, true);
+                    else                  applyState(0, true);
+                }
+            });
+
+            // Clicar no mapa recolhe o sheet para peek
+            mapEl.addEventListener('click', () => {
+                if (currentState > 0) applyState(0, true);
+            });
+
+            // Quando clicar em um item da lista, expande o sheet para mid se estiver peek
+            document.getElementById('places-list').addEventListener('click', () => {
+                if (currentState === 0) applyState(1, true);
+            });
+
+        })();
+
+
             link.addEventListener('mouseenter', () => {
                 gsap.to(link, { y: -1, duration: 0.15 });
             });
