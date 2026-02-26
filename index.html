@@ -58,7 +58,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
+            padding: 0 24px;
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 2000;
@@ -70,70 +70,57 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 14px;
-            min-width: 0;
-        }
-
-        /* Data no header — estilo iOS */
-        .header-date {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-        }
-        .header-date-day {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-secondary);
-        }
-        .header-date-num {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1;
+            width: 200px;
         }
 
         .logo-placeholder {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--text-primary);
             text-decoration: none;
             transition: opacity 0.2s;
         }
         .logo-placeholder:hover { opacity: 0.7; }
+
         .logo-img {
-            height: 34px;
+            height: 48px;
             width: auto;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            display: block;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
         }
         [data-theme="dark"] .logo-img {
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.12));
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.15));
         }
+
         .logo-missing {
-            height: 30px; padding: 0 10px;
+            height: 32px;
+            padding: 0 10px;
             background: var(--bg-sidebar);
             border: 1px dashed var(--text-secondary);
             border-radius: 6px;
-            display: flex; align-items: center;
-            font-size: 10px; color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-secondary);
             text-transform: uppercase;
         }
 
         /* ===== NAV ===== */
         .header-nav {
             display: flex;
-            gap: 20px;
+            gap: 24px;
             align-items: center;
         }
         .header-nav a {
             text-decoration: none;
             font-size: 13px;
             color: var(--text-primary);
-            opacity: 0.75;
+            opacity: 0.8;
             transition: opacity 0.2s, color 0.2s;
             position: relative;
-            font-weight: 500;
         }
         .header-nav a:hover { opacity: 1; color: var(--accent-blue); }
         .header-nav a.active { opacity: 1; font-weight: 600; }
@@ -145,6 +132,38 @@
             background: var(--accent-blue);
             border-radius: 1px;
         }
+
+        /* --- iOS SWITCH --- */
+        .ios-switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 26px;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+        .ios-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #e9e9ea;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        [data-theme="dark"] .slider { background-color: #39393d; }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px; width: 22px;
+            left: 2px; bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        input:checked + .slider { background-color: #30d158; }
+        input:checked + .slider:before { transform: translateX(20px); }
 
         /* Terrain toggle button + popover horizontal */
         .terrain-popover {
@@ -198,43 +217,6 @@
         .terrain-opt:hover { background: var(--item-hover); color: var(--accent-blue); }
         .terrain-opt.active { background: var(--accent-blue); color: white; }
         .terrain-opt.active svg { stroke: white; }
-
-        /* iOS switch */
-        .ios-switch {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-        .ios-switch input { position:absolute; opacity:0; width:0; height:0; }
-        .switch-track {
-            width: 42px; height: 24px;
-            background: #e9e9ea;
-            border-radius: 34px;
-            position: relative;
-            transition: background .35s;
-            flex-shrink: 0;
-        }
-        [data-theme="dark"] .switch-track { background: #39393d; }
-        .switch-track::before {
-            content: '';
-            position: absolute;
-            height: 20px; width: 20px;
-            top: 2px; left: 2px;
-            background: white;
-            border-radius: 50%;
-            transition: transform .35s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.18);
-        }
-        .ios-switch input:checked + .switch-track { background: #30d158; }
-        .ios-switch input:checked + .switch-track::before { transform: translateX(18px); }
-        .switch-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
 
         /* ===== LAYOUT ===== */
         main {
@@ -347,7 +329,6 @@
             padding-left: 15px;
         }
 
-        /* Category icon badge */
         .place-icon-badge {
             width: 36px; height: 36px;
             border-radius: 9px;
@@ -503,8 +484,6 @@
             transition: all 0.25s;
             overflow: hidden;
         }
-        /* Icon visible at zoom >= 14 */
-        .map-pin .pin-emoji { font-size: 11px; line-height: 1; }
 
         /* Leaflet zoom control styling */
         .leaflet-control-zoom {
@@ -599,12 +578,11 @@
         @media (max-width: 768px) {
             :root { --header-height: 52px; }
             body { overflow: hidden; }
-            header { padding: 0 14px; }
+            header { padding: 0 16px; }
             .header-left { width: auto; flex: 1; }
-            .logo-img { height: 30px; }
+            .logo-img { height: 38px; }
             .header-nav { display: none; }
-            .ios-switch .switch-label { display: none; }
-            .ios-switch { margin: 0; }
+            .ios-switch { transform: scale(0.85); margin-left: 10px; }
 
             main {
                 position: relative;
@@ -683,10 +661,8 @@
                 right: 12px;
                 bottom: calc(56px + env(safe-area-inset-bottom) + 8px);
             }
-            /* Terrain popover on mobile opens upward then shifts left — stays within screen */
+            /* Terrain popover on mobile opens upward then shifts left */
             .terrain-popover {
-                right: 56px;
-                bottom: 0;
                 flex-direction: column;
                 right: auto;
                 left: auto;
@@ -707,31 +683,22 @@
 
     <header id="main-header">
         <div class="header-left">
-            <!-- Data -->
-            <div class="header-date">
-                <div class="header-date-day" id="header-weekday"></div>
-                <div class="header-date-num" id="header-daynum"></div>
-            </div>
-            <!-- Divisor -->
-            <div style="width:1px; height:28px; background:var(--border-color); flex-shrink:0;"></div>
-            <!-- Logo -->
             <a href="index.html" class="logo-placeholder">
                 <img src="logohead.png" alt="Logo" class="logo-img"
                      onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
-                <div id="logo-fallback" class="logo-missing" style="display:none;">Fortal</div>
+                <div id="logo-fallback" class="logo-missing" style="display:none;">Logo</div>
+                <span style="margin-left: 8px;"></span>
             </a>
         </div>
-
+        
         <div class="header-nav">
             <a href="index.html" class="active">Mapa</a>
             <a href="roteiros.html">Roteiros</a>
             <a href="sobre.html">Sobre</a>
-            <span id="api-badge" style="font-size:10px;font-weight:600;color:var(--text-secondary);letter-spacing:0.3px;"></span>
-            <!-- Dark mode toggle -->
-            <label class="ios-switch" title="Modo escuro">
+            <span id="api-badge" title="Status da API" style="font-size:10px;font-weight:600;color:var(--text-secondary);letter-spacing:0.3px;"></span>
+            <label class="ios-switch" title="Alternar Tema">
                 <input type="checkbox" id="theme-toggle">
-                <span class="switch-track"></span>
-                <span class="switch-label" id="theme-label">Claro</span>
+                <span class="slider"></span>
             </label>
         </div>
     </header>
@@ -778,7 +745,6 @@
 
         <div id="map"></div>
 
-        <!-- Floating Novidades button -->
         <a href="roteiros.html" class="novidades-btn" id="novidades-btn" title="Novidades na região">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
@@ -787,9 +753,7 @@
             <span class="novidades-btn-text">Novidades</span>
         </a>
 
-        <!-- Map controls: terrain toggle + locate button -->
         <div class="map-controls">
-            <!-- Terrain toggle button + popover horizontal -->
             <div style="position:relative;" id="terrain-toggle-wrap">
                 <div class="terrain-popover" id="terrain-popover">
                     <button class="terrain-opt active" data-terrain="light" title="Padrão">
@@ -817,7 +781,6 @@
                     </svg>
                 </button>
             </div>
-            <!-- Locate button -->
             <button class="map-btn" id="locate-btn" title="Minha localização" aria-label="Minha localização">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="3"/>
@@ -830,7 +793,6 @@
 
     <div id="toast"></div>
 
-    <!-- iOS Bottom Tab Bar -->
     <nav class="mobile-tab-bar" id="mobile-tab-bar">
         <a href="index.html" class="tab-item active">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -868,13 +830,6 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // ===== DATA NO HEADER =====
-        (function(){
-            const now = new Date();
-            const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-            document.getElementById('header-weekday').textContent = days[now.getDay()];
-            document.getElementById('header-daynum').textContent = now.getDate();
-        })();
 
         // ===== API CONFIG =====
         const API_URL = 'http://localhost:5254/api';
@@ -1351,20 +1306,21 @@
         const toggle = document.getElementById('theme-toggle');
         const toggleMobile = document.getElementById('theme-toggle-mobile');
         const tabThemeLabel = document.getElementById('tab-theme-label');
-        const themeLabel = document.getElementById('theme-label');
 
         function applyTheme(dark, save) {
             document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
             toggle.checked = dark;
             if (toggleMobile) toggleMobile.checked = dark;
             if (tabThemeLabel) tabThemeLabel.textContent = dark ? 'Escuro' : 'Claro';
-            if (themeLabel) themeLabel.textContent = dark ? 'Escuro' : 'Claro';
-            // auto-switch terrain between light/dark if user hasn't picked satellite/terrain
+            
+            // auto-switch terrain between light/dark se o usuario nao escolheu satelite/terreno
             const terrain = localStorage.getItem('frp-terrain') || (dark ? 'dark' : 'light');
             if (terrain === 'light' || terrain === 'dark') {
                 const newTerrain = dark ? 'dark' : 'light';
                 setMapTiles(newTerrain);
-                if (terrainSelect) terrainSelect.value = newTerrain;
+                if (typeof activateTerrainBtn === 'function') {
+                    activateTerrainBtn(newTerrain);
+                }
                 localStorage.setItem('frp-terrain', newTerrain);
             }
             if (save) localStorage.setItem('frp-theme', dark ? 'dark' : 'light');
@@ -1461,7 +1417,7 @@
         let userMarker = null, userCircle = null;
 
         locateBtn.addEventListener('click', () => {
-            if (!navigator.geolocation) { showToast('⚠️ Geolocalização não suportada'); return; }
+            if (!navigator.geolocation) { showToast(' Geolocalização não suportada'); return; }
             locateBtn.classList.add('locating');
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
@@ -1484,8 +1440,8 @@
                 },
                 (err) => {
                     locateBtn.classList.remove('locating');
-                    const msgs = { 1: '🔒 Permissão negada', 2: '📡 Posição indisponível', 3: '⏱️ Tempo esgotado' };
-                    showToast(msgs[err.code] || '⚠️ Erro ao localizar');
+                    const msgs = { 1: ' Permissão negada', 2: ' Posição indisponível', 3: ' Tempo esgotado' };
+                    showToast(msgs[err.code] || ' Erro ao localizar');
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
             );
