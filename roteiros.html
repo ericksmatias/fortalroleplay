@@ -894,22 +894,25 @@
         document.getElementById('current-date').textContent =
             new Date().toLocaleDateString('pt-BR', options).toUpperCase();
 
-        // ===== DARK MODE =====
+        // ===== DARK MODE + PERSISTÊNCIA =====
         const toggle = document.getElementById('theme-toggle');
         const toggleMobile = document.getElementById('theme-toggle-mobile');
         const tabThemeLabel = document.getElementById('tab-theme-label');
         const body = document.body;
-        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-        function applyTheme(dark) {
+        function applyTheme(dark, save) {
             body.setAttribute('data-theme', dark ? 'dark' : 'light');
             toggle.checked = dark;
-            toggleMobile.checked = dark;
+            if (toggleMobile) toggleMobile.checked = dark;
             if (tabThemeLabel) tabThemeLabel.textContent = dark ? 'Escuro' : 'Claro';
+            if (save) localStorage.setItem('frp-theme', dark ? 'dark' : 'light');
         }
-        toggle.addEventListener('change', e => applyTheme(e.target.checked));
-        toggleMobile.addEventListener('change', e => applyTheme(e.target.checked));
-        if (isDark) applyTheme(true);
+        toggle.addEventListener('change', e => applyTheme(e.target.checked, true));
+        if (toggleMobile) toggleMobile.addEventListener('change', e => applyTheme(e.target.checked, true));
+
+        const savedTheme = localStorage.getItem('frp-theme');
+        const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(savedTheme ? savedTheme === 'dark' : sysDark, false);
 
         // ===== CARREGAR FOTOS (data-img → background-image com fallback para gradiente) =====
         document.querySelectorAll('[data-img]').forEach(el => {
