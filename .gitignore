@@ -1,0 +1,30 @@
+# Build e binários
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Pacotes NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Configurações do Visual Studio
+.vs/
+*.user
+*.suo
+*.vscode/
+
+# Arquivos de publicação
+Publish/
+*.publish.xml
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+*.temp
+
+# Configurações locais
+appsettings.Development.json
+*.local.json
