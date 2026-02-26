@@ -75,7 +75,15 @@
             transition: opacity 0.2s;
         }
         .logo-placeholder:hover { opacity: 0.7; }
-        .logo-img { height: 32px; width: auto; display: block; }
+        .logo-img {
+            height: 48px;
+            width: auto;
+            display: block;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+        }
+        [data-theme="dark"] .logo-img {
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.15));
+        }
         .logo-missing {
             height: 32px; padding: 0 10px;
             background: var(--bg-sidebar);
@@ -347,33 +355,191 @@
         .contact-card-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
         .contact-card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
 
+        /* ===================== iOS BOTTOM TAB BAR ===================== */
+        .mobile-tab-bar {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-tab-bar {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 3000;
+                height: 56px;
+                padding-bottom: env(safe-area-inset-bottom);
+                background: var(--bg-header);
+                backdrop-filter: saturate(180%) blur(20px);
+                -webkit-backdrop-filter: saturate(180%) blur(20px);
+                border-top: 1px solid var(--border-color);
+                align-items: stretch;
+                justify-content: space-around;
+                transition: background 0.3s, border-color 0.3s;
+            }
+
+            .tab-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                text-decoration: none;
+                color: var(--text-secondary);
+                font-size: 10px;
+                font-weight: 500;
+                font-family: var(--sf-pro);
+                transition: color 0.18s;
+                -webkit-tap-highlight-color: transparent;
+                cursor: pointer;
+                background: none;
+                border: none;
+                padding: 0;
+            }
+
+            .tab-item.active { color: var(--accent-blue); }
+
+            .tab-item svg {
+                width: 24px; height: 24px;
+                stroke-width: 1.7;
+                transition: transform 0.15s;
+            }
+
+            .tab-item.active svg { stroke-width: 2.2; }
+            .tab-item:active svg { transform: scale(0.88); }
+
+            .tab-item .mini-switch {
+                position: relative;
+                width: 34px; height: 20px;
+            }
+            .tab-item .mini-switch input { opacity:0; width:0; height:0; position:absolute; }
+            .tab-item .mini-slider {
+                position: absolute; inset: 0;
+                background: #e9e9ea;
+                border-radius: 34px;
+                cursor: pointer;
+                transition: background .3s;
+            }
+            [data-theme="dark"] .tab-item .mini-slider { background: #39393d; }
+            .tab-item .mini-slider::before {
+                content: "";
+                position: absolute;
+                height: 16px; width: 16px;
+                left: 2px; top: 2px;
+                background: white;
+                border-radius: 50%;
+                transition: transform .3s;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+            }
+            .tab-item .mini-switch input:checked + .mini-slider { background: #30d158; }
+            .tab-item .mini-switch input:checked + .mini-slider::before { transform: translateX(14px); }
+        }
+
         /* ===================== RESPONSIVIDADE ===================== */
         @media (max-width: 768px) {
-            body { overflow: hidden; }
-            main { flex-direction: column; }
-            aside {
-                width: 100%; height: auto; max-height: 160px;
-                border-right: none; border-bottom: 1px solid var(--border-color);
-                padding-top: 12px; flex-shrink: 0;
+
+            /* Body ocupa toda a tela, sem overflow */
+            body {
+                height: 100dvh;
+                overflow: hidden;
             }
-            .sidebar-footer { display: none; }
-            .legal-nav { flex-direction: row; overflow-x: auto; padding-bottom: 6px; white-space: nowrap; padding-left: 12px; }
-            .legal-nav li a {
-                padding: 8px 14px; border-left: none; border-radius: 20px; margin-right: 4px;
-                border-bottom: 2px solid transparent; font-size: 13px;
-            }
-            .legal-nav li a.active {
-                border-left-color: transparent;
-                background: rgba(0,113,227,0.1); color: var(--accent-blue);
-            }
+
+            /* Header compacto */
+            header { padding: 0 16px; }
+            .header-left { width: auto; flex: 1; }
+            .logo-img { height: 38px; }
             .header-nav { display: none; }
             .ios-switch { transform: scale(0.85); margin-left: 10px; }
-            .logo-placeholder span { display: none; }
-            .legal-document { padding: 28px 20px 60px; }
-            .doc-hero h1 { font-size: 30px; }
+
+            /* Main: coluna, altura exata descontando header + tab bar */
+            main {
+                flex-direction: column;
+                height: calc(100dvh - var(--header-height) - 56px);
+                overflow: hidden;
+            }
+
+            /* ── SIDEBAR vira barra de chips horizontal no topo ── */
+            aside {
+                width: 100%;
+                height: auto;
+                flex-shrink: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding-top: 0;
+                overflow: hidden;
+                /* reset da animação GSAP que pode ficar travada */
+                transform: none !important;
+                opacity: 1 !important;
+            }
+            .sidebar-footer { display: none; }
+            .sidebar-section { margin-bottom: 0; }
+            .legal-menu-title { display: none; }
+
+            /* Lista vira flex row com scroll horizontal */
+            .legal-nav {
+                display: flex;
+                flex-direction: row;
+                list-style: none;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 10px 12px;
+                gap: 6px;
+                scrollbar-width: none;
+                white-space: nowrap;
+            }
+            .legal-nav::-webkit-scrollbar { display: none; }
+
+            /* Cada item da lista: inline */
+            .legal-nav li { display: inline-flex; flex-shrink: 0; }
+
+            /* Links viram chips pill */
+            .legal-nav li a {
+                display: inline-flex;
+                align-items: center;
+                padding: 6px 14px;
+                border-radius: 20px;
+                border-left: none;
+                margin-right: 0;
+                font-size: 13px;
+                font-weight: 500;
+                background: var(--bg-sidebar);
+                border: 1px solid var(--border-color);
+                color: var(--text-secondary);
+                transition: background 0.15s, color 0.15s;
+                white-space: nowrap;
+            }
+            .legal-nav li a .nav-icon { display: none; }
+            .legal-nav li a:hover {
+                background: var(--item-hover);
+                color: var(--text-primary);
+            }
+            .legal-nav li a.active {
+                background: var(--accent-blue);
+                border-color: var(--accent-blue);
+                color: white;
+                font-weight: 600;
+            }
+
+            /* ── CONTEÚDO ocupa o resto e rola ── */
+            .legal-content-wrapper {
+                flex: 1;
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+                /* reset animação GSAP */
+                opacity: 1 !important;
+            }
+
+            .legal-document { padding: 24px 18px 40px; }
+            .doc-hero h1 { font-size: 26px; letter-spacing: -0.5px; }
+            .doc-hero .lead { font-size: 14px; line-height: 1.6; }
             .doc-body { padding-left: 0; }
             .doc-section-header { gap: 12px; }
             .contact-cards { grid-template-columns: 1fr; }
+            .doc-meta { gap: 10px; flex-direction: column; }
+            .section-divider { margin: 32px 0; }
         }
     </style>
 </head>
@@ -626,26 +792,81 @@
         </div><!-- /content-wrapper -->
     </main>
 
+    <!-- iOS Bottom Tab Bar (mobile only) -->
+    <nav class="mobile-tab-bar" id="mobile-tab-bar">
+        <a href="index.html" class="tab-item" id="tab-map">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                <line x1="9" y1="3" x2="9" y2="18"/>
+                <line x1="15" y1="6" x2="15" y2="21"/>
+            </svg>
+            <span>Mapa</span>
+        </a>
+        <a href="roteiros.html" class="tab-item" id="tab-roteiros">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <span>Roteiros</span>
+        </a>
+        <a href="sobre.html" class="tab-item active" id="tab-sobre">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <span>Sobre</span>
+        </a>
+        <button class="tab-item" id="tab-theme" aria-label="Alternar Tema">
+            <label class="mini-switch">
+                <input type="checkbox" id="theme-toggle-mobile">
+                <span class="mini-slider"></span>
+            </label>
+            <span id="tab-theme-label">Claro</span>
+        </button>
+    </nav>
+
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
-        // ===== DARK MODE =====
-        const toggle = document.getElementById('theme-toggle');
+        // ===== DARK MODE + PERSISTÊNCIA =====
+        const toggle       = document.getElementById('theme-toggle');
+        const toggleMobile = document.getElementById('theme-toggle-mobile');
+        const tabThemeLabel = document.getElementById('tab-theme-label');
         const body   = document.body;
-        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-        function applyTheme(dark) {
+        function applyTheme(dark, save) {
             body.setAttribute('data-theme', dark ? 'dark' : 'light');
             toggle.checked = dark;
+            if (toggleMobile) toggleMobile.checked = dark;
+            if (tabThemeLabel) tabThemeLabel.textContent = dark ? 'Escuro' : 'Claro';
+            if (save) localStorage.setItem('frp-theme', dark ? 'dark' : 'light');
         }
-        toggle.addEventListener('change', e => applyTheme(e.target.checked));
-        if (isDark) applyTheme(true);
+        toggle.addEventListener('change', e => applyTheme(e.target.checked, true));
+        if (toggleMobile) toggleMobile.addEventListener('change', e => applyTheme(e.target.checked, true));
+
+        const savedTheme = localStorage.getItem('frp-theme');
+        const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(savedTheme ? savedTheme === 'dark' : sysDark, false);
 
         // ===== GSAP ENTRADA =====
+        const isMobile = window.innerWidth <= 768;
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-        tl.to('#main-header',       { opacity: 1, y: 0, duration: 0.55 })
-          .to('#sidebar',           { opacity: 1, x: 0, duration: 0.5 }, '-=0.3')
-          .to('#content-wrapper',   { opacity: 1, duration: 0.5 }, '-=0.3');
+
+        if (isMobile) {
+            // No mobile: anima só o header, sidebar e conteúdo já visíveis via CSS
+            tl.to('#main-header', { opacity: 1, y: 0, duration: 0.55 });
+            // Garante visibilidade imediata sem animação
+            gsap.set('#sidebar',         { opacity: 1, x: 0, clearProps: 'transform' });
+            gsap.set('#content-wrapper', { opacity: 1, clearProps: 'opacity' });
+        } else {
+            tl.to('#main-header',       { opacity: 1, y: 0, duration: 0.55 })
+              .to('#sidebar',           { opacity: 1, x: 0, duration: 0.5 }, '-=0.3')
+              .to('#content-wrapper',   { opacity: 1, duration: 0.5 }, '-=0.3');
+        }
 
         // Seções do documento animam ao entrar na viewport
         document.querySelectorAll('.doc-section').forEach(section => {
@@ -681,8 +902,12 @@
             navLinks.forEach(link => {
                 const isActive = link.dataset.target === id;
                 link.classList.toggle('active', isActive);
-                if (isActive) {
+                if (isActive && !isMobile) {
                     gsap.fromTo(link, { x: -4 }, { x: 0, duration: 0.25, ease: 'power2.out' });
+                }
+                // No mobile: rola o chip ativo para dentro da view
+                if (isActive && isMobile) {
+                    link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 }
             });
         }

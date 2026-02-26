@@ -91,9 +91,13 @@
         .logo-placeholder:hover { opacity: 0.7; }
 
         .logo-img {
-            height: 32px;
+            height: 48px;
             width: auto;
             display: block;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+        }
+        [data-theme="dark"] .logo-img {
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.15));
         }
 
         .logo-missing {
@@ -374,7 +378,43 @@
         }
         .popup-btn:hover { opacity: 0.88; transform: scale(0.99); }
 
-        /* ===================== TOAST ===================== */
+        /* ===================== BOTÃO GEOLOCALIZAÇÃO ===================== */
+        #locate-btn {
+            position: absolute;
+            right: 16px;
+            bottom: 100px;
+            z-index: 500;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            border: 1px solid var(--border-color);
+            transition: transform 0.15s, box-shadow 0.15s;
+            color: var(--accent-blue);
+        }
+        #locate-btn svg { width: 20px; height: 20px; }
+        #locate-btn:hover { transform: scale(1.08); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+        #locate-btn:active { transform: scale(0.94); }
+        #locate-btn.locating { animation: pulse-locate 1s infinite; }
+        #locate-btn.located { color: var(--accent-blue); }
+        @keyframes pulse-locate {
+            0%, 100% { transform: scale(1);    opacity: 1; }
+            50%       { transform: scale(1.12); opacity: 0.7; }
+        }
+        @media (max-width: 768px) {
+            #locate-btn {
+                right: 12px;
+                bottom: calc(56px + env(safe-area-inset-bottom) + 145px);
+            }
+        }
         #toast {
             position: fixed;
             bottom: 30px;
@@ -393,15 +433,225 @@
             opacity: 0;
         }
 
-        /* ===================== RESPONSIVIDADE ===================== */
+        /* ===================== iOS BOTTOM TAB BAR ===================== */
+        .mobile-tab-bar {
+            display: none;
+        }
+
         @media (max-width: 768px) {
-            main { flex-direction: column-reverse; }
-            aside { width: 100%; height: 45%; border-right: none; border-top: 1px solid var(--border-color); }
-            #map { height: 55%; }
+            .mobile-tab-bar {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 3000;
+                height: 56px;
+                padding-bottom: env(safe-area-inset-bottom);
+                background: var(--bg-header);
+                backdrop-filter: saturate(180%) blur(20px);
+                -webkit-backdrop-filter: saturate(180%) blur(20px);
+                border-top: 1px solid var(--border-color);
+                align-items: stretch;
+                justify-content: space-around;
+                transition: background 0.3s, border-color 0.3s;
+            }
+
+            .tab-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                text-decoration: none;
+                color: var(--text-secondary);
+                font-size: 10px;
+                font-weight: 500;
+                font-family: var(--sf-pro);
+                transition: color 0.18s;
+                -webkit-tap-highlight-color: transparent;
+                cursor: pointer;
+                background: none;
+                border: none;
+                padding: 0;
+            }
+
+            .tab-item.active {
+                color: var(--accent-blue);
+            }
+
+            .tab-item svg {
+                width: 24px;
+                height: 24px;
+                stroke-width: 1.7;
+                transition: transform 0.15s;
+            }
+
+            .tab-item.active svg {
+                stroke-width: 2.2;
+            }
+
+            .tab-item:active svg {
+                transform: scale(0.88);
+            }
+
+            /* theme toggle inside tab bar */
+            .tab-item .tab-switch-wrap {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 3px;
+            }
+
+            .tab-item .mini-switch {
+                position: relative;
+                width: 34px;
+                height: 20px;
+            }
+
+            .tab-item .mini-switch input { opacity:0; width:0; height:0; position:absolute; }
+
+            .tab-item .mini-slider {
+                position: absolute;
+                inset: 0;
+                background: #e9e9ea;
+                border-radius: 34px;
+                cursor: pointer;
+                transition: background .3s;
+            }
+
+            [data-theme="dark"] .tab-item .mini-slider { background: #39393d; }
+
+            .tab-item .mini-slider::before {
+                content: "";
+                position: absolute;
+                height: 16px; width: 16px;
+                left: 2px; top: 2px;
+                background: white;
+                border-radius: 50%;
+                transition: transform .3s;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+            }
+
+            .tab-item .mini-switch input:checked + .mini-slider { background: #30d158; }
+            .tab-item .mini-switch input:checked + .mini-slider::before { transform: translateX(14px); }
+        }
+
+        /* ===================== RESPONSIVIDADE — APPLE MAPS STYLE ===================== */
+        @media (max-width: 768px) {
+
+            :root { --header-height: 52px; }
+
+            body { overflow: hidden; }
+
+            header { padding: 0 16px; }
+            .header-left { width: auto; flex: 1; }
+            .logo-img { height: 38px; }
             .header-nav { display: none; }
-            .logo-placeholder span { display: none; }
             .ios-switch { transform: scale(0.85); margin-left: 10px; }
-            #toast { bottom: calc(45% + 16px); }
+
+            /* Main ocupa tela inteira abaixo do header */
+            main {
+                position: relative;
+                height: calc(100dvh - var(--header-height));
+                overflow: hidden;
+            }
+
+            /* MAPA: fundo total, como Apple Maps */
+            #map {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+            }
+
+            /* Controles do mapa acima da tab bar */
+            .leaflet-bottom.leaflet-right {
+                bottom: calc(56px + env(safe-area-inset-bottom) + 8px);
+                right: 12px;
+            }
+
+            /* ── BOTTOM SHEET ── */
+            aside {
+                position: absolute;
+                bottom: calc(56px + env(safe-area-inset-bottom));
+                left: 0;
+                right: 0;
+                z-index: 100;
+
+                /* Altura máxima quando expandido */
+                max-height: calc(100dvh - var(--header-height) - 56px - env(safe-area-inset-bottom) - 20px);
+
+                background: var(--bg-header);
+                backdrop-filter: saturate(180%) blur(24px);
+                -webkit-backdrop-filter: saturate(180%) blur(24px);
+                border: 1px solid var(--border-color);
+                border-radius: 20px 20px 0 0;
+                box-shadow: 0 -4px 32px rgba(0,0,0,0.18);
+
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+
+                /* Posição inicial: peek (só handle + busca visíveis) */
+                transform: translateY(calc(100% - 130px));
+                transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
+                will-change: transform;
+                touch-action: none;
+            }
+
+            /* Estados do sheet */
+            aside.sheet-mid      { transform: translateY(40%); }
+            aside.sheet-expanded { transform: translateY(0);   }
+            aside.sheet-peek     { transform: translateY(calc(100% - 130px)); }
+
+            /* Handle de arraste */
+            aside::before {
+                content: '';
+                display: block;
+                width: 36px;
+                height: 4px;
+                background: var(--text-secondary);
+                opacity: 0.3;
+                border-radius: 2px;
+                margin: 10px auto 6px;
+                flex-shrink: 0;
+            }
+
+            .search-container { padding: 6px 12px 8px; }
+
+            .ios-search {
+                font-size: 14px;
+                padding: 9px 10px 9px 34px;
+            }
+
+            .filter-bar  { padding: 6px 12px; gap: 5px; }
+            .filter-pill { padding: 4px 10px; font-size: 10px; }
+
+            .places-list { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+            .place-item         { padding: 10px 14px; gap: 10px; }
+            .place-content h3   { font-size: 14px; }
+            .place-content p    { font-size: 11px; }
+
+            /* Toast flutua sobre o mapa */
+            #toast {
+                bottom: calc(56px + env(safe-area-inset-bottom) + 140px);
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+
+            /* Popup menor */
+            .leaflet-popup-content { width: 210px !important; padding: 14px; }
+            .popup-title  { font-size: 15px; }
+            .popup-desc   { font-size: 12px; margin-bottom: 10px; }
+        }
+
+        @media (max-width: 400px) {
+            .filter-pill { padding: 3px 8px; font-size: 9px; }
+            .place-item  { padding: 8px 12px; }
         }
     </style>
 </head>
@@ -466,9 +716,53 @@
         </aside>
 
         <div id="map"></div>
+        <button id="locate-btn" title="Minha localização" aria-label="Minha localização">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+                <circle cx="12" cy="12" r="9" stroke-opacity="0.3"/>
+            </svg>
+        </button>
     </main>
 
     <div id="toast"></div>
+
+    <!-- iOS Bottom Tab Bar (mobile only) -->
+    <nav class="mobile-tab-bar" id="mobile-tab-bar">
+        <a href="index.html" class="tab-item active" id="tab-map">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                <line x1="9" y1="3" x2="9" y2="18"/>
+                <line x1="15" y1="6" x2="15" y2="21"/>
+            </svg>
+            <span>Mapa</span>
+        </a>
+        <a href="roteiros.html" class="tab-item" id="tab-roteiros">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <span>Roteiros</span>
+        </a>
+        <a href="sobre.html" class="tab-item" id="tab-sobre">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <span>Sobre</span>
+        </a>
+        <button class="tab-item" id="tab-theme" aria-label="Alternar Tema">
+            <label class="mini-switch">
+                <input type="checkbox" id="theme-toggle-mobile">
+                <span class="mini-slider"></span>
+            </label>
+            <span id="tab-theme-label">Claro</span>
+        </button>
+    </nav>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -493,18 +787,18 @@
             { name: "Cervejaria Capitosa", cat: "Artesanal", color: "#af52de", lat: -3.7375, lon: -38.4990, desc: "Público que discute lúpulo a noite toda." },
             { name: "Brauhaus", cat: "Alemão", color: "#af52de", lat: -3.7320, lon: -38.5050, desc: "Templo da cerveja importada." },
             { name: "Mayú", cat: "Alta Gastronomia", color: "#af52de", lat: -3.7340, lon: -38.4970, desc: "Restaurante do Senac. Comida experimental." },
-            { name: "Cinema do Dragão", cat: "Cinefilia", color: "#af52de", lat: -3.7220, lon: -38.5200, desc: "Filmes que ninguém entende e debate sobre semiótica." },
+            { name: "Cinema do Dragão", cat: "Cinefilia", color: "#af52de", lat: -3.7222, lon: -38.5182, desc: "Filmes que ninguém entende e debate sobre semiótica." },
             { name: "Café Couture", cat: "Jazz & Drinks", color: "#af52de", lat: -3.7335, lon: -38.5040, desc: "Piano e luz vermelha. Boemia afrancesada." },
             { name: "Brewstone Pub", cat: "Cerveja & Rock", color: "#af52de", lat: -3.7360, lon: -38.5010, desc: "Pub sério. Cerveja própria excelente." },
             { name: "Amika Coffee", cat: "Café Geek", color: "#af52de", lat: -3.7350, lon: -38.4980, desc: "Café pra trabalhar remoto. Cheio de MacBooks." },
             { name: "Le Pain Le Café", cat: "Francês", color: "#af52de", lat: -3.7370, lon: -38.4960, desc: "Croissant e ar condicionado. Madames e cults." },
             { name: "Benévolo", cat: "Gelato", color: "#af52de", lat: -3.7340, lon: -38.5000, desc: "Sorvete e café. Ponto de encontro pós-almoço." },
             { name: "Museu da Fotografia", cat: "Cultura", color: "#af52de", lat: -3.7345, lon: -38.4930, desc: "Ar condicionado gelado e fotos incríveis." },
-            { name: "Caixa Cultural", cat: "Exposições", color: "#af52de", lat: -3.7230, lon: -38.5180, desc: "Exposições gratuitas na Praia de Iracema." },
+            { name: "Caixa Cultural", cat: "Exposições", color: "#af52de", lat: -3.7217, lon: -38.5175, desc: "Exposições gratuitas na Praia de Iracema." },
 
             // --- ESQUERDA + FODIDO (Vermelho) ---
-            { name: "Route Fortaleza", cat: "O Caos", color: "#ff3b30", lat: -3.7212, lon: -38.5205, desc: "O abismo. Onde a dignidade morre às 5 da manhã." },
-            { name: "Fuzuê Club", cat: "Balada Centro", color: "#ff3b30", lat: -3.7218, lon: -38.5198, desc: "Vizinho do Route. Pop, funk e suor." },
+            { name: "Route Fortaleza", cat: "O Caos", color: "#ff3b30", lat: -3.7215, lon: -38.5172, desc: "O abismo. Onde a dignidade morre às 5 da manhã." },
+            { name: "Fuzuê Club", cat: "Balada Centro", color: "#ff3b30", lat: -3.7218, lon: -38.5168, desc: "Vizinho do Route. Pop, funk e suor." },
             { name: "Bar do Seu Nonato", cat: "Raiz Intelectual", color: "#ff3b30", lat: -3.7441, lon: -38.5362, desc: "Ovo colorido e panelada. QG dos professores." },
             { name: "Bar do Vinil", cat: "Hipster Raiz", color: "#ff3b30", lat: -3.7433, lon: -38.5351, desc: "Bolachão na vitrola. Refúgio hipster do Benfica." },
             { name: "Rap Bar", cat: "Cena Urbana", color: "#ff3b30", lat: -3.7255, lon: -38.5258, desc: "Rima, skate e cerveja barata no Centro." },
@@ -529,10 +823,10 @@
             { name: "Haus", cat: "Eletrônico", color: "#ff3b30", lat: -3.7220, lon: -38.5180, desc: "Techno e óculos escuros às 3 da manhã." },
             { name: "Level", cat: "Balada Drag", color: "#ff3b30", lat: -3.7218, lon: -38.5170, desc: "Shows de Drag Queen e festa até amanhecer." },
             { name: "Centro Fashion", cat: "Moda & Caos", color: "#ff3b30", lat: -3.7150, lon: -38.5400, desc: "Onde a sacoleira guerreira faz a moda girar." },
-            { name: "Mercado Central", cat: "Turista & Local", color: "#ff3b30", lat: -3.7240, lon: -38.5230, desc: "Labirinto de renda e castanha." },
+            { name: "Mercado Central", cat: "Turista & Local", color: "#ff3b30", lat: -3.7290, lon: -38.5368, desc: "Labirinto de renda e castanha." },
             { name: "Mercado São Sebastião", cat: "Café Nordestino", color: "#ff3b30", lat: -3.7300, lon: -38.5350, desc: "Cuscuz, panelada e gritaria." },
             { name: "Beco da Poeira", cat: "Hardcore", color: "#ff3b30", lat: -3.7280, lon: -38.5300, desc: "Comércio popular extremo." },
-            { name: "Praça do Ferreira", cat: "Marco Zero", color: "#ff3b30", lat: -3.7270, lon: -38.5270, desc: "O coração da cidade." },
+            { name: "Praça do Ferreira", cat: "Marco Zero", color: "#ff3b30", lat: -3.7270, lon: -38.5264, desc: "O coração da cidade." },
             { name: "Cabaré da Baixa", cat: "Histórico", color: "#ff3b30", lat: -3.7200, lon: -38.5300, desc: "Boemia antiga da zona portuária." },
             { name: "Bar do Biel", cat: "Sinuca", color: "#ff3b30", lat: -3.7230, lon: -38.5250, desc: "Sinuca e cerveja barata no Centro." },
             { name: "Assis da Picanha", cat: "Picanha Raiz", color: "#ff3b30", lat: -3.7320, lon: -38.5400, desc: "Picanha boa e barata." },
@@ -588,7 +882,7 @@
             { name: "Colher de Pau", cat: "Turista Raiz", color: "#34c759", lat: -3.7360, lon: -38.4880, desc: "Baião de dois sério na Varjota." },
             { name: "Arre Égua", cat: "Forró Antigo", color: "#34c759", lat: -3.7370, lon: -38.4850, desc: "Vila sertaneja turística." },
             { name: "Kukukaya", cat: "Forró Raiz", color: "#34c759", lat: -3.7450, lon: -38.5250, desc: "Dançar agarradinho." },
-            { name: "Pirata Bar", cat: "Segunda-feira", color: "#34c759", lat: -3.7200, lon: -38.5150, desc: "Segunda mais louca do mundo." },
+            { name: "Pirata Bar", cat: "Segunda-feira", color: "#34c759", lat: -3.7192, lon: -38.5167, desc: "Segunda mais louca do mundo." },
             { name: "Lupus Bier", cat: "Humor", color: "#34c759", lat: -3.7210, lon: -38.5160, desc: "Show de humor e Rossicléa." },
             { name: "Chico do Caranguejo", cat: "Praia Futuro", color: "#34c759", lat: -3.7541, lon: -38.4450, desc: "Caranguejo e show." },
             { name: "Crocobeach", cat: "Resort", color: "#34c759", lat: -3.7330, lon: -38.4620, desc: "Hotel na areia." },
@@ -607,7 +901,7 @@
             { name: "Círculo Militar", cat: "Clube", color: "#34c759", lat: -3.7250, lon: -38.4950, desc: "Eventos militares e vista." },
             { name: "AABB", cat: "Clube", color: "#34c759", lat: -3.7300, lon: -38.4850, desc: "Churrasco de domingo." },
             { name: "BNB Clube", cat: "Clube", color: "#34c759", lat: -3.7320, lon: -38.5000, desc: "Festas juninas épicas." },
-            { name: "Parque do Cocó", cat: "Natureza", color: "#34c759", lat: -3.7450, lon: -38.4850, desc: "Piquenique e trilha." },
+            { name: "Parque do Cocó", cat: "Natureza", color: "#34c759", lat: -3.7480, lon: -38.4820, desc: "Piquenique e trilha." },
             { name: "Padaria Costa Mendes", cat: "Montese", color: "#34c759", lat: -3.7600, lon: -38.5400, desc: "Pão de coco lendário." },
             { name: "Empório Delitália", cat: "Padaria Rica", color: "#34c759", lat: -3.7360, lon: -38.4950, desc: "Presunto de Parma às 22h." },
 
@@ -615,20 +909,21 @@
             { name: "Boteco do Lee", cat: "Neutro", color: "#ffcc00", lat: -3.7305, lon: -38.5208, desc: "O purgatório." },
             { name: "Bar da Tetê", cat: "Indefinido", color: "#ffcc00", lat: -3.7321, lon: -38.5222, desc: "Ninguém define o público." },
             { name: "Relativo Bar", cat: "Depende", color: "#ffcc00", lat: -3.7315, lon: -38.5215, desc: "Tudo é relativo." },
-            { name: "Shopping Iguatemi", cat: "O Mall", color: "#ffcc00", lat: -3.7550, lon: -38.4880, desc: "Onde todo mundo se encontra." },
-            { name: "Shopping RioMar", cat: "O Novo Rico", color: "#ffcc00", lat: -3.7400, lon: -38.4750, desc: "Gigante e frio." },
-            { name: "North Shopping", cat: "O do Povo", color: "#ffcc00", lat: -3.7350, lon: -38.5600, desc: "Formigueiro na Bezerra." },
+            { name: "Shopping Iguatemi", cat: "O Mall", color: "#ffcc00", lat: -3.7554, lon: -38.4873, desc: "Onde todo mundo se encontra." },
+            { name: "Shopping RioMar", cat: "O Novo Rico", color: "#ffcc00", lat: -3.7412, lon: -38.4714, desc: "Gigante e frio." },
+            { name: "North Shopping", cat: "O do Povo", color: "#ffcc00", lat: -3.7115, lon: -38.5812, desc: "Formigueiro na Bezerra." },
             { name: "Shopping Benfica", cat: "Diversidade", color: "#ffcc00", lat: -3.7420, lon: -38.5380, desc: "Otakus e vovós." },
             { name: "Shopping Del Paseo", cat: "Compacto", color: "#ffcc00", lat: -3.7350, lon: -38.4980, desc: "Shopping de rico velho." },
-            { name: "Via Sul Shopping", cat: "Zona Sul", color: "#ffcc00", lat: -3.7900, lon: -38.4850, desc: "Shopping da Seis Bocas." },
-            { name: "Grand Shopping", cat: "Messejana", color: "#ffcc00", lat: -3.8100, lon: -38.4700, desc: "Salvou Messejana." },
+            { name: "Via Sul Shopping", cat: "Zona Sul", color: "#ffcc00", lat: -3.8298, lon: -38.5210, desc: "Shopping da Seis Bocas." },
+            { name: "Grand Shopping", cat: "Messejana", color: "#ffcc00", lat: -3.8220, lon: -38.4900, desc: "Salvou Messejana." },
             { name: "Pão de Açúcar Náutico", cat: "Meeting Point", color: "#ffcc00", lat: -3.7240, lon: -38.4930, desc: "Ponto de encontro." },
-            { name: "Feirinha da Beira Mar", cat: "Turismo", color: "#ffcc00", lat: -3.7230, lon: -38.4900, desc: "Artesanato e castanha." },
-            { name: "Estátua de Iracema", cat: "Foto", color: "#ffcc00", lat: -3.7200, lon: -38.5100, desc: "A guardiã da praia." }
+            { name: "Feirinha da Beira Mar", cat: "Turismo", color: "#ffcc00", lat: -3.7255, lon: -38.4962, desc: "Artesanato e castanha." },
+            { name: "Estátua de Iracema", cat: "Foto", color: "#ffcc00", lat: -3.7198, lon: -38.5142, desc: "A guardiã da praia." }
         ];
 
         // ===================== MAPA =====================
         const map = L.map('map', { zoomControl: false }).setView([-3.73, -38.51], 13);
+        window._leafletMap = map;
         let currentLayer;
 
         function setMapTiles(theme) {
@@ -642,8 +937,9 @@
             }).addTo(map);
         }
 
-        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setMapTiles(isDark ? 'dark' : 'light');
+        const savedThemeEarly = localStorage.getItem('frp-theme');
+        const sysDarkEarly = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setMapTiles((savedThemeEarly ? savedThemeEarly === 'dark' : sysDarkEarly) ? 'dark' : 'light');
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
         // ===================== RENDERIZAÇÃO =====================
@@ -804,19 +1100,28 @@
             });
         });
 
-        // ===================== DARK MODE =====================
+        // ===================== DARK MODE + PERSISTÊNCIA =====================
         const toggle = document.getElementById('theme-toggle');
+        const toggleMobile = document.getElementById('theme-toggle-mobile');
+        const tabThemeLabel = document.getElementById('tab-theme-label');
         const body = document.body;
 
-        function applyTheme(dark) {
+        function applyTheme(dark, save) {
             body.setAttribute('data-theme', dark ? 'dark' : 'light');
             setMapTiles(dark ? 'dark' : 'light');
             toggle.checked = dark;
+            if (toggleMobile) toggleMobile.checked = dark;
+            if (tabThemeLabel) tabThemeLabel.textContent = dark ? 'Escuro' : 'Claro';
+            if (save) localStorage.setItem('frp-theme', dark ? 'dark' : 'light');
         }
 
-        toggle.addEventListener('change', (e) => applyTheme(e.target.checked));
+        toggle.addEventListener('change', (e) => applyTheme(e.target.checked, true));
+        if (toggleMobile) toggleMobile.addEventListener('change', (e) => applyTheme(e.target.checked, true));
 
-        if (isDark) applyTheme(true);
+        // Carrega tema salvo, senão usa preferência do sistema
+        const savedTheme = localStorage.getItem('frp-theme');
+        const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(savedTheme ? savedTheme === 'dark' : sysDark, false);
 
         // ===================== GSAP — ANIMAÇÕES DE ENTRADA =====================
         gsap.registerPlugin(ScrollTrigger);
@@ -826,6 +1131,153 @@
         tl.to('#main-header', { opacity: 1, y: 0, duration: 0.6 })
           .to('#sidebar',     { opacity: 1, x: 0, duration: 0.5 }, '-=0.3')
           .from('#map',       { opacity: 0, duration: 0.7, ease: 'power2.inOut' }, '-=0.4');
+
+        // ===================== BOTTOM SHEET (mobile) =====================
+        (function() {
+            if (window.innerWidth > 768) return;
+
+            const sheet   = document.getElementById('sidebar');
+            const mapEl   = document.getElementById('map');
+            if (!sheet) return;
+
+            // Posições: peek | mid | expanded
+            const STATES = ['sheet-peek', 'sheet-mid', 'sheet-expanded'];
+            let currentState = 0; // começa em peek
+
+            function applyState(idx, animate) {
+                STATES.forEach(s => sheet.classList.remove(s));
+                if (!animate) sheet.style.transition = 'none';
+                sheet.classList.add(STATES[idx]);
+                if (!animate) requestAnimationFrame(() => sheet.style.transition = '');
+                currentState = idx;
+                // Invalida o mapa Leaflet quando o sheet muda de tamanho
+                setTimeout(() => { if (window._leafletMap) window._leafletMap.invalidateSize(); }, 450);
+            }
+
+            applyState(0, false);
+
+            // ── Drag com touch ──
+            let startY = 0, startTranslate = 0, isDragging = false;
+
+            function getTranslateY() {
+                const style = window.getComputedStyle(sheet);
+                const matrix = new WebKitCSSMatrix(style.transform);
+                return matrix.m42;
+            }
+
+            sheet.addEventListener('touchstart', e => {
+                // Só inicia drag no handle (primeiros 60px do sheet)
+                const touch = e.touches[0];
+                const rect  = sheet.getBoundingClientRect();
+                if (touch.clientY - rect.top > 60 && currentState === 2) return; // expanded + scroll interno
+                isDragging  = true;
+                startY      = touch.clientY;
+                startTranslate = getTranslateY();
+                sheet.style.transition = 'none';
+            }, { passive: true });
+
+            sheet.addEventListener('touchmove', e => {
+                if (!isDragging) return;
+                const delta = e.touches[0].clientY - startY;
+                const newY  = Math.max(0, startTranslate + delta);
+                sheet.style.transform = `translateY(${newY}px)`;
+            }, { passive: true });
+
+            sheet.addEventListener('touchend', e => {
+                if (!isDragging) return;
+                isDragging = false;
+                sheet.style.transition = '';
+
+                const delta = e.changedTouches[0].clientY - startY;
+                const speed = delta; // positivo = para baixo
+
+                if (speed < -40)      applyState(Math.min(currentState + 1, 2), true); // sobe
+                else if (speed > 40)  applyState(Math.max(currentState - 1, 0), true); // desce
+                else                  applyState(currentState, true); // snap de volta
+            }, { passive: true });
+
+            // Toque no handle sobe/desce um nível
+            sheet.addEventListener('click', e => {
+                const rect = sheet.getBoundingClientRect();
+                if (e.clientY - rect.top <= 28) { // área do handle
+                    if (currentState < 2) applyState(currentState + 1, true);
+                    else                  applyState(0, true);
+                }
+            });
+
+            // Clicar no mapa recolhe o sheet para peek
+            mapEl.addEventListener('click', () => {
+                if (currentState > 0) applyState(0, true);
+            });
+
+            // Quando clicar em um item da lista, expande o sheet para mid se estiver peek
+            document.getElementById('places-list').addEventListener('click', () => {
+                if (currentState === 0) applyState(1, true);
+            });
+
+        })();
+
+        // ===================== GEOLOCALIZAÇÃO =====================
+        const locateBtn = document.getElementById('locate-btn');
+        let userMarker = null;
+        let userCircle = null;
+
+        locateBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                showToast('⚠️ Geolocalização não suportada');
+                return;
+            }
+            locateBtn.classList.add('locating');
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    locateBtn.classList.remove('locating');
+                    locateBtn.classList.add('located');
+
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const acc = pos.coords.accuracy;
+
+                    // Remove marcador anterior
+                    if (userMarker) { map.removeLayer(userMarker); map.removeLayer(userCircle); }
+
+                    // Círculo de precisão
+                    userCircle = L.circle([lat, lon], {
+                        radius: acc,
+                        color: '#0071e3',
+                        fillColor: '#0071e3',
+                        fillOpacity: 0.08,
+                        weight: 1.5
+                    }).addTo(map);
+
+                    // Marcador de posição estilo iOS
+                    const locIcon = L.divIcon({
+                        className: '',
+                        html: `<div style="
+                            width:18px;height:18px;border-radius:50%;
+                            background:#0071e3;
+                            border:3px solid white;
+                            box-shadow:0 2px 8px rgba(0,113,227,0.6);
+                        "></div>`,
+                        iconSize: [18, 18],
+                        iconAnchor: [9, 9]
+                    });
+
+                    userMarker = L.marker([lat, lon], { icon: locIcon }).addTo(map);
+                    map.flyTo([lat, lon], 16, { duration: 1.4 });
+                    showToast('📍 Você está aqui');
+                },
+                (err) => {
+                    locateBtn.classList.remove('locating');
+                    const msgs = {
+                        1: '🔒 Permissão de localização negada',
+                        2: '📡 Posição indisponível',
+                        3: '⏱️ Tempo esgotado'
+                    };
+                    showToast(msgs[err.code] || '⚠️ Erro ao localizar');
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+            );
+        });
 
         // Hover sutil nos links do nav
         document.querySelectorAll('.header-nav a').forEach(link => {
