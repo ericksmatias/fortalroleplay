@@ -74,23 +74,6 @@
             min-width: 0;
         }
 
-        /* Botão Ocultar Menu */
-        .sidebar-toggle-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s, color 0.2s, transform 0.2s;
-        }
-        .sidebar-toggle-btn:hover { background: var(--item-hover); color: var(--accent-blue); }
-        .sidebar-toggle-btn:active { transform: scale(0.92); }
-        .sidebar-toggle-btn svg { width: 22px; height: 22px; }
-
         /* --- DATA NO HEADER --- */
         .header-date {
             display: flex;
@@ -281,7 +264,7 @@
             opacity: 0;
             transform: translateX(-20px);
             flex-shrink: 0;
-            /* Usaremos GSAP para animar a margem ao ocultar */
+            z-index: 1000;
         }
 
         .search-container {
@@ -414,8 +397,19 @@
         .empty-state .empty-icon { font-size: 36px; opacity: 0.35; }
         .empty-state p { font-size: 14px; line-height: 1.5; }
 
-        /* ===== MAP ===== */
-        #map { flex: 1; height: 100%; z-index: 1; }
+        /* ===== MAP WRAPPER ===== */
+        #map-wrapper {
+            flex: 1;
+            position: relative;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
 
         /* ===== MAP CONTROLS (floating) ===== */
         .map-controls {
@@ -426,6 +420,14 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+        }
+        
+        /* Botão de Toggle da Barra Lateral no Mapa */
+        .map-controls-left {
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            z-index: 500;
         }
 
         .map-btn {
@@ -441,7 +443,7 @@
             -webkit-backdrop-filter: saturate(180%) blur(20px);
             box-shadow: 0 2px 12px rgba(0,0,0,0.15);
             border: 1px solid var(--border-color);
-            transition: transform 0.12s, box-shadow 0.12s;
+            transition: transform 0.12s, box-shadow 0.12s, color 0.2s;
             color: var(--accent-blue);
             text-decoration: none;
         }
@@ -453,7 +455,7 @@
         .novidades-btn {
             position: absolute;
             right: 16px;
-            top: calc(var(--header-height) + 16px);
+            top: 16px;
             z-index: 500;
             display: flex;
             flex-direction: column;
@@ -503,7 +505,6 @@
         }
         .leaflet-popup-tip { background: var(--bg-header); }
         .leaflet-popup-content { margin: 0; width: 265px !important; padding: 20px; font-family: var(--sf-pro); }
-        .popup-icon { font-size: 28px; margin-bottom: 8px; display: block; }
         .popup-category { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; letter-spacing: 0.4px; }
         .popup-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: var(--text-primary); line-height: 1.25; }
         .popup-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px; }
@@ -624,10 +625,10 @@
             :root { --header-height: 52px; }
             body { overflow: hidden; }
             header { padding: 0 16px; }
-            .header-left { width: auto; flex: 1; gap: 8px; }
+            .header-left { width: auto; flex: 1; gap: 10px; }
             
-            /* No celular escondemos a data pra dar espaço pros botões + logo */
-            .header-date, .header-divider { display: none !important; }
+            .header-date-num { font-size: 18px; }
+            .header-date-day { font-size: 9px; }
             
             .logo-img { height: 32px; }
             .header-nav { display: none; }
@@ -638,11 +639,10 @@
                 height: calc(100dvh - var(--header-height));
                 overflow: hidden;
             }
-            #map {
+            #map-wrapper {
                 position: absolute;
                 inset: 0;
                 width: 100%; height: 100%;
-                z-index: 1;
             }
             .leaflet-bottom.leaflet-right {
                 bottom: calc(56px + env(safe-area-inset-bottom) + 8px);
@@ -653,7 +653,6 @@
                 position: absolute;
                 bottom: calc(56px + env(safe-area-inset-bottom));
                 left: 0; right: 0;
-                z-index: 100;
                 max-height: calc(100dvh - var(--header-height) - 56px - env(safe-area-inset-bottom) - 16px);
                 background: var(--bg-header);
                 backdrop-filter: saturate(180%) blur(24px);
@@ -672,7 +671,7 @@
             aside.sheet-mid { transform: translateY(40%); }
             aside.sheet-expanded { transform: translateY(0); }
             aside.sheet-peek { transform: translateY(calc(100% - 120px)); }
-            aside.sheet-hidden { transform: translateY(calc(100% + 20px)); } /* Esconde 100% */
+            aside.sheet-hidden { transform: translateY(calc(100% + 20px)); }
             
             aside::before {
                 content: '';
@@ -696,7 +695,7 @@
             /* Novidades button mobile */
             .novidades-btn {
                 right: 12px;
-                top: calc(var(--header-height) + 12px);
+                top: 12px;
                 bottom: auto;
                 transform: none;
                 flex-direction: column;
@@ -708,9 +707,10 @@
             .novidades-btn:hover { transform: scale(1.04); }
             .novidades-btn:active { transform: scale(0.95); }
 
+            .map-controls-left { left: 12px; top: 12px; }
             .map-controls {
                 right: 12px;
-                bottom: calc(56px + env(safe-area-inset-bottom) + 8px);
+                bottom: calc(56px + env(safe-area-inset-bottom) + 130px); /* Ajustado para não ficar sob o menu na espiada */
             }
             .terrain-popover {
                 flex-direction: column;
@@ -733,13 +733,6 @@
 
     <header id="main-header">
         <div class="header-left">
-            <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Ocultar / Mostrar Menu">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="9" y1="3" x2="9" y2="21"></line>
-                </svg>
-            </button>
-
             <div class="header-date">
                 <div class="header-date-day" id="header-weekday"></div>
                 <div class="header-date-num" id="header-daynum"></div>
@@ -805,51 +798,66 @@
             </div>
         </aside>
 
-        <div id="map"></div>
-
-        <a href="roteiros.html" class="novidades-btn" id="novidades-btn" title="Novidades na região">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-            <span class="novidades-btn-text">Novidades</span>
-        </a>
-
-        <div class="map-controls">
-            <div style="position:relative;" id="terrain-toggle-wrap">
-                <div class="terrain-popover" id="terrain-popover">
-                    <button class="terrain-opt active" data-terrain="light" title="Padrão">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
-                        Padrão
-                    </button>
-                    <button class="terrain-opt" data-terrain="dark" title="Noite">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                        Noite
-                    </button>
-                    <button class="terrain-opt" data-terrain="satellite" title="Satélite">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                        Satélite
-                    </button>
-                    <button class="terrain-opt" data-terrain="terrain" title="Terreno">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 17 9 6 15 13 19 8 21 17"/></svg>
-                        Terreno
-                    </button>
-                </div>
-                <button class="map-btn" id="terrain-toggle-btn" title="Tipo de mapa" aria-label="Tipo de mapa">
+        <div id="map-wrapper">
+            <div id="map"></div>
+            
+            <div class="map-controls-left">
+                <button class="map-btn" id="sidebar-toggle" title="Ocultar/Mostrar Lista">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
-                        <line x1="9" y1="3" x2="9" y2="18"/>
-                        <line x1="15" y1="6" x2="15" y2="21"/>
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
                     </svg>
                 </button>
             </div>
-            <button class="map-btn" id="locate-btn" title="Minha localização" aria-label="Minha localização">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-                    <circle cx="12" cy="12" r="9" stroke-opacity="0.25"/>
+
+            <a href="roteiros.html" class="novidades-btn" id="novidades-btn" title="Novidades na região">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                 </svg>
-            </button>
+                <span class="novidades-btn-text">Novidades</span>
+            </a>
+
+            <div class="map-controls">
+                <div style="position:relative;" id="terrain-toggle-wrap">
+                    <div class="terrain-popover" id="terrain-popover">
+                        <button class="terrain-opt active" data-terrain="light" title="Padrão">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+                            Padrão
+                        </button>
+                        <button class="terrain-opt" data-terrain="dark" title="Noite">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                            Noite
+                        </button>
+                        <button class="terrain-opt" data-terrain="satellite" title="Satélite">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            Satélite
+                        </button>
+                        <button class="terrain-opt" data-terrain="terrain" title="Terreno">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 17 9 6 15 13 19 8 21 17"/></svg>
+                            Terreno
+                        </button>
+                    </div>
+                    <button class="map-btn" id="terrain-toggle-btn" title="Tipo de mapa" aria-label="Tipo de mapa">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                            <line x1="9" y1="3" x2="9" y2="18"/>
+                            <line x1="15" y1="6" x2="15" y2="21"/>
+                        </svg>
+                    </button>
+                </div>
+                <button class="map-btn" id="locate-btn" title="Minha localização" aria-label="Minha localização">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+                        <circle cx="12" cy="12" r="9" stroke-opacity="0.25"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </main>
 
@@ -1158,7 +1166,7 @@
                 
                 if (!isSidebarVisibleDesktop) {
                     gsap.to(sidebar, { 
-                        marginLeft: -380, // Tira o menu da tela empurrando a margem
+                        marginLeft: -380, 
                         opacity: 0, 
                         duration: 0.45, 
                         ease: "power3.inOut",
@@ -1174,9 +1182,8 @@
                     });
                 }
             } else {
-                // Animação para Mobile interage com o script de Bottom Sheet lá de baixo
+                // Animação para Mobile
                 if (typeof window.setMobileSheetState === 'function') {
-                    // Se estiver oculto (estado 3), puxa para a pontinha (estado 0). Senão, esconde.
                     if (window.mobileSheetState === 3) {
                         window.setMobileSheetState(0, true);
                     } else {
@@ -1425,9 +1432,9 @@
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
         tl.to('#main-header', { opacity: 1, y: 0, duration: 0.55 })
           .to('#sidebar', { opacity: 1, x: 0, duration: 0.45 }, '-=0.3')
-          .from('#map', { opacity: 0, duration: 0.6, ease: 'power2.inOut' }, '-=0.35');
+          .from('#map-wrapper', { opacity: 0, duration: 0.6, ease: 'power2.inOut' }, '-=0.35');
 
-        // ===== BOTTOM SHEET (mobile) =====
+        // ===== BOTTOM SHEET (mobile) com Trava Anti-Fuga =====
         (function() {
             if (window.innerWidth > 768) return;
             const sheet = document.getElementById('sidebar');
@@ -1445,16 +1452,16 @@
                 sheet.classList.add(STATES[idx]);
                 if (!animate) requestAnimationFrame(() => sheet.style.transition = '');
                 currentState = idx;
-                window.mobileSheetState = idx; // exporta para o botão toggle poder ler
+                window.mobileSheetState = idx; 
                 setTimeout(() => { if (window._leafletMap) window._leafletMap.invalidateSize(); }, 450);
             }
             
-            // Exporta a função para que o botão de toggle la de cima consiga controlar a aba
             window.setMobileSheetState = applyState;
-
             applyState(0, false);
 
-            let startY = 0, isDragging = false;
+            let startY = 0;
+            let currentY = 0;
+            let isDragging = false;
 
             function getTranslateY() {
                 const matrix = new WebKitCSSMatrix(window.getComputedStyle(sheet).transform);
@@ -1464,30 +1471,41 @@
             sheet.addEventListener('touchstart', e => {
                 const touch = e.touches[0];
                 const rect = sheet.getBoundingClientRect();
-                // Se tiver expandido ou escondido, bloqueia arrastar pelo corpo
                 if (touch.clientY - rect.top > 60 && currentState === 2) return;
-                if (currentState === 3) return; // Se tá escondido, não faz nada
+                if (currentState === 3) return; // Bloqueia toque se tiver ocultado 100%
+                
                 isDragging = true;
                 startY = touch.clientY;
+                currentY = getTranslateY(); // Grava a posição inicial exata do dedo
                 sheet.style.transition = 'none';
             }, { passive: true });
 
             sheet.addEventListener('touchmove', e => {
                 if (!isDragging) return;
                 const delta = e.touches[0].clientY - startY;
-                const newY = Math.max(0, getTranslateY() + delta);
+                
+                // O segredo da trava: Calcula o máximo que a aba pode descer sem sumir (120px à vista)
+                const peekLimitY = sheet.offsetHeight - 120; 
+                let newY = currentY + delta;
+
+                // Clamp: Impede que passe do topo (0) e impede que afunde mais que o limite (peekLimitY)
+                if (newY < 0) newY = 0; 
+                if (newY > peekLimitY) newY = peekLimitY; 
+
                 sheet.style.transform = `translateY(${newY}px)`;
-                startY = e.touches[0].clientY;
             }, { passive: true });
 
             sheet.addEventListener('touchend', e => {
                 if (!isDragging) return;
                 isDragging = false;
                 sheet.style.transition = '';
+                
                 const delta = e.changedTouches[0].clientY - startY;
-                if (delta < -30) applyState(Math.min(currentState + 1, 2), true);
-                else if (delta > 30) applyState(Math.max(currentState - 1, 0), true);
-                else applyState(currentState, true);
+                
+                // Só muda de estado se o usuário puxou de verdade
+                if (delta < -40) applyState(Math.min(currentState + 1, 2), true); 
+                else if (delta > 40) applyState(Math.max(currentState - 1, 0), true); 
+                else applyState(currentState, true); 
             }, { passive: true });
 
             sheet.addEventListener('click', e => {
@@ -1499,7 +1517,6 @@
             });
 
             mapEl.addEventListener('click', () => {
-                // Ao clicar no mapa recolhe para a pontinha, MAS SÓ se não estiver oculto
                 if (currentState > 0 && currentState !== 3) applyState(0, true);
             });
 
@@ -1513,7 +1530,7 @@
         let userMarker = null, userCircle = null;
 
         locateBtn.addEventListener('click', () => {
-            if (!navigator.geolocation) { showToast(' Geolocalização não suportada'); return; }
+            if (!navigator.geolocation) { showToast('⚠️ Geolocalização não suportada'); return; }
             locateBtn.classList.add('locating');
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
@@ -1532,12 +1549,12 @@
                     });
                     userMarker = L.marker([lat, lon], { icon: locIcon }).addTo(map);
                     map.flyTo([lat, lon], 16, { duration: 1.3 });
-                    showToast(' Você está aqui');
+                    showToast('📍 Você está aqui');
                 },
                 (err) => {
                     locateBtn.classList.remove('locating');
-                    const msgs = { 1: ' Permissão negada', 2: ' Posição indisponível', 3: ' Tempo esgotado' };
-                    showToast(msgs[err.code] || ' Erro ao localizar');
+                    const msgs = { 1: '🔒 Permissão negada', 2: '📡 Posição indisponível', 3: '⏱️ Tempo esgotado' };
+                    showToast(msgs[err.code] || '⚠️ Erro ao localizar');
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
             );
