@@ -70,7 +70,51 @@
         .header-left {
             display: flex;
             align-items: center;
-            width: 200px;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        /* Botão Ocultar Menu */
+        .sidebar-toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+        }
+        .sidebar-toggle-btn:hover { background: var(--item-hover); color: var(--accent-blue); }
+        .sidebar-toggle-btn:active { transform: scale(0.92); }
+        .sidebar-toggle-btn svg { width: 22px; height: 22px; }
+
+        /* --- DATA NO HEADER --- */
+        .header-date {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .header-date-day {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+        .header-date-num {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+        .header-divider {
+            width: 1px; 
+            height: 28px; 
+            background: var(--border-color); 
+            flex-shrink: 0;
         }
 
         .logo-placeholder {
@@ -165,7 +209,7 @@
         input:checked + .slider { background-color: #30d158; }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Terrain toggle button + popover horizontal */
+        /* Terrain popover */
         .terrain-popover {
             position: absolute;
             right: 56px;
@@ -237,6 +281,7 @@
             opacity: 0;
             transform: translateX(-20px);
             flex-shrink: 0;
+            /* Usaremos GSAP para animar a margem ao ocultar */
         }
 
         .search-container {
@@ -579,8 +624,12 @@
             :root { --header-height: 52px; }
             body { overflow: hidden; }
             header { padding: 0 16px; }
-            .header-left { width: auto; flex: 1; }
-            .logo-img { height: 38px; }
+            .header-left { width: auto; flex: 1; gap: 8px; }
+            
+            /* No celular escondemos a data pra dar espaço pros botões + logo */
+            .header-date, .header-divider { display: none !important; }
+            
+            .logo-img { height: 32px; }
             .header-nav { display: none; }
             .ios-switch { transform: scale(0.85); margin-left: 10px; }
 
@@ -623,6 +672,8 @@
             aside.sheet-mid { transform: translateY(40%); }
             aside.sheet-expanded { transform: translateY(0); }
             aside.sheet-peek { transform: translateY(calc(100% - 120px)); }
+            aside.sheet-hidden { transform: translateY(calc(100% + 20px)); } /* Esconde 100% */
+            
             aside::before {
                 content: '';
                 display: block;
@@ -642,7 +693,7 @@
             .place-content p { font-size: 11px; }
             .place-icon-badge { width: 32px; height: 32px; font-size: 16px; border-radius: 8px; }
 
-            /* Novidades button mobile - top right, compact */
+            /* Novidades button mobile */
             .novidades-btn {
                 right: 12px;
                 top: calc(var(--header-height) + 12px);
@@ -661,7 +712,6 @@
                 right: 12px;
                 bottom: calc(56px + env(safe-area-inset-bottom) + 8px);
             }
-            /* Terrain popover on mobile opens upward then shifts left */
             .terrain-popover {
                 flex-direction: column;
                 right: auto;
@@ -683,11 +733,23 @@
 
     <header id="main-header">
         <div class="header-left">
+            <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Ocultar / Mostrar Menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="9" y1="3" x2="9" y2="21"></line>
+                </svg>
+            </button>
+
+            <div class="header-date">
+                <div class="header-date-day" id="header-weekday"></div>
+                <div class="header-date-num" id="header-daynum"></div>
+            </div>
+            <div class="header-divider"></div>
+
             <a href="index.html" class="logo-placeholder">
                 <img src="logohead.png" alt="Logo" class="logo-img"
                      onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
                 <div id="logo-fallback" class="logo-missing" style="display:none;">Logo</div>
-                <span style="margin-left: 8px;"></span>
             </a>
         </div>
         
@@ -830,11 +892,18 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // ===== DATA NO HEADER =====
+        (function(){
+            const now = new Date();
+            const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+            document.getElementById('header-weekday').textContent = days[now.getDay()];
+            document.getElementById('header-daynum').textContent = now.getDate();
+        })();
 
         // ===== API CONFIG =====
         const API_URL = 'http://localhost:5254/api';
 
-        // ===== CATEGORY SVG ICONS (sem emoji) =====
+        // ===== CATEGORY SVG ICONS =====
         const CAT_SVG = {
             '#af52de': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>`,
             '#ff3b30': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
@@ -844,13 +913,12 @@
         };
         function getCatSVG(color) { return CAT_SVG[color] || CAT_SVG['#ffcc00']; }
 
-        // SVG mini para os pins do mapa (versão menor, mais simples)
         const PIN_SVG_PATH = {
             '#af52de': 'M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22',
             '#ff3b30': 'M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z',
-            '#007aff': null, // polygon — tratado separado
+            '#007aff': null, 
             '#34c759': 'M3 11l19-9-9 19-2-8-8-2z',
-            '#ffcc00': null, // rect — tratado separado
+            '#ffcc00': null, 
         };
 
         function getPinSVGHtml(color, size) {
@@ -866,7 +934,7 @@
             return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
         }
 
-        // ===== DATABASE COMPLETO — 142 locais com coords Google Maps =====
+        // ===== DATABASE =====
         const FALLBACK_DATABASE = [
             // --- CULT / ALTERNATIVO (Roxo) ---
             { name: "A Quitanda", cat: "Alternativo Chique", color: "#af52de", lat: -3.7378, lon: -38.5109, desc: "Mercado orgânico. Público que curte MPB Lado B." },
@@ -1018,13 +1086,12 @@
 
         let database = [...FALLBACK_DATABASE];
 
-        // ===== MAPA — centro REAL de Fortaleza =====
+        // ===== MAPA =====
         const map = L.map('map', { zoomControl: false }).setView([-3.7327, -38.5270], 13);
         window._leafletMap = map;
         let currentTileLayer;
         let currentZoom = 13;
 
-        // Tile layers
         const TILES = {
             light:     { url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', attr: '© OpenStreetMap © Carto' },
             dark:      { url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', attr: '© OpenStreetMap © Carto' },
@@ -1033,11 +1100,8 @@
             topo:      { url: 'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=', attr: '© Thunderforest © OpenStreetMap' },
         };
 
-        let currentTerrainMode = 'light';
-
         function setMapTiles(mode) {
             if (currentTileLayer) map.removeLayer(currentTileLayer);
-            // fallback topo to terrain (no API key needed)
             const tileKey = (mode === 'topo') ? 'terrain' : mode;
             const tile = TILES[tileKey] || TILES.light;
             currentTileLayer = L.tileLayer(tile.url, {
@@ -1045,10 +1109,8 @@
                 maxZoom: 20,
                 subdomains: tileKey === 'terrain' ? 'abc' : 'abcd',
             }).addTo(map);
-            currentTerrainMode = mode;
         }
 
-        // Load saved preferences
         const savedThemeEarly = localStorage.getItem('frp-theme');
         const sysDarkEarly = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         const initDark = savedThemeEarly ? savedThemeEarly === 'dark' : sysDarkEarly;
@@ -1078,17 +1140,53 @@
                 setMapTiles(mode);
                 activateTerrainBtn(mode);
                 localStorage.setItem('frp-terrain', mode);
-                // close after pick
                 setTimeout(() => terrainPopover.classList.remove('open'), 180);
             });
         });
 
-        // Close popover when clicking outside
         document.addEventListener('click', () => terrainPopover.classList.remove('open'));
-
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // ===== ZOOM-BASED MARKERS (gradual) =====
+        // ===== LÓGICA DE OCULTAR O MENU (PC e MOBILE) =====
+        let isSidebarVisibleDesktop = true;
+        
+        document.getElementById('sidebar-toggle').addEventListener('click', () => {
+            if (window.innerWidth > 768) {
+                // Animação para PC
+                const sidebar = document.getElementById('sidebar');
+                isSidebarVisibleDesktop = !isSidebarVisibleDesktop;
+                
+                if (!isSidebarVisibleDesktop) {
+                    gsap.to(sidebar, { 
+                        marginLeft: -380, // Tira o menu da tela empurrando a margem
+                        opacity: 0, 
+                        duration: 0.45, 
+                        ease: "power3.inOut",
+                        onUpdate: () => window._leafletMap.invalidateSize()
+                    });
+                } else {
+                    gsap.to(sidebar, { 
+                        marginLeft: 0, 
+                        opacity: 1, 
+                        duration: 0.45, 
+                        ease: "power3.inOut",
+                        onUpdate: () => window._leafletMap.invalidateSize()
+                    });
+                }
+            } else {
+                // Animação para Mobile interage com o script de Bottom Sheet lá de baixo
+                if (typeof window.setMobileSheetState === 'function') {
+                    // Se estiver oculto (estado 3), puxa para a pontinha (estado 0). Senão, esconde.
+                    if (window.mobileSheetState === 3) {
+                        window.setMobileSheetState(0, true);
+                    } else {
+                        window.setMobileSheetState(3, true);
+                    }
+                }
+            }
+        });
+
+        // ===== PINS DO MAPA =====
         let markers = [];
         let activeColor = 'all';
 
@@ -1128,7 +1226,6 @@
 
         map.on('zoomend', updateMarkersZoom);
 
-        // ===== TOAST =====
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -1141,7 +1238,6 @@
             );
         }
 
-        // ===== RENDER =====
         const listContainer = document.getElementById('places-list');
         const searchBox = document.getElementById('searchBox');
         const resultsCount = document.getElementById('results-count');
@@ -1163,7 +1259,6 @@
             items.forEach((place) => {
                 const svgHtml = getCatSVG(place.color);
 
-                // List item
                 const item = document.createElement('div');
                 item.className = 'place-item';
                 item.innerHTML = `
@@ -1177,7 +1272,6 @@
                     </div>
                 `;
 
-                // Map marker
                 const marker = L.marker([place.lat, place.lon], {
                     icon: createPinIcon(place, zoom)
                 }).addTo(map);
@@ -1223,7 +1317,6 @@
             }
         }
 
-        // ===== LOAD DATA =====
         async function carregarLocais() {
             const spinner = document.getElementById('list-spinner');
             const apiBadge = document.getElementById('api-badge');
@@ -1253,7 +1346,6 @@
         }
         carregarLocais();
 
-        // ===== SEARCH =====
         let searchTimeout;
         searchBox.addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
@@ -1269,7 +1361,6 @@
             }, 150);
         });
 
-        // ===== FILTERS =====
         document.querySelectorAll('.filter-pill').forEach(pill => {
             pill.addEventListener('click', () => {
                 document.querySelectorAll('.filter-pill').forEach(p => {
@@ -1302,7 +1393,6 @@
             });
         });
 
-        // ===== DARK MODE =====
         const toggle = document.getElementById('theme-toggle');
         const toggleMobile = document.getElementById('theme-toggle-mobile');
         const tabThemeLabel = document.getElementById('tab-theme-label');
@@ -1313,14 +1403,11 @@
             if (toggleMobile) toggleMobile.checked = dark;
             if (tabThemeLabel) tabThemeLabel.textContent = dark ? 'Escuro' : 'Claro';
             
-            // auto-switch terrain between light/dark se o usuario nao escolheu satelite/terreno
             const terrain = localStorage.getItem('frp-terrain') || (dark ? 'dark' : 'light');
             if (terrain === 'light' || terrain === 'dark') {
                 const newTerrain = dark ? 'dark' : 'light';
                 setMapTiles(newTerrain);
-                if (typeof activateTerrainBtn === 'function') {
-                    activateTerrainBtn(newTerrain);
-                }
+                if (typeof activateTerrainBtn === 'function') activateTerrainBtn(newTerrain);
                 localStorage.setItem('frp-terrain', newTerrain);
             }
             if (save) localStorage.setItem('frp-theme', dark ? 'dark' : 'light');
@@ -1333,7 +1420,7 @@
         const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         applyTheme(savedTheme ? savedTheme === 'dark' : sysDark, false);
 
-        // ===== GSAP ANIMATIONS =====
+        // ===== GSAP ENTRADA INICIAL =====
         gsap.registerPlugin(ScrollTrigger);
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
         tl.to('#main-header', { opacity: 1, y: 0, duration: 0.55 })
@@ -1347,8 +1434,10 @@
             const mapEl = document.getElementById('map');
             if (!sheet) return;
 
-            const STATES = ['sheet-peek', 'sheet-mid', 'sheet-expanded'];
+            // Os 4 estados: Peek(0), Mid(1), Expanded(2), Hidden(3)
+            const STATES = ['sheet-peek', 'sheet-mid', 'sheet-expanded', 'sheet-hidden'];
             let currentState = 0;
+            window.mobileSheetState = 0;
 
             function applyState(idx, animate) {
                 STATES.forEach(s => sheet.classList.remove(s));
@@ -1356,8 +1445,12 @@
                 sheet.classList.add(STATES[idx]);
                 if (!animate) requestAnimationFrame(() => sheet.style.transition = '');
                 currentState = idx;
+                window.mobileSheetState = idx; // exporta para o botão toggle poder ler
                 setTimeout(() => { if (window._leafletMap) window._leafletMap.invalidateSize(); }, 450);
             }
+            
+            // Exporta a função para que o botão de toggle la de cima consiga controlar a aba
+            window.setMobileSheetState = applyState;
 
             applyState(0, false);
 
@@ -1371,7 +1464,9 @@
             sheet.addEventListener('touchstart', e => {
                 const touch = e.touches[0];
                 const rect = sheet.getBoundingClientRect();
+                // Se tiver expandido ou escondido, bloqueia arrastar pelo corpo
                 if (touch.clientY - rect.top > 60 && currentState === 2) return;
+                if (currentState === 3) return; // Se tá escondido, não faz nada
                 isDragging = true;
                 startY = touch.clientY;
                 sheet.style.transition = 'none';
@@ -1404,7 +1499,8 @@
             });
 
             mapEl.addEventListener('click', () => {
-                if (currentState > 0) applyState(0, true);
+                // Ao clicar no mapa recolhe para a pontinha, MAS SÓ se não estiver oculto
+                if (currentState > 0 && currentState !== 3) applyState(0, true);
             });
 
             document.getElementById('places-list').addEventListener('click', () => {
@@ -1436,7 +1532,7 @@
                     });
                     userMarker = L.marker([lat, lon], { icon: locIcon }).addTo(map);
                     map.flyTo([lat, lon], 16, { duration: 1.3 });
-                    showToast('📍 Você está aqui');
+                    showToast(' Você está aqui');
                 },
                 (err) => {
                     locateBtn.classList.remove('locating');
