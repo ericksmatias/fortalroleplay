@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fortal Roleplay</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="icon" type="image/png" href="logo.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --sf-pro: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            --bg-body: #ffffff;
+            --bg-sidebar: #f5f5f7;
+            --bg-header: rgba(255,255,255,0.88);
+            --border-color: #d2d2d7;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-blue: #0071e3;
+            --search-bg: #ffffff;
+            --item-hover: rgba(0,0,0,0.05);
+            --header-height: 56px;
+            --sidebar-width: 380px;
+        }
+        [data-theme="dark"] {
+            --bg-body: #000000;
+            --bg-sidebar: #1c1c1e;
+            --bg-header: rgba(28,28,30,0.88);
+            --border-color: #38383a;
+            --text-primary: #f5f5f7;
+            --text-secondary: #98989d;
+            --accent-blue: #0a84ff;
+            --search-bg: #2c2c2e;
+            --item-hover: rgba(255,255,255,0.08);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; outline:none; -webkit-tap-highlight-color:transparent; }
+
+        body {
+            font-family: var(--sf-pro);
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            height: var(--header-height);
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 2000;
+            transition: background 0.3s, border-color 0.3s;
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        /* Data no header — estilo iOS */
+        .header-date {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .header-date-day {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+        .header-date-num {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .logo-placeholder {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .logo-placeholder:hover { opacity: 0.7; }
+        .logo-img {
+            height: 34px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        [data-theme="dark"] .logo-img {
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.12));
+        }
+        .logo-missing {
+            height: 30px; padding: 0 10px;
+            background: var(--bg-sidebar);
+            border: 1px dashed var(--text-secondary);
+            border-radius: 6px;
+            display: flex; align-items: center;
+            font-size: 10px; color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* ===== NAV ===== */
+        .header-nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .header-nav a {
+            text-decoration: none;
+            font-size: 13px;
+            color: var(--text-primary);
+            opacity: 0.75;
+            transition: opacity 0.2s, color 0.2s;
+            position: relative;
+            font-weight: 500;
+        }
+        .header-nav a:hover { opacity: 1; color: var(--accent-blue); }
+        .header-nav a.active { opacity: 1; font-weight: 600; }
+        .header-nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0; right: 0;
+            height: 2px;
+            background: var(--accent-blue);
+            border-radius: 1px;
+        }
+
+        /* Terrain panel (floating, junto dos botões do mapa) */
+        .terrain-panel {
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .terrain-btn {
+            width: 44px; height: 36px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-family: var(--sf-pro);
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            transition: background 0.12s, color 0.12s;
+            border-bottom: 1px solid var(--border-color);
+            flex-direction: column;
+            gap: 2px;
+            padding: 0;
+        }
+        .terrain-btn:last-child { border-bottom: none; }
+        .terrain-btn svg { width: 16px; height: 16px; }
+        .terrain-btn:hover { background: var(--item-hover); color: var(--accent-blue); }
+        .terrain-btn.active { background: var(--accent-blue); color: white; }
+        .terrain-btn.active svg { stroke: white; }
+
+        /* iOS switch */
+        .ios-switch {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .ios-switch input { position:absolute; opacity:0; width:0; height:0; }
+        .switch-track {
+            width: 42px; height: 24px;
+            background: #e9e9ea;
+            border-radius: 34px;
+            position: relative;
+            transition: background .35s;
+            flex-shrink: 0;
+        }
+        [data-theme="dark"] .switch-track { background: #39393d; }
+        .switch-track::before {
+            content: '';
+            position: absolute;
+            height: 20px; width: 20px;
+            top: 2px; left: 2px;
+            background: white;
+            border-radius: 50%;
+            transition: transform .35s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.18);
+        }
+        .ios-switch input:checked + .switch-track { background: #30d158; }
+        .ios-switch input:checked + .switch-track::before { transform: translateX(18px); }
+        .switch-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        /* ===== LAYOUT ===== */
+        main {
+            display: flex;
+            margin-top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+            width: 100%;
+        }
+
+        /* ===== SIDEBAR ===== */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, border-color 0.3s;
+            opacity: 0;
+            transform: translateX(-20px);
+            flex-shrink: 0;
+        }
+
+        .search-container {
+            padding: 12px 14px 10px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .ios-search {
+            width: 100%;
+            padding: 9px 12px 9px 34px;
+            border-radius: 10px;
+            border: none;
+            background-color: var(--search-bg);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: var(--sf-pro);
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 10px center;
+        }
+        .ios-search::placeholder { color: var(--text-secondary); }
+        .ios-search:focus { box-shadow: 0 0 0 2px var(--accent-blue); }
+
+        .results-count {
+            font-size: 11px;
+            color: var(--text-secondary);
+            padding: 0 2px;
+            font-weight: 500;
+            min-height: 14px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 6px;
+            padding: 8px 14px;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .filter-bar::-webkit-scrollbar { display: none; }
+
+        .filter-pill {
+            flex-shrink: 0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border-color);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: var(--sf-pro);
+            transition: all 0.18s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .filter-pill .pill-icon { font-size: 13px; line-height: 1; }
+        .filter-pill:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+        .filter-pill.active { color: white; border-color: transparent; }
+
+        .places-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+        .places-list::-webkit-scrollbar { width: 4px; }
+        .places-list::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.25); border-radius: 2px; }
+
+        .place-item {
+            padding: 13px 18px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.12s;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            opacity: 0;
+            transform: translateX(-8px);
+        }
+        .place-item:hover { background-color: var(--item-hover); }
+        .place-item.active {
+            background-color: var(--item-hover);
+            border-left: 3px solid var(--accent-blue);
+            padding-left: 15px;
+        }
+
+        /* Category icon badge */
+        .place-icon-badge {
+            width: 36px; height: 36px;
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .place-content h3 {
+            font-size: 14px; font-weight: 600;
+            margin-bottom: 2px; color: var(--text-primary);
+        }
+        .place-content .place-cat {
+            font-size: 10px; text-transform: uppercase;
+            letter-spacing: 0.4px; font-weight: 700;
+            opacity: 0.85; display: block; margin-bottom: 4px;
+        }
+        .place-content p {
+            font-size: 12px; color: var(--text-secondary);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .empty-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 56px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+            gap: 10px;
+        }
+        .empty-state .empty-icon { font-size: 36px; opacity: 0.35; }
+        .empty-state p { font-size: 14px; line-height: 1.5; }
+
+        /* ===== MAP ===== */
+        #map { flex: 1; height: 100%; z-index: 1; }
+
+        /* ===== MAP CONTROLS (floating) ===== */
+        .map-controls {
+            position: absolute;
+            right: 16px;
+            bottom: 80px;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .map-btn {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            border: 1px solid var(--border-color);
+            transition: transform 0.12s, box-shadow 0.12s;
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+        .map-btn svg { width: 20px; height: 20px; }
+        .map-btn:hover { transform: scale(1.07); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+        .map-btn:active { transform: scale(0.93); }
+
+        /* Novidades button */
+        .novidades-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            width: 54px;
+            padding: 12px 0;
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--accent-blue);
+            font-size: 9px;
+            font-weight: 700;
+            font-family: var(--sf-pro);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            transition: transform 0.15s, box-shadow 0.15s, background 0.3s;
+            writing-mode: initial;
+        }
+        .novidades-btn svg { width: 20px; height: 20px; margin-bottom: 2px; }
+        .novidades-btn-text { writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); font-size: 9px; }
+        .novidades-btn:hover { transform: translateY(-50%) scale(1.05); box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
+        .novidades-btn:active { transform: translateY(-50%) scale(0.96); }
+
+        #locate-btn.locating { animation: pulse-locate 1s infinite; }
+        @keyframes pulse-locate {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.65; }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== POPUPS ===== */
+        .leaflet-popup-content-wrapper {
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            color: var(--text-primary);
+            border-radius: 18px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+            padding: 0;
+            border: 1px solid var(--border-color);
+        }
+        .leaflet-popup-tip { background: var(--bg-header); }
+        .leaflet-popup-content { margin: 0; width: 265px !important; padding: 20px; font-family: var(--sf-pro); }
+        .popup-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+        .popup-category { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; letter-spacing: 0.4px; }
+        .popup-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: var(--text-primary); line-height: 1.25; }
+        .popup-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px; }
+        .popup-btn {
+            display: block; width: 100%; padding: 10px 0; text-align: center;
+            color: white; font-size: 14px; font-weight: 600;
+            border-radius: 10px; text-decoration: none;
+            transition: opacity 0.18s, transform 0.1s;
+        }
+        .popup-btn:hover { opacity: 0.88; transform: scale(0.99); }
+
+        /* Custom map markers */
+        .map-pin-wrap { transition: transform 0.2s; }
+        .map-pin-wrap:hover { transform: scale(1.4) !important; }
+        .map-pin {
+            border-radius: 50%;
+            border: 2.5px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            transition: all 0.25s;
+            overflow: hidden;
+        }
+        /* Icon visible at zoom >= 14 */
+        .map-pin .pin-emoji { font-size: 11px; line-height: 1; }
+
+        /* Leaflet zoom control styling */
+        .leaflet-control-zoom {
+            border: none !important;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
+            border-radius: 12px !important;
+            overflow: hidden;
+        }
+        .leaflet-control-zoom a {
+            background: var(--bg-header) !important;
+            color: var(--text-primary) !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            backdrop-filter: blur(20px);
+            width: 34px !important;
+            height: 34px !important;
+            line-height: 34px !important;
+            font-size: 16px !important;
+        }
+        .leaflet-control-zoom-out { border-bottom: none !important; }
+
+        /* ===== TOAST ===== */
+        #toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(60px);
+            background: var(--text-primary);
+            color: var(--bg-body);
+            padding: 9px 18px;
+            border-radius: 28px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        /* ===== MOBILE TAB BAR ===== */
+        .mobile-tab-bar { display: none; }
+
+        @media (max-width: 768px) {
+            .mobile-tab-bar {
+                display: flex;
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                z-index: 3000;
+                height: calc(56px + env(safe-area-inset-bottom));
+                padding-bottom: env(safe-area-inset-bottom);
+                background: var(--bg-header);
+                backdrop-filter: saturate(180%) blur(20px);
+                -webkit-backdrop-filter: saturate(180%) blur(20px);
+                border-top: 1px solid var(--border-color);
+                align-items: stretch;
+                justify-content: space-around;
+                transition: background 0.3s, border-color 0.3s;
+            }
+            .tab-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                text-decoration: none;
+                color: var(--text-secondary);
+                font-size: 10px;
+                font-weight: 500;
+                font-family: var(--sf-pro);
+                transition: color 0.18s;
+                cursor: pointer;
+                background: none;
+                border: none;
+                padding: 0;
+                height: 56px;
+            }
+            .tab-item.active { color: var(--accent-blue); }
+            .tab-item svg { width: 22px; height: 22px; stroke-width: 1.7; transition: transform 0.12s; }
+            .tab-item.active svg { stroke-width: 2.2; }
+            .tab-item:active svg { transform: scale(0.86); }
+            .mini-switch { position: relative; width: 34px; height: 20px; }
+            .mini-switch input { opacity:0; width:0; height:0; position:absolute; }
+            .mini-slider { position:absolute; inset:0; background:#e9e9ea; border-radius:34px; cursor:pointer; transition:background .3s; }
+            [data-theme="dark"] .mini-slider { background:#39393d; }
+            .mini-slider::before { content:""; position:absolute; height:16px; width:16px; left:2px; top:2px; background:white; border-radius:50%; transition:transform .3s; box-shadow:0 1px 3px rgba(0,0,0,0.25); }
+            .mini-switch input:checked + .mini-slider { background:#30d158; }
+            .mini-switch input:checked + .mini-slider::before { transform:translateX(14px); }
+        }
+
+        /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            :root { --header-height: 52px; }
+            body { overflow: hidden; }
+            header { padding: 0 14px; }
+            .header-left { width: auto; flex: 1; }
+            .logo-img { height: 30px; }
+            .header-nav { display: none; }
+            .ios-switch .switch-label { display: none; }
+            .ios-switch { margin: 0; }
+
+            main {
+                position: relative;
+                height: calc(100dvh - var(--header-height));
+                overflow: hidden;
+            }
+            #map {
+                position: absolute;
+                inset: 0;
+                width: 100%; height: 100%;
+                z-index: 1;
+            }
+            .leaflet-bottom.leaflet-right {
+                bottom: calc(56px + env(safe-area-inset-bottom) + 8px);
+            }
+
+            /* BOTTOM SHEET */
+            aside {
+                position: absolute;
+                bottom: calc(56px + env(safe-area-inset-bottom));
+                left: 0; right: 0;
+                z-index: 100;
+                max-height: calc(100dvh - var(--header-height) - 56px - env(safe-area-inset-bottom) - 16px);
+                background: var(--bg-header);
+                backdrop-filter: saturate(180%) blur(24px);
+                -webkit-backdrop-filter: saturate(180%) blur(24px);
+                border: 1px solid var(--border-color);
+                border-radius: 20px 20px 0 0;
+                box-shadow: 0 -4px 32px rgba(0,0,0,0.15);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                transform: translateY(calc(100% - 120px));
+                transition: transform 0.42s cubic-bezier(0.32,0.72,0,1);
+                will-change: transform;
+                touch-action: none;
+            }
+            aside.sheet-mid { transform: translateY(40%); }
+            aside.sheet-expanded { transform: translateY(0); }
+            aside.sheet-peek { transform: translateY(calc(100% - 120px)); }
+            aside::before {
+                content: '';
+                display: block;
+                width: 34px; height: 4px;
+                background: var(--text-secondary);
+                opacity: 0.3;
+                border-radius: 2px;
+                margin: 10px auto 4px;
+                flex-shrink: 0;
+            }
+            .search-container { padding: 5px 12px 8px; }
+            .ios-search { font-size: 14px; padding: 8px 10px 8px 32px; }
+            .filter-bar { padding: 6px 12px; gap: 5px; }
+            .filter-pill { padding: 4px 10px; font-size: 10px; }
+            .place-item { padding: 10px 14px; gap: 10px; }
+            .place-content h3 { font-size: 13px; }
+            .place-content p { font-size: 11px; }
+            .place-icon-badge { width: 32px; height: 32px; font-size: 16px; border-radius: 8px; }
+
+            /* Novidades button mobile */
+            .novidades-btn {
+                right: 12px;
+                top: auto;
+                bottom: calc(56px + env(safe-area-inset-bottom) + 130px);
+                transform: none;
+                flex-direction: row;
+                width: auto;
+                padding: 9px 14px;
+                border-radius: 22px;
+                gap: 6px;
+                writing-mode: initial;
+            }
+            .novidades-btn-text { writing-mode: initial; transform: none; }
+            .novidades-btn svg { margin-bottom: 0; }
+            .novidades-btn:hover { transform: scale(1.04); }
+            .novidades-btn:active { transform: scale(0.96); }
+
+            .map-controls {
+                right: 12px;
+                bottom: calc(56px + env(safe-area-inset-bottom) + 8px);
+            }
+
+            #toast { bottom: calc(56px + env(safe-area-inset-bottom) + 130px); }
+            .leaflet-popup-content { width: 220px !important; padding: 14px; }
+        }
+
+        @media (max-width: 400px) {
+            .filter-pill { padding: 3px 8px; font-size: 9px; }
+            .place-item { padding: 8px 12px; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <header id="main-header">
+        <div class="header-left">
+            <!-- Data -->
+            <div class="header-date">
+                <div class="header-date-day" id="header-weekday"></div>
+                <div class="header-date-num" id="header-daynum"></div>
+            </div>
+            <!-- Divisor -->
+            <div style="width:1px; height:28px; background:var(--border-color); flex-shrink:0;"></div>
+            <!-- Logo -->
+            <a href="index.html" class="logo-placeholder">
+                <img src="logohead.png" alt="Logo" class="logo-img"
+                     onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
+                <div id="logo-fallback" class="logo-missing" style="display:none;">Fortal</div>
+            </a>
+        </div>
+
+        <div class="header-nav">
+            <a href="index.html" class="active">Mapa</a>
+            <a href="roteiros.html">Roteiros</a>
+            <a href="sobre.html">Sobre</a>
+            <span id="api-badge" style="font-size:10px;font-weight:600;color:var(--text-secondary);letter-spacing:0.3px;"></span>
+            <!-- Dark mode toggle -->
+            <label class="ios-switch" title="Modo escuro">
+                <input type="checkbox" id="theme-toggle">
+                <span class="switch-track"></span>
+                <span class="switch-label" id="theme-label">Claro</span>
+            </label>
+        </div>
+    </header>
+
+    <main>
+        <aside id="sidebar">
+            <div class="search-container">
+                <input type="text" id="searchBox" class="ios-search" placeholder="Buscar local, vibe ou bairro…">
+                <div class="results-count" id="results-count"></div>
+            </div>
+
+            <div class="filter-bar" id="filter-bar">
+                <button class="filter-pill active" data-color="all" style="background:var(--text-primary);border-color:var(--text-primary);color:var(--bg-body);">
+                    Todos
+                </button>
+                <button class="filter-pill" data-color="#af52de">
+                    <span class="pill-icon" style="display:inline-flex;align-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span>Cult
+                </button>
+                <button class="filter-pill" data-color="#ff3b30">
+                    <span class="pill-icon" style="display:inline-flex;align-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span>Underground
+                </button>
+                <button class="filter-pill" data-color="#007aff">
+                    <span class="pill-icon" style="display:inline-flex;align-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>Elite
+                </button>
+                <button class="filter-pill" data-color="#34c759">
+                    <span class="pill-icon" style="display:inline-flex;align-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></span>Povão
+                </button>
+                <button class="filter-pill" data-color="#ffcc00">
+                    <span class="pill-icon" style="display:inline-flex;align-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>Neutros
+                </button>
+            </div>
+
+            <div id="places-list" class="places-list">
+                <div id="list-spinner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 0;gap:12px;color:var(--text-secondary);font-size:13px;">
+                    <div style="width:22px;height:22px;border:2.5px solid var(--border-color);border-top-color:var(--accent-blue);border-radius:50%;animation:spin .8s linear infinite;"></div>
+                    Carregando locais…
+                </div>
+                <div class="empty-state" id="empty-state" style="display:none;">
+                    <div class="empty-icon">🗺️</div>
+                    <p>Nenhum local encontrado.<br>Tenta outra busca.</p>
+                </div>
+            </div>
+        </aside>
+
+        <div id="map"></div>
+
+        <!-- Floating Novidades button -->
+        <a href="roteiros.html" class="novidades-btn" id="novidades-btn" title="Novidades na região">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span class="novidades-btn-text">Novidades</span>
+        </a>
+
+        <!-- Map controls: terrain panel + locate button -->
+        <div class="map-controls">
+            <!-- Terrain panel -->
+            <div class="terrain-panel">
+                <button class="terrain-btn active" data-terrain="light" title="Padrão">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="3"/>
+                        <path d="M3 9h18M9 21V9"/>
+                    </svg>
+                    Padrão
+                </button>
+                <button class="terrain-btn" data-terrain="dark" title="Escuro">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    Noite
+                </button>
+                <button class="terrain-btn" data-terrain="satellite" title="Satélite">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    Satélite
+                </button>
+                <button class="terrain-btn" data-terrain="terrain" title="Terreno">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="3 17 9 6 15 13 19 8 21 17"/>
+                    </svg>
+                    Terreno
+                </button>
+            </div>
+            <!-- Locate button -->
+            <button class="map-btn" id="locate-btn" title="Minha localização" aria-label="Minha localização">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+                    <circle cx="12" cy="12" r="9" stroke-opacity="0.25"/>
+                </svg>
+            </button>
+        </div>
+    </main>
+
+    <div id="toast"></div>
+
+    <!-- iOS Bottom Tab Bar -->
+    <nav class="mobile-tab-bar" id="mobile-tab-bar">
+        <a href="index.html" class="tab-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                <line x1="9" y1="3" x2="9" y2="18"/>
+                <line x1="15" y1="6" x2="15" y2="21"/>
+            </svg>
+            <span>Mapa</span>
+        </a>
+        <a href="roteiros.html" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span>Roteiros</span>
+        </a>
+        <a href="sobre.html" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <span>Sobre</span>
+        </a>
+        <button class="tab-item" id="tab-theme" aria-label="Alternar Tema">
+            <label class="mini-switch">
+                <input type="checkbox" id="theme-toggle-mobile">
+                <span class="mini-slider"></span>
+            </label>
+            <span id="tab-theme-label">Claro</span>
+        </button>
+    </nav>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // ===== DATA NO HEADER =====
+        (function(){
+            const now = new Date();
+            const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+            document.getElementById('header-weekday').textContent = days[now.getDay()];
+            document.getElementById('header-daynum').textContent = now.getDate();
+        })();
+
+        // ===== API CONFIG =====
+        const API_URL = 'http://localhost:5254/api';
+
+        // ===== CATEGORY SVG ICONS (sem emoji) =====
+        const CAT_SVG = {
+            '#af52de': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>`,
+            '#ff3b30': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
+            '#007aff': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+            '#34c759': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>`,
+            '#ffcc00': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+        };
+        function getCatSVG(color) { return CAT_SVG[color] || CAT_SVG['#ffcc00']; }
+
+        // SVG mini para os pins do mapa (versão menor, mais simples)
+        const PIN_SVG_PATH = {
+            '#af52de': 'M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22',
+            '#ff3b30': 'M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z',
+            '#007aff': null, // polygon — tratado separado
+            '#34c759': 'M3 11l19-9-9 19-2-8-8-2z',
+            '#ffcc00': null, // rect — tratado separado
+        };
+
+        function getPinSVGHtml(color, size) {
+            const s = size;
+            const sw = Math.max(1.5, s * 0.12);
+            if (color === '#007aff') {
+                return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+            }
+            if (color === '#ffcc00') {
+                return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`;
+            }
+            const d = PIN_SVG_PATH[color] || 'M3 11l19-9-9 19-2-8-8-2z';
+            return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+        }
+
+        // ===== DATABASE COMPLETO — 142 locais com coords Google Maps =====
+        const FALLBACK_DATABASE = [
+            // --- CULT / ALTERNATIVO (Roxo) ---
+            { name: "A Quitanda", cat: "Alternativo Chique", color: "#af52de", lat: -3.7378, lon: -38.5109, desc: "Mercado orgânico. Público que curte MPB Lado B." },
+            { name: "Budega do Raul", cat: "Universitário Gourmet", color: "#af52de", lat: -3.7449, lon: -38.5294, desc: "Coxinha gourmet no Benfica. Universitário com mesada." },
+            { name: "Mormaço Bar", cat: "Cool & Vento", color: "#af52de", lat: -3.7218, lon: -38.5106, desc: "Vento na cara, drinks caros e gente falando de cinema." },
+            { name: "Brisa de Fortaleza", cat: "Visual", color: "#af52de", lat: -3.7208, lon: -38.5078, desc: "Vista pro mar pra quem tem iPhone Pro e vota no PSOL." },
+            { name: "Parqland", cat: "Festa Hype", color: "#af52de", lat: -3.7321, lon: -38.5478, desc: "Touro Neon. Gente bonita, suada e muito glitter na Parquelândia." },
+            { name: "Fuzuê Bar", cat: "Esquenta Nobre", color: "#af52de", lat: -3.7260, lon: -38.5041, desc: "Esquenta oficial do Meireles. Gente desconstruída de Uber Black." },
+            { name: "Giz Cozinha Boêmia", cat: "Samba Caviar", color: "#af52de", lat: -3.7299, lon: -38.5036, desc: "Samba de rico. Garçom de gravata e feijoada preço de ouro." },
+            { name: "Teresa & Jorge", cat: "Cult Turístico", color: "#af52de", lat: -3.7195, lon: -38.5142, desc: "Era raiz, virou point turístico. Samba excelente." },
+            { name: "Zelig Drink Bar", cat: "Nova York", color: "#af52de", lat: -3.7305, lon: -38.5045, desc: "Escondido e escuro. Parece bar de filme noir." },
+            { name: "Culinária da Van", cat: "Regional Cult", color: "#af52de", lat: -3.7447, lon: -38.5285, desc: "A chef Van é celebridade. Panelada premiada no Benfica." },
+            { name: "O Mar Menino", cat: "Gastronomia Arte", color: "#af52de", lat: -3.7358, lon: -38.5020, desc: "Comida que parece quadro. Lugar de arquitetos." },
+            { name: "Bulls Beer House", cat: "Rock Pub", color: "#af52de", lat: -3.7381, lon: -38.5073, desc: "Rock e burger na Aldeota. Metaleiros programadores." },
+            { name: "Clandestino", cat: "Jazz & Blues", color: "#af52de", lat: -3.7418, lon: -38.5302, desc: "Jazz no quintal. Vibe intimista no Benfica." },
+            { name: "Hey Joe Food 'n' Bar", cat: "Descolado", color: "#af52de", lat: -3.7342, lon: -38.5088, desc: "Comida saudável e gente tatuada bonita." },
+            { name: "Boozer's Pub", cat: "Hostel Vibe", color: "#af52de", lat: -3.7255, lon: -38.5080, desc: "Gringos e rock clássico. Parece que você tá viajando." },
+            { name: "Cervejaria Capitosa", cat: "Artesanal", color: "#af52de", lat: -3.7355, lon: -38.5002, desc: "Público que discute lúpulo a noite toda." },
+            { name: "Brauhaus", cat: "Alemão", color: "#af52de", lat: -3.7334, lon: -38.5062, desc: "Templo da cerveja importada." },
+            { name: "Mayú", cat: "Alta Gastronomia", color: "#af52de", lat: -3.7335, lon: -38.4969, desc: "Restaurante do Senac. Comida experimental." },
+            { name: "Cinema do Dragão", cat: "Cinefilia", color: "#af52de", lat: -3.7200, lon: -38.5175, desc: "Filmes que ninguém entende e debate sobre semiótica." },
+            { name: "Café Couture", cat: "Jazz & Drinks", color: "#af52de", lat: -3.7342, lon: -38.5050, desc: "Piano e luz vermelha. Boemia afrancesada." },
+            { name: "Brewstone Pub", cat: "Cerveja & Rock", color: "#af52de", lat: -3.7360, lon: -38.5010, desc: "Pub sério. Cerveja própria excelente." },
+            { name: "Amika Coffee", cat: "Café Geek", color: "#af52de", lat: -3.7363, lon: -38.5018, desc: "Café pra trabalhar remoto. Cheio de MacBooks." },
+            { name: "Le Pain Le Café", cat: "Francês", color: "#af52de", lat: -3.7340, lon: -38.4978, desc: "Croissant e ar condicionado. Madames e cults." },
+            { name: "Benévolo", cat: "Gelato", color: "#af52de", lat: -3.7330, lon: -38.4962, desc: "Sorvete e café. Ponto de encontro pós-almoço." },
+            { name: "Museu da Fotografia", cat: "Cultura", color: "#af52de", lat: -3.7210, lon: -38.5170, desc: "Ar condicionado gelado e fotos incríveis." },
+            { name: "Caixa Cultural", cat: "Exposições", color: "#af52de", lat: -3.7193, lon: -38.5184, desc: "Exposições gratuitas na Praia de Iracema." },
+            // --- UNDERGROUND / RAIZ (Vermelho) ---
+            { name: "Route Fortaleza", cat: "O Caos", color: "#ff3b30", lat: -3.7192, lon: -38.5162, desc: "O abismo. Onde a dignidade morre às 5 da manhã." },
+            { name: "Fuzuê Club", cat: "Balada Centro", color: "#ff3b30", lat: -3.7194, lon: -38.5155, desc: "Vizinho do Route. Pop, funk e suor." },
+            { name: "Bar do Seu Nonato", cat: "Raiz Intelectual", color: "#ff3b30", lat: -3.7441, lon: -38.5362, desc: "Ovo colorido e panelada. QG dos professores." },
+            { name: "Bar do Vinil", cat: "Hipster Raiz", color: "#ff3b30", lat: -3.7430, lon: -38.5340, desc: "Bolachão na vitrola. Refúgio hipster do Benfica." },
+            { name: "Rap Bar", cat: "Cena Urbana", color: "#ff3b30", lat: -3.7255, lon: -38.5258, desc: "Rima, skate e cerveja barata no Centro." },
+            { name: "Budega dos Pinhões", cat: "Praça", color: "#ff3b30", lat: -3.7215, lon: -38.5197, desc: "Esquenta pro nada. Bebe em pé na praça." },
+            { name: "Vinil Ambientz", cat: "Nostalgia", color: "#ff3b30", lat: -3.7435, lon: -38.5348, desc: "Mais vinil no Benfica." },
+            { name: "Nomads", cat: "Alternativo", color: "#ff3b30", lat: -3.7405, lon: -38.5321, desc: "Gringo perdido e cerveja em copo de plástico." },
+            { name: "Na Toca do Coelho", cat: "Underground", color: "#ff3b30", lat: -3.7452, lon: -38.5380, desc: "Buraco negro alternativo. Entrou, sumiu." },
+            { name: "Boteco do Peixe", cat: "Universitário", color: "#ff3b30", lat: -3.7388, lon: -38.5309, desc: "Cachaça e estudante liso." },
+            { name: "Pitombeira Bar", cat: "Raiz", color: "#ff3b30", lat: -3.7425, lon: -38.5365, desc: "Mesa bamba e garçom amigo íntimo." },
+            { name: "Covil Rock Bar", cat: "Metal", color: "#ff3b30", lat: -3.7431, lon: -38.5338, desc: "Trevas, preto e metal." },
+            { name: "Bar Galola", cat: "Zueira", color: "#ff3b30", lat: -3.7445, lon: -38.5390, desc: "Zueira sem limites e preços baixos." },
+            { name: "Laje Head Shop", cat: "Fumaça", color: "#ff3b30", lat: -3.7435, lon: -38.5343, desc: "A fumaça sobe, o rock toca." },
+            { name: "Mambembe", cat: "Cultural Caos", color: "#ff3b30", lat: -3.7197, lon: -38.5179, desc: "Festa na rua e liberdade total na PI." },
+            { name: "Chopp do Bixiga", cat: "Clássico Dragão", color: "#ff3b30", lat: -3.7196, lon: -38.5168, desc: "Chopp de vinho famoso e perigoso." },
+            { name: "Praça dos Leões", cat: "Rua", color: "#ff3b30", lat: -3.7280, lon: -38.5270, desc: "Underground real. Cerveja de isopor." },
+            { name: "Raimundo dos Queijos", cat: "Patrimônio", color: "#ff3b30", lat: -3.7272, lon: -38.5282, desc: "Domingo de manhã é lei no Centro." },
+            { name: "Leão do Sul", cat: "Azia Boa", color: "#ff3b30", lat: -3.7268, lon: -38.5272, desc: "Pastel com caldo de cana lendário." },
+            { name: "Moto Libre", cat: "Balada Alt", color: "#ff3b30", lat: -3.7298, lon: -38.5085, desc: "Vibe motoqueira e alternativa." },
+            { name: "Praça da Gentilândia", cat: "Benfica Soul", color: "#ff3b30", lat: -3.7420, lon: -38.5352, desc: "Skate, litrão e debate político." },
+            { name: "Serpentina", cat: "Cerveja Raiz", color: "#ff3b30", lat: -3.7248, lon: -38.5252, desc: "Artesanal no Centro, mesa na calçada." },
+            { name: "Gandaia Club", cat: "LGBTQIA+", color: "#ff3b30", lat: -3.7198, lon: -38.5186, desc: "Templo do pop e do suor." },
+            { name: "Haus", cat: "Eletrônico", color: "#ff3b30", lat: -3.7195, lon: -38.5172, desc: "Techno e óculos escuros às 3 da manhã." },
+            { name: "Level", cat: "Balada Drag", color: "#ff3b30", lat: -3.7197, lon: -38.5164, desc: "Shows de Drag Queen e festa até amanhecer." },
+            { name: "Centro Fashion", cat: "Moda & Caos", color: "#ff3b30", lat: -3.7152, lon: -38.5395, desc: "Onde a sacoleira guerreira faz a moda girar." },
+            { name: "Mercado Central", cat: "Turista & Local", color: "#ff3b30", lat: -3.7285, lon: -38.5368, desc: "Labirinto de renda e castanha." },
+            { name: "Mercado São Sebastião", cat: "Café Nordestino", color: "#ff3b30", lat: -3.7295, lon: -38.5352, desc: "Cuscuz, panelada e gritaria." },
+            { name: "Beco da Poeira", cat: "Hardcore", color: "#ff3b30", lat: -3.7278, lon: -38.5298, desc: "Comércio popular extremo." },
+            { name: "Praça do Ferreira", cat: "Marco Zero", color: "#ff3b30", lat: -3.7262, lon: -38.5262, desc: "O coração da cidade." },
+            { name: "Cabaré da Baixa", cat: "Histórico", color: "#ff3b30", lat: -3.7198, lon: -38.5302, desc: "Boemia antiga da zona portuária." },
+            { name: "Bar do Biel", cat: "Sinuca", color: "#ff3b30", lat: -3.7230, lon: -38.5252, desc: "Sinuca e cerveja barata no Centro." },
+            { name: "Assis da Picanha", cat: "Picanha Raiz", color: "#ff3b30", lat: -3.7318, lon: -38.5398, desc: "Picanha boa e barata." },
+            { name: "Churrascaria O Osmar", cat: "Fartura", color: "#ff3b30", lat: -3.7505, lon: -38.5498, desc: "Ponto de taxistas. Comida muita e barata." },
+            // --- ELITE / PREMIUM (Azul) ---
+            { name: "Moleskine / Moleska", cat: "Elite", color: "#007aff", lat: -3.7323, lon: -38.4930, desc: "QG da Elite. Fecha contrato milionário." },
+            { name: "Hoots Gastropub", cat: "Rock de Rico", color: "#007aff", lat: -3.7338, lon: -38.4952, desc: "Rock pra quem anda de blindado." },
+            { name: "Austin Pub", cat: "Sertanejo Elite", color: "#007aff", lat: -3.7345, lon: -38.4902, desc: "Templo do Sapatênis e paquera." },
+            { name: "Cervejaria Turatti", cat: "Família Rica", color: "#007aff", lat: -3.7352, lon: -38.4858, desc: "Disney de Bêbado Rico." },
+            { name: "Bang's Sul", cat: "Faroeste Gourmet", color: "#007aff", lat: -3.7812, lon: -38.4812, desc: "Carne defumada cara na Zona Sul." },
+            { name: "Floresta Complexo", cat: "Cover", color: "#007aff", lat: -3.7368, lon: -38.4992, desc: "Rock dos anos 80 pra tiozões." },
+            { name: "Donkey Head", cat: "Cervejeiro", color: "#007aff", lat: -3.7375, lon: -38.5008, desc: "Cerveja boa na Aldeota." },
+            { name: "Boteco do Ciço", cat: "Fake Raiz", color: "#007aff", lat: -3.7372, lon: -38.5025, desc: "Parece pobre, mas fica no m² mais caro." },
+            { name: "Colosso Fortaleza", cat: "Super Elite", color: "#007aff", lat: -3.7555, lon: -38.4878, desc: "Wakeboard e combo de vodka caro no Edson Queiroz." },
+            { name: "Zoi Restaurante", cat: "Jantar de Negócios", color: "#007aff", lat: -3.7558, lon: -38.4895, desc: "Mediterrâneo pra impressionar." },
+            { name: "Iate Clube", cat: "Old Money", color: "#007aff", lat: -3.7210, lon: -38.4820, desc: "Donos da cidade estacionam seus barcos." },
+            { name: "Coco Bambu (Frutos)", cat: "Embaixada", color: "#007aff", lat: -3.7305, lon: -38.4958, desc: "A catedral do camarão." },
+            { name: "Santa Grelha", cat: "Carne de Ouro", color: "#007aff", lat: -3.7345, lon: -38.4985, desc: "Onde o empresário almoça." },
+            { name: "Ryori Sushi", cat: "Japa de Rico", color: "#007aff", lat: -3.7355, lon: -38.4928, desc: "Sushi com trufa branca." },
+            { name: "Ponza Frutos do Mar", cat: "Sofisticação", color: "#007aff", lat: -3.7332, lon: -38.4965, desc: "Ambiente azul e comida chique." },
+            { name: "Vibe do Lago", cat: "Lago Jacarey", color: "#007aff", lat: -3.7950, lon: -38.4845, desc: "O point da Zona Sul. Famílias ricas." },
+            { name: "Cabaña del Primo", cat: "Argentino", color: "#007aff", lat: -3.7362, lon: -38.4912, desc: "Parrilla porteña no Jardins Open Mall." },
+            { name: "Geppos Italiano", cat: "Jardins Open Mall", color: "#007aff", lat: -3.7358, lon: -38.4908, desc: "Massa e vinho. Fingir que tá na Europa." },
+            { name: "Illa Mare", cat: "Beira Mar Elite", color: "#007aff", lat: -3.7235, lon: -38.4875, desc: "Restaurante flutuante com preço pra turista." },
+            { name: "Vignoli", cat: "Pizza de Rico", color: "#007aff", lat: -3.7372, lon: -38.4948, desc: "Pizza fina. Coma com luvas." },
+            { name: "Samba do Vila", cat: "Pagode de Elite", color: "#007aff", lat: -3.7382, lon: -38.4985, desc: "Pagode pra quem usa sapatênis." },
+            { name: "Living", cat: "Balada Playba", color: "#007aff", lat: -3.7338, lon: -38.4942, desc: "Eletrônico e funk na Aldeota." },
+            { name: "Soho", cat: "Asiático", color: "#007aff", lat: -3.7405, lon: -38.4715, desc: "Japa moderno no RioMar." },
+            { name: "Medit", cat: "Alta Gastronomia", color: "#007aff", lat: -3.7350, lon: -38.4902, desc: "Um dos melhores da cidade." },
+            { name: "L'Ô Restaurante", cat: "Eventos", color: "#007aff", lat: -3.7248, lon: -38.5155, desc: "Oásis de riqueza no Dragão." },
+            { name: "Ideal Clube", cat: "Tradicional", color: "#007aff", lat: -3.7278, lon: -38.5048, desc: "Clube da alta sociedade." },
+            { name: "Misaki", cat: "Japa Fusion", color: "#007aff", lat: -3.7368, lon: -38.4918, desc: "Lagosta e ouro." },
+            { name: "Picanha do Cowboy", cat: "Clássico", color: "#007aff", lat: -3.7352, lon: -38.5005, desc: "Picanha honesta em área nobre." },
+            // --- POVÃO / POPULAR (Verde) ---
+            { name: "Divina Picanha", cat: "Família Tradicional", color: "#34c759", lat: -3.7705, lon: -38.4855, desc: "Almoço de domingo na Sul." },
+            { name: "Paraíba Raiz", cat: "Butequeiro", color: "#34c759", lat: -3.7438, lon: -38.5355, desc: "Foco é beber litrão barato." },
+            { name: "Bar do Railson", cat: "Bairro", color: "#34c759", lat: -3.7502, lon: -38.5405, desc: "Sinuca e emoção no Benfica." },
+            { name: "Kosmika Club", cat: "Pop Glitter", color: "#34c759", lat: -3.7242, lon: -38.5198, desc: "Pop e glitter no Centro." },
+            { name: "Sr. Petisco", cat: "Comida", color: "#34c759", lat: -3.7550, lon: -38.5512, desc: "Comida de boteco honesta." },
+            { name: "Bar do Seu Carlos", cat: "Lenda", color: "#34c759", lat: -3.7598, lon: -38.5598, desc: "Lenda do Montese." },
+            { name: "Bar do Animaw", cat: "Bicho Solto", color: "#34c759", lat: -3.7585, lon: -38.5550, desc: "Cerveja trincando e zero etiqueta." },
+            { name: "Tony Do Orós", cat: "Carne de Sol", color: "#34c759", lat: -3.7658, lon: -38.5710, desc: "Melhor carne de sol da galáxia." },
+            { name: "Bar da Loura", cat: "Centro Raiz", color: "#34c759", lat: -3.7252, lon: -38.5282, desc: "Puro suco do Centro." },
+            { name: "Carneiro do Ordones", cat: "Fartura", color: "#34c759", lat: -3.7355, lon: -38.5558, desc: "Catedral da carne na Parquelândia." },
+            { name: "Bar do Mincharia", cat: "Praia Raiz", color: "#34c759", lat: -3.7202, lon: -38.5108, desc: "Pé na areia na PI." },
+            { name: "Cantinho do Frango", cat: "Patrimônio", color: "#34c759", lat: -3.7362, lon: -38.5048, desc: "Frango desossado e vinil." },
+            { name: "Kina do Feijão Verde", cat: "Regional", color: "#34c759", lat: -3.7305, lon: -38.5155, desc: "O melhor feijão verde." },
+            { name: "Carneiro do Tércio", cat: "Zona Sul", color: "#34c759", lat: -3.7798, lon: -38.4902, desc: "Carneiro gigante na Sul." },
+            { name: "Rei da Panelada", cat: "Cura Ressaca", color: "#34c759", lat: -3.7498, lon: -38.5205, desc: "A cura está aqui." },
+            { name: "Colher de Pau", cat: "Turista Raiz", color: "#34c759", lat: -3.7358, lon: -38.4882, desc: "Baião de dois sério na Varjota." },
+            { name: "Arre Égua", cat: "Forró Antigo", color: "#34c759", lat: -3.7368, lon: -38.4855, desc: "Vila sertaneja turística." },
+            { name: "Kukukaya", cat: "Forró Raiz", color: "#34c759", lat: -3.7448, lon: -38.5252, desc: "Dançar agarradinho." },
+            { name: "Pirata Bar", cat: "Segunda-feira", color: "#34c759", lat: -3.7191, lon: -38.5166, desc: "Segunda mais louca do mundo." },
+            { name: "Lupus Bier", cat: "Humor", color: "#34c759", lat: -3.7212, lon: -38.5158, desc: "Show de humor e Rossicléa." },
+            { name: "Chico do Caranguejo", cat: "Praia Futuro", color: "#34c759", lat: -3.7542, lon: -38.4440, desc: "Caranguejo e show." },
+            { name: "Crocobeach", cat: "Resort", color: "#34c759", lat: -3.7405, lon: -38.4308, desc: "Hotel na areia na Praia do Futuro." },
+            { name: "Mercado dos Peixes", cat: "Pôr do Sol", color: "#34c759", lat: -3.7215, lon: -38.4798, desc: "Camarão fresco na hora." },
+            { name: "Orbita Blue", cat: "Praia Hype", color: "#34c759", lat: -3.7315, lon: -38.4650, desc: "Eletrônica e gente bonita na PF." },
+            { name: "Santa Praia", cat: "Beach Tennis", color: "#34c759", lat: -3.7322, lon: -38.4632, desc: "Suar e beber." },
+            { name: "Pastel na Hora", cat: "Lanche", color: "#34c759", lat: -3.7348, lon: -38.5052, desc: "Pastel gigante." },
+            { name: "Beira Mar Grill", cat: "Churrasco", color: "#34c759", lat: -3.7252, lon: -38.4902, desc: "Rodízio na orla." },
+            { name: "Coco Bambu Sul", cat: "Evento", color: "#34c759", lat: -3.7850, lon: -38.4800, desc: "Maior restaurante do Brasil." },
+            { name: "Ordones Sandry", cat: "Variação", color: "#34c759", lat: -3.7360, lon: -38.5545, desc: "Versão premium do Ordones." },
+            { name: "Tatu Bola", cat: "Balada Sertaneja", color: "#34c759", lat: -3.7338, lon: -38.4935, desc: "Paquera na semana." },
+            { name: "Boteco Praia", cat: "Vista", color: "#34c759", lat: -3.7222, lon: -38.4948, desc: "Prédio na orla com vista." },
+            { name: "Alpendre", cat: "Cultural", color: "#34c759", lat: -3.7278, lon: -38.5128, desc: "Cerveja de garrafa na calçada." },
+            { name: "Pasto & Pizza", cat: "Rodízio", color: "#34c759", lat: -3.7352, lon: -38.4948, desc: "Pizza infinita." },
+            { name: "Náutico Clube", cat: "Clube", color: "#34c759", lat: -3.7232, lon: -38.4918, desc: "Clube da orla." },
+            { name: "Círculo Militar", cat: "Clube", color: "#34c759", lat: -3.7252, lon: -38.4948, desc: "Eventos militares e vista." },
+            { name: "AABB", cat: "Clube", color: "#34c759", lat: -3.7462, lon: -38.5020, desc: "Churrasco de domingo." },
+            { name: "BNB Clube", cat: "Clube", color: "#34c759", lat: -3.7480, lon: -38.5012, desc: "Festas juninas épicas." },
+            { name: "Parque do Cocó", cat: "Natureza", color: "#34c759", lat: -3.7468, lon: -38.4825, desc: "Piquenique e trilha." },
+            { name: "Padaria Costa Mendes", cat: "Montese", color: "#34c759", lat: -3.7598, lon: -38.5402, desc: "Pão de coco lendário." },
+            { name: "Empório Delitália", cat: "Padaria Rica", color: "#34c759", lat: -3.7362, lon: -38.4948, desc: "Presunto de Parma às 22h." },
+            // --- NEUTROS & MALLS (Amarelo) ---
+            { name: "Boteco do Lee", cat: "Neutro", color: "#ffcc00", lat: -3.7305, lon: -38.5210, desc: "O purgatório." },
+            { name: "Bar da Tetê", cat: "Indefinido", color: "#ffcc00", lat: -3.7321, lon: -38.5225, desc: "Ninguém define o público." },
+            { name: "Relativo Bar", cat: "Depende", color: "#ffcc00", lat: -3.7315, lon: -38.5218, desc: "Tudo é relativo." },
+            { name: "Shopping Iguatemi", cat: "O Mall", color: "#ffcc00", lat: -3.7554, lon: -38.4873, desc: "Onde todo mundo se encontra." },
+            { name: "Shopping RioMar", cat: "O Novo Rico", color: "#ffcc00", lat: -3.7410, lon: -38.4718, desc: "Gigante e frio." },
+            { name: "North Shopping", cat: "O do Povo", color: "#ffcc00", lat: -3.7112, lon: -38.5818, desc: "Formigueiro na Bezerra." },
+            { name: "Shopping Benfica", cat: "Diversidade", color: "#ffcc00", lat: -3.7420, lon: -38.5378, desc: "Otakus e vovós." },
+            { name: "Shopping Del Paseo", cat: "Compacto", color: "#ffcc00", lat: -3.7350, lon: -38.4982, desc: "Shopping de rico velho." },
+            { name: "Via Sul Shopping", cat: "Zona Sul", color: "#ffcc00", lat: -3.8298, lon: -38.5210, desc: "Shopping da Seis Bocas." },
+            { name: "Grand Shopping", cat: "Messejana", color: "#ffcc00", lat: -3.8218, lon: -38.4902, desc: "Salvou Messejana." },
+            { name: "Pão de Açúcar Náutico", cat: "Meeting Point", color: "#ffcc00", lat: -3.7238, lon: -38.4928, desc: "Ponto de encontro." },
+            { name: "Feirinha da Beira Mar", cat: "Turismo", color: "#ffcc00", lat: -3.7255, lon: -38.4965, desc: "Artesanato e castanha." },
+            { name: "Estátua de Iracema", cat: "Foto", color: "#ffcc00", lat: -3.7196, lon: -38.5148, desc: "A guardiã da praia." }
+        ];
+
+        let database = [...FALLBACK_DATABASE];
+
+        // ===== MAPA — centro REAL de Fortaleza =====
+        const map = L.map('map', { zoomControl: false }).setView([-3.7327, -38.5270], 13);
+        window._leafletMap = map;
+        let currentTileLayer;
+        let currentZoom = 13;
+
+        // Tile layers
+        const TILES = {
+            light:     { url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', attr: '© OpenStreetMap © Carto' },
+            dark:      { url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', attr: '© OpenStreetMap © Carto' },
+            satellite: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attr: '© Esri Satellite' },
+            terrain:   { url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', attr: '© OpenStreetMap © OpenTopoMap' },
+            topo:      { url: 'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=', attr: '© Thunderforest © OpenStreetMap' },
+        };
+
+        let currentTerrainMode = 'light';
+
+        function setMapTiles(mode) {
+            if (currentTileLayer) map.removeLayer(currentTileLayer);
+            // fallback topo to terrain (no API key needed)
+            const tileKey = (mode === 'topo') ? 'terrain' : mode;
+            const tile = TILES[tileKey] || TILES.light;
+            currentTileLayer = L.tileLayer(tile.url, {
+                attribution: tile.attr,
+                maxZoom: 20,
+                subdomains: tileKey === 'terrain' ? 'abc' : 'abcd',
+            }).addTo(map);
+            currentTerrainMode = mode;
+        }
+
+        // Load saved preferences
+        const savedThemeEarly = localStorage.getItem('frp-theme');
+        const sysDarkEarly = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const initDark = savedThemeEarly ? savedThemeEarly === 'dark' : sysDarkEarly;
+        const savedTerrain = localStorage.getItem('frp-terrain') || (initDark ? 'dark' : 'light');
+        setMapTiles(savedTerrain);
+
+        // Terrain buttons (floating panel)
+        function activateTerrainBtn(mode) {
+            document.querySelectorAll('.terrain-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.terrain === mode);
+            });
+        }
+        activateTerrainBtn(savedTerrain);
+        document.querySelectorAll('.terrain-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.dataset.terrain;
+                setMapTiles(mode);
+                activateTerrainBtn(mode);
+                localStorage.setItem('frp-terrain', mode);
+            });
+        });
+
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // ===== ZOOM-BASED MARKERS (gradual) =====
+        let markers = [];
+        let activeColor = 'all';
+
+        function getPinSize(zoom) {
+            if (zoom >= 16) return 22;
+            if (zoom >= 14) return 16;
+            if (zoom >= 12) return 11;
+            return 8;
+        }
+
+        function showSVGIcon(zoom) { return zoom >= 14; }
+
+        function createPinIcon(place, zoom) {
+            const size = getPinSize(zoom);
+            const showIco = showSVGIcon(zoom);
+            const bg = place.color;
+            const svgSize = Math.round(size * 0.58);
+            return L.divIcon({
+                className: '',
+                html: `<div class="map-pin-wrap" style="width:${size}px;height:${size}px;">
+                    <div class="map-pin" style="width:${size}px;height:${size}px;background:${bg};border-width:${size>14?'2.5px':'2px'};">
+                        ${showIco ? getPinSVGHtml(place.color, svgSize) : ''}
+                    </div>
+                </div>`,
+                iconSize: [size, size],
+                iconAnchor: [size/2, size/2],
+                popupAnchor: [0, -size/2 - 4]
+            });
+        }
+
+        function updateMarkersZoom() {
+            const zoom = map.getZoom();
+            markers.forEach(({ marker, place }) => {
+                marker.setIcon(createPinIcon(place, zoom));
+            });
+        }
+
+        map.on('zoomend', updateMarkersZoom);
+
+        // ===== TOAST =====
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            gsap.killTweensOf(toast);
+            gsap.fromTo(toast,
+                { opacity: 0, y: 20, x: '-50%' },
+                { opacity: 1, y: 0, x: '-50%', duration: 0.28, ease: 'power2.out',
+                  onComplete: () => gsap.to(toast, { opacity: 0, y: -8, x: '-50%', duration: 0.35, delay: 2.2 })
+                }
+            );
+        }
+
+        // ===== RENDER =====
+        const listContainer = document.getElementById('places-list');
+        const searchBox = document.getElementById('searchBox');
+        const resultsCount = document.getElementById('results-count');
+        const emptyState = document.getElementById('empty-state');
+
+        function render(items) {
+            listContainer.querySelectorAll('.place-item').forEach(el => el.remove());
+            markers.forEach(({ marker }) => map.removeLayer(marker));
+            markers = [];
+
+            resultsCount.textContent = items.length > 0
+                ? `${items.length} ${items.length === 1 ? 'local' : 'locais'}`
+                : '';
+            emptyState.style.display = items.length === 0 ? 'flex' : 'none';
+
+            const fragment = document.createDocumentFragment();
+            const zoom = map.getZoom();
+
+            items.forEach((place) => {
+                const svgHtml = getCatSVG(place.color);
+
+                // List item
+                const item = document.createElement('div');
+                item.className = 'place-item';
+                item.innerHTML = `
+                    <div class="place-icon-badge" style="background:${place.color}22;color:${place.color};display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;flex-shrink:0;">
+                        ${svgHtml}
+                    </div>
+                    <div class="place-content">
+                        <span class="place-cat" style="color:${place.color}">${place.cat}</span>
+                        <h3>${place.name}</h3>
+                        <p>${place.desc}</p>
+                    </div>
+                `;
+
+                // Map marker
+                const marker = L.marker([place.lat, place.lon], {
+                    icon: createPinIcon(place, zoom)
+                }).addTo(map);
+
+                marker.on('mouseover', function() {
+                    const el = this.getElement();
+                    if (el) gsap.to(el.querySelector('.map-pin-wrap'), { scale: 1.5, duration: 0.18 });
+                });
+                marker.on('mouseout', function() {
+                    const el = this.getElement();
+                    if (el) gsap.to(el.querySelector('.map-pin-wrap'), { scale: 1, duration: 0.18 });
+                });
+
+                const gmapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' Fortaleza CE')}`;
+                marker.bindPopup(`
+                    <div style="color:${place.color};width:32px;height:32px;margin-bottom:8px;">${svgHtml}</div>
+                    <div class="popup-category" style="color:${place.color}">${place.cat}</div>
+                    <div class="popup-title">${place.name}</div>
+                    <div class="popup-desc">${place.desc}</div>
+                    <a href="${gmapsLink}" target="_blank" class="popup-btn" style="background:${place.color}">Como chegar →</a>
+                `);
+
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.place-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
+                    map.flyTo([place.lat, place.lon], 16, { duration: 1.1, easeLinearity: 0.5 });
+                    marker.openPopup();
+                    showToast(place.name);
+                    gsap.fromTo(item, { scale: 0.98 }, { scale: 1, duration: 0.2, ease: 'back.out(2)' });
+                });
+
+                markers.push({ marker, place });
+                fragment.appendChild(item);
+            });
+
+            listContainer.insertBefore(fragment, emptyState);
+
+            if (items.length > 0) {
+                gsap.fromTo('.place-item',
+                    { opacity: 0, x: -8 },
+                    { opacity: 1, x: 0, duration: 0.3, stagger: 0.025, ease: 'power2.out' }
+                );
+            }
+        }
+
+        // ===== LOAD DATA =====
+        async function carregarLocais() {
+            const spinner = document.getElementById('list-spinner');
+            const apiBadge = document.getElementById('api-badge');
+            if (spinner) spinner.style.display = 'flex';
+
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 4000);
+                const resp = await fetch(`${API_URL}/locais`, { signal: controller.signal });
+                clearTimeout(timeout);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const dados = await resp.json();
+                if (Array.isArray(dados) && dados.length > 0) {
+                    database = dados.map(d => ({
+                        id: d.id, name: d.name, cat: d.cat, color: d.color,
+                        lat: parseFloat(d.lat), lon: parseFloat(d.lon), desc: d.desc
+                    }));
+                    if (apiBadge) { apiBadge.textContent = '🟢 API'; }
+                } else throw new Error('Vazio');
+            } catch (e) {
+                database = [...FALLBACK_DATABASE];
+                if (apiBadge) { apiBadge.textContent = ''; }
+            } finally {
+                if (spinner) spinner.style.display = 'none';
+                render(database);
+            }
+        }
+        carregarLocais();
+
+        // ===== SEARCH =====
+        let searchTimeout;
+        searchBox.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const term = e.target.value.toLowerCase();
+                let filtered = database.filter(p =>
+                    p.name.toLowerCase().includes(term) ||
+                    p.desc.toLowerCase().includes(term) ||
+                    p.cat.toLowerCase().includes(term)
+                );
+                if (activeColor !== 'all') filtered = filtered.filter(p => p.color === activeColor);
+                render(filtered);
+            }, 150);
+        });
+
+        // ===== FILTERS =====
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.filter-pill').forEach(p => {
+                    p.classList.remove('active');
+                    p.style.background = '';
+                    p.style.borderColor = '';
+                    p.style.color = '';
+                });
+                pill.classList.add('active');
+                const color = pill.dataset.color;
+                if (color === 'all') {
+                    pill.style.background = 'var(--text-primary)';
+                    pill.style.borderColor = 'var(--text-primary)';
+                    pill.style.color = 'var(--bg-body)';
+                } else {
+                    pill.style.background = color;
+                    pill.style.borderColor = color;
+                    pill.style.color = 'white';
+                }
+                activeColor = color;
+                const term = searchBox.value.toLowerCase();
+                let filtered = color === 'all' ? database : database.filter(p => p.color === color);
+                if (term) filtered = filtered.filter(p =>
+                    p.name.toLowerCase().includes(term) ||
+                    p.desc.toLowerCase().includes(term) ||
+                    p.cat.toLowerCase().includes(term)
+                );
+                render(filtered);
+                gsap.fromTo(pill, { scale: 0.92 }, { scale: 1, duration: 0.25, ease: 'back.out(2)' });
+            });
+        });
+
+        // ===== DARK MODE =====
+        const toggle = document.getElementById('theme-toggle');
+        const toggleMobile = document.getElementById('theme-toggle-mobile');
+        const tabThemeLabel = document.getElementById('tab-theme-label');
+        const themeLabel = document.getElementById('theme-label');
+
+        function applyTheme(dark, save) {
+            document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
+            toggle.checked = dark;
+            if (toggleMobile) toggleMobile.checked = dark;
+            if (tabThemeLabel) tabThemeLabel.textContent = dark ? 'Escuro' : 'Claro';
+            if (themeLabel) themeLabel.textContent = dark ? 'Escuro' : 'Claro';
+            // auto-switch terrain between light/dark if user hasn't picked satellite/terrain
+            const terrain = localStorage.getItem('frp-terrain') || (dark ? 'dark' : 'light');
+            if (terrain === 'light' || terrain === 'dark') {
+                const newTerrain = dark ? 'dark' : 'light';
+                setMapTiles(newTerrain);
+                if (terrainSelect) terrainSelect.value = newTerrain;
+                localStorage.setItem('frp-terrain', newTerrain);
+            }
+            if (save) localStorage.setItem('frp-theme', dark ? 'dark' : 'light');
+        }
+
+        toggle.addEventListener('change', e => applyTheme(e.target.checked, true));
+        if (toggleMobile) toggleMobile.addEventListener('change', e => applyTheme(e.target.checked, true));
+
+        const savedTheme = localStorage.getItem('frp-theme');
+        const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(savedTheme ? savedTheme === 'dark' : sysDark, false);
+
+        // ===== GSAP ANIMATIONS =====
+        gsap.registerPlugin(ScrollTrigger);
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        tl.to('#main-header', { opacity: 1, y: 0, duration: 0.55 })
+          .to('#sidebar', { opacity: 1, x: 0, duration: 0.45 }, '-=0.3')
+          .from('#map', { opacity: 0, duration: 0.6, ease: 'power2.inOut' }, '-=0.35');
+
+        // ===== BOTTOM SHEET (mobile) =====
+        (function() {
+            if (window.innerWidth > 768) return;
+            const sheet = document.getElementById('sidebar');
+            const mapEl = document.getElementById('map');
+            if (!sheet) return;
+
+            const STATES = ['sheet-peek', 'sheet-mid', 'sheet-expanded'];
+            let currentState = 0;
+
+            function applyState(idx, animate) {
+                STATES.forEach(s => sheet.classList.remove(s));
+                if (!animate) sheet.style.transition = 'none';
+                sheet.classList.add(STATES[idx]);
+                if (!animate) requestAnimationFrame(() => sheet.style.transition = '');
+                currentState = idx;
+                setTimeout(() => { if (window._leafletMap) window._leafletMap.invalidateSize(); }, 450);
+            }
+
+            applyState(0, false);
+
+            let startY = 0, isDragging = false;
+
+            function getTranslateY() {
+                const matrix = new WebKitCSSMatrix(window.getComputedStyle(sheet).transform);
+                return matrix.m42;
+            }
+
+            sheet.addEventListener('touchstart', e => {
+                const touch = e.touches[0];
+                const rect = sheet.getBoundingClientRect();
+                if (touch.clientY - rect.top > 60 && currentState === 2) return;
+                isDragging = true;
+                startY = touch.clientY;
+                sheet.style.transition = 'none';
+            }, { passive: true });
+
+            sheet.addEventListener('touchmove', e => {
+                if (!isDragging) return;
+                const delta = e.touches[0].clientY - startY;
+                const newY = Math.max(0, getTranslateY() + delta);
+                sheet.style.transform = `translateY(${newY}px)`;
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+
+            sheet.addEventListener('touchend', e => {
+                if (!isDragging) return;
+                isDragging = false;
+                sheet.style.transition = '';
+                const delta = e.changedTouches[0].clientY - startY;
+                if (delta < -30) applyState(Math.min(currentState + 1, 2), true);
+                else if (delta > 30) applyState(Math.max(currentState - 1, 0), true);
+                else applyState(currentState, true);
+            }, { passive: true });
+
+            sheet.addEventListener('click', e => {
+                const rect = sheet.getBoundingClientRect();
+                if (e.clientY - rect.top <= 28) {
+                    if (currentState < 2) applyState(currentState + 1, true);
+                    else applyState(0, true);
+                }
+            });
+
+            mapEl.addEventListener('click', () => {
+                if (currentState > 0) applyState(0, true);
+            });
+
+            document.getElementById('places-list').addEventListener('click', () => {
+                if (currentState === 0) applyState(1, true);
+            });
+        })();
+
+        // ===== GEOLOCATION =====
+        const locateBtn = document.getElementById('locate-btn');
+        let userMarker = null, userCircle = null;
+
+        locateBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) { showToast('⚠️ Geolocalização não suportada'); return; }
+            locateBtn.classList.add('locating');
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    locateBtn.classList.remove('locating');
+                    locateBtn.classList.add('located');
+                    const { latitude: lat, longitude: lon, accuracy: acc } = pos.coords;
+                    if (userMarker) { map.removeLayer(userMarker); map.removeLayer(userCircle); }
+                    userCircle = L.circle([lat, lon], {
+                        radius: acc, color: '#0071e3',
+                        fillColor: '#0071e3', fillOpacity: 0.07, weight: 1.5
+                    }).addTo(map);
+                    const locIcon = L.divIcon({
+                        className: '',
+                        html: `<div style="width:16px;height:16px;border-radius:50%;background:#0071e3;border:3px solid white;box-shadow:0 2px 8px rgba(0,113,227,0.55);"></div>`,
+                        iconSize: [16,16], iconAnchor: [8,8]
+                    });
+                    userMarker = L.marker([lat, lon], { icon: locIcon }).addTo(map);
+                    map.flyTo([lat, lon], 16, { duration: 1.3 });
+                    showToast('📍 Você está aqui');
+                },
+                (err) => {
+                    locateBtn.classList.remove('locating');
+                    const msgs = { 1: '🔒 Permissão negada', 2: '📡 Posição indisponível', 3: '⏱️ Tempo esgotado' };
+                    showToast(msgs[err.code] || '⚠️ Erro ao localizar');
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+            );
+        });
+
+        // Nav hover
+        document.querySelectorAll('.header-nav a').forEach(link => {
+            link.addEventListener('mouseenter', () => gsap.to(link, { y: -1, duration: 0.12 }));
+            link.addEventListener('mouseleave', () => gsap.to(link, { y: 0, duration: 0.12 }));
+        });
+    </script>
+</body>
+</html>

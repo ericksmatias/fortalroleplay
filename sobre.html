@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fortal Roleplay — Sobre</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --sf-pro: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            --bg-body: #ffffff;
+            --bg-sidebar: #f5f5f7;
+            --bg-header: rgba(255,255,255,0.88);
+            --border-color: #d2d2d7;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-blue: #0071e3;
+            --search-bg: #ffffff;
+            --item-hover: rgba(0,0,0,0.05);
+            --header-height: 56px;
+            --sidebar-width: 280px;
+        }
+        [data-theme="dark"] {
+            --bg-body: #000000;
+            --bg-sidebar: #1c1c1e;
+            --bg-header: rgba(28,28,30,0.88);
+            --border-color: #38383a;
+            --text-primary: #f5f5f7;
+            --text-secondary: #98989d;
+            --accent-blue: #0a84ff;
+            --search-bg: #2c2c2e;
+            --item-hover: rgba(255,255,255,0.08);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; outline:none; -webkit-tap-highlight-color:transparent; }
+
+        body {
+            font-family: var(--sf-pro);
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* ===== HEADER (same as others) ===== */
+        header {
+            height: var(--header-height);
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 2000;
+            transition: background 0.3s, border-color 0.3s;
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .header-date { display: flex; flex-direction: column; line-height: 1.2; }
+        .header-date-day { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); }
+        .header-date-num { font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+
+        .logo-placeholder { display: flex; align-items: center; gap: 8px; text-decoration: none; transition: opacity 0.2s; }
+        .logo-placeholder:hover { opacity: 0.7; }
+        .logo-img { height: 34px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        [data-theme="dark"] .logo-img { filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.12)); }
+        .logo-missing { height: 30px; padding: 0 10px; background: var(--bg-sidebar); border: 1px dashed var(--text-secondary); border-radius: 6px; display: flex; align-items: center; font-size: 10px; color: var(--text-secondary); text-transform: uppercase; }
+
+        .header-nav { display: flex; gap: 20px; align-items: center; }
+        .header-nav a { text-decoration: none; font-size: 13px; color: var(--text-primary); opacity: 0.75; transition: opacity 0.2s, color 0.2s; position: relative; font-weight: 500; }
+        .header-nav a:hover { opacity: 1; color: var(--accent-blue); }
+        .header-nav a.active { opacity: 1; font-weight: 600; }
+        .header-nav a.active::after { content:''; position:absolute; bottom:-4px; left:0; right:0; height:2px; background:var(--accent-blue); border-radius:1px; }
+
+        .ios-switch { position: relative; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+        .ios-switch input { position:absolute; opacity:0; width:0; height:0; }
+        .switch-track { width:42px; height:24px; background:#e9e9ea; border-radius:34px; position:relative; transition:background .35s; flex-shrink:0; }
+        [data-theme="dark"] .switch-track { background:#39393d; }
+        .switch-track::before { content:''; position:absolute; height:20px; width:20px; top:2px; left:2px; background:white; border-radius:50%; transition:transform .35s; box-shadow:0 2px 4px rgba(0,0,0,0.18); }
+        .ios-switch input:checked + .switch-track { background:#30d158; }
+        .ios-switch input:checked + .switch-track::before { transform:translateX(18px); }
+        .switch-label { font-size:12px; font-weight:600; color:var(--text-secondary); white-space:nowrap; }
+
+        /* ===== LAYOUT ===== */
+        main {
+            display: flex;
+            margin-top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+            width: 100%;
+        }
+
+        /* ===== SIDEBAR ===== */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding-top: 24px;
+            transition: background 0.3s, border-color 0.3s;
+            opacity: 0;
+            transform: translateX(-16px);
+            flex-shrink: 0;
+        }
+        .sidebar-section { margin-bottom: 32px; }
+        .legal-menu-title { font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.7px; padding: 0 20px 10px; }
+        .legal-nav { list-style: none; }
+        .legal-nav li a { display: flex; align-items: center; gap: 10px; padding: 10px 20px; font-size: 14px; color: var(--text-primary); text-decoration: none; border-left: 3px solid transparent; transition: background 0.12s, color 0.12s; border-radius: 0 8px 8px 0; margin-right: 12px; }
+        .legal-nav li a .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; opacity: 0.55; transition: opacity 0.12s; }
+        .legal-nav li a:hover { background-color: var(--item-hover); }
+        .legal-nav li a:hover .nav-icon { opacity: 1; }
+        .legal-nav li a.active { font-weight: 600; border-left-color: var(--accent-blue); background-color: var(--item-hover); color: var(--accent-blue); }
+        .legal-nav li a.active .nav-icon { opacity: 1; }
+        .sidebar-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border-color); }
+        .sidebar-footer p { font-size: 11px; color: var(--text-secondary); line-height: 1.55; }
+        .sidebar-footer a { color: var(--accent-blue); text-decoration: none; }
+
+        /* ===== CONTENT ===== */
+        .legal-content-wrapper { flex: 1; overflow-y: auto; background-color: var(--bg-body); display: flex; justify-content: center; opacity: 0; }
+        .legal-content-wrapper::-webkit-scrollbar { width: 5px; }
+        .legal-content-wrapper::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.22); border-radius: 3px; }
+        .legal-document { max-width: 760px; width: 100%; padding: 52px 48px 80px; }
+
+        .doc-hero { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border-color); }
+        .doc-hero-eyebrow { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--accent-blue); margin-bottom: 10px; }
+        .doc-hero h1 { font-size: 42px; font-weight: 700; letter-spacing: -1px; line-height: 1.1; margin-bottom: 16px; }
+        .doc-hero .lead { font-size: 17px; line-height: 1.65; color: var(--text-secondary); max-width: 580px; }
+        .doc-meta { display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
+        .doc-meta-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+        .doc-meta-item span { font-weight: 600; color: var(--text-primary); }
+
+        .doc-section { margin-bottom: 56px; opacity: 0; transform: translateY(20px); }
+        .doc-section-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+        .section-number { width: 36px; height: 36px; border-radius: 10px; background: var(--bg-sidebar); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; color: var(--accent-blue); margin-top: 2px; }
+        .doc-section h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.2; color: var(--text-primary); margin-bottom: 4px; }
+        .doc-section .section-sub { font-size: 12px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
+        .doc-body { padding-left: 52px; }
+        .doc-section p { font-size: 15px; line-height: 1.72; color: var(--text-primary); opacity: 0.88; margin-bottom: 18px; }
+        .doc-section p:last-child { margin-bottom: 0; }
+        .doc-section strong { font-weight: 600; color: var(--text-primary); opacity: 1; }
+        .doc-section em { font-style: italic; }
+        .doc-section a { color: var(--accent-blue); text-decoration: none; }
+        .doc-section a:hover { text-decoration: underline; }
+
+        .legal-list { list-style: none; margin-bottom: 18px; }
+        .legal-list li { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border-color); font-size: 15px; line-height: 1.6; color: var(--text-primary); opacity: 0.88; }
+        .legal-list li:last-child { border-bottom: none; }
+        .legal-list li::before { content: '✓'; color: #30d158; font-weight: 700; font-size: 13px; margin-top: 2px; flex-shrink: 0; }
+
+        .callout { border-left: 3px solid var(--accent-blue); background: rgba(0,113,227,0.06); border-radius: 0 10px 10px 0; padding: 16px 18px; margin: 20px 0; }
+        [data-theme="dark"] .callout { background: rgba(10,132,255,0.1); }
+        .callout p { font-size: 14px; line-height: 1.6; color: var(--text-primary); opacity: 1 !important; margin: 0 !important; }
+        .callout strong { color: var(--accent-blue); }
+        .callout-warn { border-left-color: #ff9f0a; background: rgba(255,159,10,0.06); }
+        [data-theme="dark"] .callout-warn { background: rgba(255,159,10,0.1); }
+        .callout-warn strong { color: #ff9f0a; }
+
+        .section-divider { height: 1px; background: var(--border-color); margin: 48px 0; }
+
+        .contact-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+        .contact-card { background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+        .contact-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        [data-theme="dark"] .contact-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+        .contact-card-icon { font-size: 24px; margin-bottom: 10px; }
+        .contact-card-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .contact-card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+
+        /* ===== MOBILE TAB BAR ===== */
+        .mobile-tab-bar { display: none; }
+
+        @media (max-width: 768px) {
+            :root { --header-height: 52px; }
+            .mobile-tab-bar {
+                display: flex;
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                z-index: 3000;
+                height: calc(56px + env(safe-area-inset-bottom));
+                padding-bottom: env(safe-area-inset-bottom);
+                background: var(--bg-header);
+                backdrop-filter: saturate(180%) blur(20px);
+                -webkit-backdrop-filter: saturate(180%) blur(20px);
+                border-top: 1px solid var(--border-color);
+                align-items: stretch;
+                justify-content: space-around;
+                transition: background 0.3s, border-color 0.3s;
+            }
+            .tab-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; text-decoration:none; color:var(--text-secondary); font-size:10px; font-weight:500; font-family:var(--sf-pro); transition:color .18s; cursor:pointer; background:none; border:none; padding:0; height:56px; }
+            .tab-item.active { color: var(--accent-blue); }
+            .tab-item svg { width:22px; height:22px; stroke-width:1.7; transition:transform .12s; }
+            .tab-item.active svg { stroke-width:2.2; }
+            .tab-item:active svg { transform:scale(0.86); }
+            .mini-switch { position:relative; width:34px; height:20px; }
+            .mini-switch input { opacity:0; width:0; height:0; position:absolute; }
+            .mini-slider { position:absolute; inset:0; background:#e9e9ea; border-radius:34px; cursor:pointer; transition:background .3s; }
+            [data-theme="dark"] .mini-slider { background:#39393d; }
+            .mini-slider::before { content:""; position:absolute; height:16px; width:16px; left:2px; top:2px; background:white; border-radius:50%; transition:transform .3s; box-shadow:0 1px 3px rgba(0,0,0,0.25); }
+            .mini-switch input:checked + .mini-slider { background:#30d158; }
+            .mini-switch input:checked + .mini-slider::before { transform:translateX(14px); }
+
+            body { height: 100dvh; }
+            header { padding: 0 14px; }
+            .header-left { width: auto; flex: 1; }
+            .logo-img { height: 30px; }
+            .header-nav { display: none; }
+            .ios-switch .switch-label { display: none; }
+
+            main {
+                flex-direction: column;
+                height: calc(100dvh - var(--header-height) - calc(56px + env(safe-area-inset-bottom)));
+                overflow: hidden;
+            }
+
+            /* Sidebar becomes horizontal chip bar */
+            aside {
+                width: 100%;
+                height: auto;
+                flex-shrink: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding-top: 0;
+                overflow: hidden;
+                transform: none !important;
+                opacity: 1 !important;
+            }
+            .sidebar-footer { display: none; }
+            .sidebar-section { margin-bottom: 0; }
+            .legal-menu-title { display: none; }
+            .legal-nav { display: flex; flex-direction: row; overflow-x: auto; overflow-y: hidden; padding: 10px 12px; gap: 6px; scrollbar-width: none; white-space: nowrap; }
+            .legal-nav::-webkit-scrollbar { display: none; }
+            .legal-nav li { display: inline-flex; flex-shrink: 0; }
+            .legal-nav li a { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 20px; border-left: none; margin-right: 0; font-size: 13px; font-weight: 500; background: var(--bg-sidebar); border: 1px solid var(--border-color); color: var(--text-secondary); transition: background 0.15s, color 0.15s; white-space: nowrap; }
+            .legal-nav li a .nav-icon { display: none; }
+            .legal-nav li a:hover { background: var(--item-hover); color: var(--text-primary); }
+            .legal-nav li a.active { background: var(--accent-blue); border-color: var(--accent-blue); color: white; font-weight: 600; }
+
+            .legal-content-wrapper { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; opacity: 1 !important; }
+            .legal-document { padding: 24px 18px 40px; }
+            .doc-hero h1 { font-size: 26px; letter-spacing: -0.5px; }
+            .doc-hero .lead { font-size: 14px; line-height: 1.6; }
+            .doc-body { padding-left: 0; }
+            .doc-section-header { gap: 12px; }
+            .contact-cards { grid-template-columns: 1fr; }
+            .doc-meta { gap: 10px; flex-direction: column; }
+            .section-divider { margin: 32px 0; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <header id="main-header">
+        <div class="header-left">
+            <div class="header-date">
+                <div class="header-date-day" id="header-weekday"></div>
+                <div class="header-date-num" id="header-daynum"></div>
+            </div>
+            <div style="width:1px;height:28px;background:var(--border-color);flex-shrink:0;"></div>
+            <a href="index.html" class="logo-placeholder">
+                <img src="logohead.png" alt="Logo" class="logo-img"
+                     onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex';">
+                <div id="logo-fallback" class="logo-missing" style="display:none;">Fortal</div>
+            </a>
+        </div>
+        <div class="header-nav">
+            <a href="index.html">Mapa</a>
+            <a href="roteiros.html">Roteiros</a>
+            <a href="sobre.html" class="active">Sobre</a>
+            <label class="ios-switch" title="Modo escuro">
+                <input type="checkbox" id="theme-toggle">
+                <span class="switch-track"></span>
+                <span class="switch-label" id="theme-label">Claro</span>
+            </label>
+        </div>
+    </header>
+
+    <main>
+        <aside id="sidebar">
+            <div class="sidebar-section">
+                <div class="legal-menu-title">Documento</div>
+                <ul class="legal-nav">
+                    <li><a href="#natureza"    class="nav-link active" data-target="natureza">   <span class="nav-icon">📋</span> Natureza do Projeto</a></li>
+                    <li><a href="#liberdade"   class="nav-link"        data-target="liberdade">  <span class="nav-icon">⚖️</span> Liberdade de Expressão</a></li>
+                    <li><a href="#satira"      class="nav-link"        data-target="satira">     <span class="nav-icon">🎭</span> Sátira e Humor</a></li>
+                    <li><a href="#privacidade" class="nav-link"        data-target="privacidade"><span class="nav-icon">🔒</span> Privacidade & LGPD</a></li>
+                    <li><a href="#marco-civil" class="nav-link"        data-target="marco-civil"><span class="nav-icon">🏛️</span> Marco Civil</a></li>
+                    <li><a href="#editorial"   class="nav-link"        data-target="editorial">  <span class="nav-icon">✍️</span> Linha Editorial</a></li>
+                    <li><a href="#contato"     class="nav-link"        data-target="contato">    <span class="nav-icon">💬</span> Contato & Resposta</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <p>Fortal Roleplay © 2026<br>
+                Feito com carinho por quem ama Fortaleza<br>
+                <a href="index.html">← Voltar ao Mapa</a></p>
+            </div>
+        </aside>
+
+        <div class="legal-content-wrapper" id="content-wrapper">
+            <div class="legal-document">
+
+                <div class="doc-hero">
+                    <div class="doc-hero-eyebrow">Termos, Políticas & Manifesto</div>
+                    <h1>Sobre o Fortal Roleplay</h1>
+                    <p class="lead">Tudo que você precisa saber sobre o que somos, o que não somos, o que fazemos com seus dados (spoiler: nada) e por que a Constituição Federal está do nosso lado quando falamos que a Route só tem patricinha.</p>
+                    <div class="doc-meta">
+                        <div class="doc-meta-item">Última atualização: <span>25 de Fevereiro de 2026</span></div>
+                        <div class="doc-meta-item">Jurisdição: <span>Brasil</span></div>
+                        <div class="doc-meta-item">Locais mapeados: <span>+130</span></div>
+                    </div>
+                </div>
+
+                <!-- 1. NATUREZA -->
+                <div class="doc-section" id="natureza">
+                    <div class="doc-section-header">
+                        <div class="section-number">1</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">O que é isso aqui</div>
+                            <h2>Natureza do Projeto e Finalidade</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>O <strong>Fortal Roleplay</strong> é um projeto de mapeamento cultural independente, não-comercial e sem fins lucrativos, dedicado a realizar uma <strong>crônica urbana, sociológica e satírica</strong> sobre as dinâmicas de classe, comportamento social e os espaços de convivência da cidade de Fortaleza, Ceará. Nasceu da observação — às vezes espantada, às vezes divertida — de como a cidade se organiza em tribos, territórios e rituais próprios.</p>
+                        <p>O projeto não é um guia turístico convencional. Não há estrelas, notas ou ranqueamento técnico de qualidade gastronômica. O que existe é uma <strong>leitura cultural e bem-humorada</strong> da cidade, filtrada pela perspectiva editorial de quem a vive cotidianamente. Cada descrição é uma crônica em miniatura — um retrato impressionista, não um laudo técnico.</p>
+                        <div class="callout">
+                            <p><strong>Em síntese:</strong> somos uma crônica da cidade, não um Tripadvisor. Se seu estabelecimento aparece aqui, é porque faz parte do tecido cultural de Fortaleza — e isso, em geral, é um elogio disfarçado de piada.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 2. LIBERDADE -->
+                <div class="doc-section" id="liberdade">
+                    <div class="doc-section-header">
+                        <div class="section-number">2</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">Fundamentos jurídicos</div>
+                            <h2>Liberdade de Expressão e Base Legal</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>O conteúdo veiculado nesta plataforma encontra amparo jurídico no <strong>Direito Constitucional à Liberdade de Expressão</strong>, assegurado pelo Artigo 5º, incisos IV, IX e XIV, da Constituição Federal de 1988.</p>
+                        <p>A liberdade de expressão, conforme consolidada pela jurisprudência do STF — especialmente no julgamento da ADPF 130 —, é um dos pilares fundamentais do Estado Democrático de Direito brasileiro. O STF reafirmou que o direito à crítica, à sátira e ao humor integram o núcleo essencial dessa liberdade.</p>
+                        <ul class="legal-list">
+                            <li><strong>Art. 5º, IV, CF/88</strong> — É livre a manifestação do pensamento, sendo vedado o anonimato.</li>
+                            <li><strong>Art. 5º, IX, CF/88</strong> — É livre a expressão da atividade intelectual, artística, científica e de comunicação, independentemente de censura ou licença.</li>
+                            <li><strong>Art. 220, CF/88</strong> — A manifestação do pensamento, a criação, a expressão e a informação não sofrerão qualquer restrição.</li>
+                            <li><strong>ADPF 130/STF</strong> — Reconhece a inconstitucionalidade de censura prévia à imprensa e à crítica.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 3. SÁTIRA -->
+                <div class="doc-section" id="satira">
+                    <div class="doc-section-header">
+                        <div class="section-number">3</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">Animus Jocandi e Criticandi</div>
+                            <h2>Sátira, Humor e Crônica Social</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>Declaramos expressamente que todos os textos redigidos nesta plataforma possuem o chamado <em><strong>animus jocandi</strong></em> — a intenção de brincar, satirizar, ironizar e fazer humor — e o <em><strong>animus criticandi</strong></em> — a intenção de criticar comportamentos sociais coletivos, dinâmicas de classe e tribos urbanas, não de atacar indivíduos específicos.</p>
+                        <p>Ressaltamos que <strong>não praticamos imputação de crimes</strong> conforme Art. 138 do Código Penal, <strong>nem fazemos alegações factuais falsas</strong> conforme o Art. 139 do CP. As menções a estereótipos como "dentistas de HB20" ou "Uber Black desconstruído" são figuras de linguagem genéricas referentes a grupos sociais, <strong>não direcionadas a nenhum indivíduo identificável</strong>.</p>
+                        <div class="callout-warn callout">
+                            <p><strong>Importante:</strong> A ausência de identificação de pessoa natural específica inviabiliza, por si só, a configuração de dano moral individual. Humor e opinião social não configuram difamação na jurisprudência majoritária dos tribunais brasileiros, salvo em casos de excesso manifesto.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 4. PRIVACIDADE -->
+                <div class="doc-section" id="privacidade">
+                    <div class="doc-section-header">
+                        <div class="section-number">4</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">LGPD e dados pessoais</div>
+                            <h2>Política de Privacidade</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>A privacidade dos nossos usuários é um princípio inegociável. Em conformidade com a <strong>LGPD (Lei nº 13.709/2018)</strong> e com o <strong>GDPR</strong>, o Fortal Roleplay adota uma política de coleta zero.</p>
+                        <ul class="legal-list">
+                            <li><strong>Sem Cookies:</strong> Nenhum cookie é gravado no seu dispositivo.</li>
+                            <li><strong>Sem dados pessoais:</strong> Não há cadastro, login, e-mail ou qualquer campo de identificação.</li>
+                            <li><strong>Sem rastreamento de localização:</strong> O mapa é renderizado inteiramente no seu dispositivo.</li>
+                            <li><strong>Sem analytics de terceiros:</strong> Não utilizamos Google Analytics, Meta Pixel, Hotjar ou similares.</li>
+                            <li><strong>Sem publicidade direcionada:</strong> Não vendemos dados com anunciantes — simplesmente não temos dados para vender.</li>
+                            <li><strong>Código auditável:</strong> Nossa plataforma é client-side. Qualquer desenvolvedor pode inspecionar o código-fonte.</li>
+                        </ul>
+                        <div class="callout">
+                            <p><strong>Base legal (LGPD):</strong> Por não coletarmos nenhum dado pessoal, não há tratamento de dados a declarar. Nossa conformidade com a LGPD é estrutural.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 5. MARCO CIVIL -->
+                <div class="doc-section" id="marco-civil">
+                    <div class="doc-section-header">
+                        <div class="section-number">5</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">Responsabilidade civil online</div>
+                            <h2>Marco Civil da Internet</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>O Fortal Roleplay atua como provedor de aplicação de internet nos termos da <strong>Lei nº 12.965/2014 — Marco Civil da Internet</strong>. Todo o conteúdo publicado é de autoria da equipe editorial e não contempla conteúdo gerado por usuários.</p>
+                        <p>Nos termos do <strong>Artigo 19 do Marco Civil</strong>, a plataforma apenas poderá ser responsabilizada civilmente por danos decorrentes de conteúdo caso, após ordem judicial específica e válida, não tome providências no prazo determinado. A mera notificação extrajudicial não configura obrigação legal de retirada imediata de conteúdo.</p>
+                        <ul class="legal-list">
+                            <li><strong>Art. 3º, I, Marco Civil:</strong> Garantia da liberdade de expressão, comunicação e manifestação de pensamento.</li>
+                            <li><strong>Art. 8º, Marco Civil:</strong> Direito à privacidade e à liberdade de expressão como condição para pleno acesso à internet.</li>
+                            <li><strong>Art. 19, Marco Civil:</strong> Responsabilidade civil condicionada a descumprimento de ordem judicial específica.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 6. EDITORIAL -->
+                <div class="doc-section" id="editorial">
+                    <div class="doc-section-header">
+                        <div class="section-number">6</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">Critérios e valores</div>
+                            <h2>Linha Editorial e Critérios de Curadoria</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>O Fortal Roleplay tem uma voz editorial deliberadamente opinativa, irônica e desrespeitosa com a pose — mas nunca com a dignidade humana. Existe uma diferença fundamental entre <strong>zoar o fenômeno sociocultural</strong> e atacar um indivíduo real com nome e sobrenome. Operamos apenas no primeiro campo.</p>
+                        <ul class="legal-list">
+                            <li><strong>Sem calúnia ou difamação técnica:</strong> Não imputamos crimes. Piadas sobre locais são hipérbole literária, não laudos sanitários.</li>
+                            <li><strong>Sem discriminação vedada em lei:</strong> Satirizamos comportamentos e dinâmicas de classe, não identidades protegidas.</li>
+                            <li><strong>Sem identificação de indivíduos:</strong> Descrições referem-se a perfis de público, nunca a pessoas físicas identificáveis.</li>
+                            <li><strong>Com equilíbrio temático:</strong> O mapa retrata todo o espectro social — do Bar do Railson ao Iate Clube, do Route à Santa Grelha.</li>
+                            <li><strong>Com revisão contínua:</strong> Locais fechados são removidos. Novos são adicionados. O mapa tenta ser atual.</li>
+                        </ul>
+                        <p>Acreditamos que Fortaleza é uma cidade extraordinária — generosa, quente, caótica e absolutamente única. O Fortal Roleplay é, antes de tudo, um ato de carinho com a cidade.</p>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 7. CONTATO -->
+                <div class="doc-section" id="contato">
+                    <div class="doc-section-header">
+                        <div class="section-number">7</div>
+                        <div class="section-heading-group">
+                            <div class="section-sub">Direito de resposta e diálogo</div>
+                            <h2>Contato, Resposta e Revisão de Conteúdo</h2>
+                        </div>
+                    </div>
+                    <div class="doc-body">
+                        <p>Prezamos pelo debate democrático, pela boa-fé e pela resolução amigável de qualquer desconforto que nosso conteúdo possa eventualmente gerar. A equipe editorial está disponível para receber manifestações de estabelecimentos, representantes legais, jornalistas e usuários.</p>
+                        <p>Se você representa um estabelecimento citado e acredita que a descrição ultrapassa os limites do humor razoável, entre em contato pelos nossos canais. Analisaremos com atenção e boa-fé, priorizando sempre a resolução extrajudicial.</p>
+                        <div class="callout">
+                            <p><strong>Prazo de análise:</strong> Solicitações devidamente fundamentadas são analisadas em até 7 dias úteis. Não respondemos a notificações genéricas sem identificação do conteúdo específico e da fundamentação do pedido.</p>
+                        </div>
+                        <div class="contact-cards">
+                            <div class="contact-card">
+                                <div class="contact-card-icon">📸</div>
+                                <div class="contact-card-title">Instagram</div>
+                                <div class="contact-card-desc">Canal principal. DMs abertas para diálogo e colaboração editorial.</div>
+                            </div>
+                            <div class="contact-card">
+                                <div class="contact-card-icon">📧</div>
+                                <div class="contact-card-title">E-mail Editorial</div>
+                                <div class="contact-card-desc">Para solicitações formais, direito de resposta e notificações legais.</div>
+                            </div>
+                            <div class="contact-card">
+                                <div class="contact-card-icon">📍</div>
+                                <div class="contact-card-title">Sugerir um Local</div>
+                                <div class="contact-card-desc">Conhece um lugar que merece estar no mapa? Nos conta via Instagram.</div>
+                            </div>
+                            <div class="contact-card">
+                                <div class="contact-card-icon">🤝</div>
+                                <div class="contact-card-title">Parcerias</div>
+                                <div class="contact-card-desc">Projetos culturais, eventos e iniciativas alinhadas à nossa missão.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- iOS Bottom Tab Bar -->
+    <nav class="mobile-tab-bar" id="mobile-tab-bar">
+        <a href="index.html" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
+            </svg>
+            <span>Mapa</span>
+        </a>
+        <a href="roteiros.html" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span>Roteiros</span>
+        </a>
+        <a href="sobre.html" class="tab-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <span>Sobre</span>
+        </a>
+        <button class="tab-item" id="tab-theme" aria-label="Alternar Tema">
+            <label class="mini-switch">
+                <input type="checkbox" id="theme-toggle-mobile">
+                <span class="mini-slider"></span>
+            </label>
+            <span id="tab-theme-label">Claro</span>
+        </button>
+    </nav>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Data no header
+        (function(){
+            const now = new Date();
+            const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+            document.getElementById('header-weekday').textContent = days[now.getDay()];
+            document.getElementById('header-daynum').textContent = now.getDate();
+        })();
+
+        // Dark mode
+        const toggle = document.getElementById('theme-toggle');
+        const toggleMobile = document.getElementById('theme-toggle-mobile');
+        const tabThemeLabel = document.getElementById('tab-theme-label');
+        const themeLabel = document.getElementById('theme-label');
+
+        function applyTheme(dark, save) {
+            document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
+            toggle.checked = dark;
+            if (toggleMobile) toggleMobile.checked = dark;
+            if (tabThemeLabel) tabThemeLabel.textContent = dark ? 'Escuro' : 'Claro';
+            if (themeLabel) themeLabel.textContent = dark ? 'Escuro' : 'Claro';
+            if (save) localStorage.setItem('frp-theme', dark ? 'dark' : 'light');
+        }
+        toggle.addEventListener('change', e => applyTheme(e.target.checked, true));
+        if (toggleMobile) toggleMobile.addEventListener('change', e => applyTheme(e.target.checked, true));
+        const savedTheme = localStorage.getItem('frp-theme');
+        const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(savedTheme ? savedTheme === 'dark' : sysDark, false);
+
+        // GSAP
+        const isMobile = window.innerWidth <= 768;
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        if (isMobile) {
+            tl.to('#main-header', { opacity: 1, y: 0, duration: 0.55 });
+            gsap.set('#sidebar', { opacity: 1, x: 0, clearProps: 'transform' });
+            gsap.set('#content-wrapper', { opacity: 1, clearProps: 'opacity' });
+        } else {
+            tl.to('#main-header', { opacity: 1, y: 0, duration: 0.55 })
+              .to('#sidebar', { opacity: 1, x: 0, duration: 0.5 }, '-=0.3')
+              .to('#content-wrapper', { opacity: 1, duration: 0.5 }, '-=0.3');
+        }
+
+        document.querySelectorAll('.doc-section').forEach(section => {
+            gsap.to(section, {
+                opacity: 1, y: 0, duration: 0.6, ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: section,
+                    scroller: '#content-wrapper',
+                    start: 'top 88%',
+                    toggleActions: 'play none none none'
+                }
+            });
+        });
+
+        // Nav scroll spy
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.doc-section');
+        const wrapper = document.getElementById('content-wrapper');
+
+        function setActiveLink(id) {
+            navLinks.forEach(link => {
+                const isActive = link.dataset.target === id;
+                link.classList.toggle('active', isActive);
+                if (isActive && isMobile) {
+                    link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            });
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.getElementById(link.dataset.target);
+                if (target) {
+                    wrapper.scrollTo({ top: target.offsetTop - 32, behavior: 'smooth' });
+                    setActiveLink(link.dataset.target);
+                }
+            });
+        });
+
+        wrapper.addEventListener('scroll', () => {
+            let current = sections[0].id;
+            sections.forEach(section => {
+                if (wrapper.scrollTop + 120 >= section.offsetTop) current = section.id;
+            });
+            setActiveLink(current);
+        }, { passive: true });
+
+        // Nav hover
+        document.querySelectorAll('.header-nav a').forEach(link => {
+            link.addEventListener('mouseenter', () => gsap.to(link, { y: -1, duration: 0.12 }));
+            link.addEventListener('mouseleave', () => gsap.to(link, { y: 0, duration: 0.12 }));
+        });
+
+        // Contact card hover
+        document.querySelectorAll('.contact-card').forEach(card => {
+            card.addEventListener('mouseenter', () => gsap.to(card, { scale: 1.02, duration: 0.18, ease: 'power2.out' }));
+            card.addEventListener('mouseleave', () => gsap.to(card, { scale: 1, duration: 0.18 }));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fortal Roleplay — Roteiros</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --sf-pro: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            --bg-body: #f2f2f7;
+            --bg-sidebar: #ffffff;
+            --bg-header: rgba(255,255,255,0.88);
+            --border-color: #d2d2d7;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-blue: #0071e3;
+            --search-bg: #ffffff;
+            --card-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            --card-bg: #ffffff;
+            --header-height: 56px;
+        }
+        [data-theme="dark"] {
+            --bg-body: #000000;
+            --bg-sidebar: #1c1c1e;
+            --bg-header: rgba(28,28,30,0.88);
+            --border-color: #38383a;
+            --text-primary: #f5f5f7;
+            --text-secondary: #98989d;
+            --accent-blue: #0a84ff;
+            --search-bg: #2c2c2e;
+            --card-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            --card-bg: #1c1c1e;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; outline:none; -webkit-tap-highlight-color:transparent; }
+
+        body {
+            font-family: var(--sf-pro);
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* ===== HEADER (same as index) ===== */
+        header {
+            height: var(--header-height);
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 2000;
+            transition: background 0.3s, border-color 0.3s;
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .header-date { display: flex; flex-direction: column; line-height: 1.2; }
+        .header-date-day { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); }
+        .header-date-num { font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+
+        .logo-placeholder { display: flex; align-items: center; gap: 8px; text-decoration: none; transition: opacity 0.2s; }
+        .logo-placeholder:hover { opacity: 0.7; }
+        .logo-img { height: 34px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        [data-theme="dark"] .logo-img { filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.12)); }
+        .logo-missing { height: 30px; padding: 0 10px; background: var(--bg-sidebar); border: 1px dashed var(--text-secondary); border-radius: 6px; display: flex; align-items: center; font-size: 10px; color: var(--text-secondary); text-transform: uppercase; }
+
+        .header-nav { display: flex; gap: 20px; align-items: center; }
+        .header-nav a { text-decoration: none; font-size: 13px; color: var(--text-primary); opacity: 0.75; transition: opacity 0.2s, color 0.2s; position: relative; font-weight: 500; }
+        .header-nav a:hover { opacity: 1; color: var(--accent-blue); }
+        .header-nav a.active { opacity: 1; font-weight: 600; }
+        .header-nav a.active::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 2px; background: var(--accent-blue); border-radius: 1px; }
+
+        /* iOS switch */
+        .ios-switch { position: relative; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+        .ios-switch input { position:absolute; opacity:0; width:0; height:0; }
+        .switch-track { width: 42px; height: 24px; background: #e9e9ea; border-radius: 34px; position: relative; transition: background .35s; flex-shrink: 0; }
+        [data-theme="dark"] .switch-track { background: #39393d; }
+        .switch-track::before { content: ''; position: absolute; height: 20px; width: 20px; top: 2px; left: 2px; background: white; border-radius: 50%; transition: transform .35s; box-shadow: 0 2px 4px rgba(0,0,0,0.18); }
+        .ios-switch input:checked + .switch-track { background: #30d158; }
+        .ios-switch input:checked + .switch-track::before { transform: translateX(18px); }
+        .switch-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+
+        /* ===== MAIN ===== */
+        main {
+            padding-top: calc(var(--header-height) + 28px);
+            padding-bottom: 100px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            padding: 0 24px;
+            margin-bottom: 32px;
+            opacity: 0;
+        }
+        .page-date { font-size: 12px; font-weight: 700; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+        .page-title-row { display: flex; align-items: center; justify-content: space-between; }
+        .page-title { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.1; }
+        .page-title em { font-style: normal; color: var(--accent-blue); }
+        .profile-badge { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #ff9a9e, #fda085); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+        /* ===== SECTIONS ===== */
+        .section-container { margin-bottom: 48px; opacity: 0; transform: translateY(28px); }
+        .section-header { padding: 0 24px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .section-title-group {}
+        .section-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--accent-blue); margin-bottom: 2px; }
+        .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+        .section-link { font-size: 14px; color: var(--accent-blue); text-decoration: none; font-weight: 500; flex-shrink: 0; }
+        .section-link:hover { text-decoration: underline; }
+
+        /* ===== SCROLL ROW ===== */
+        .scroll-wrap { position: relative; }
+        .scroll-row { display: flex; gap: 16px; overflow-x: auto; padding: 8px 24px 24px; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
+        .scroll-row::-webkit-scrollbar { display: none; }
+
+        .scroll-dots { display: flex; justify-content: center; gap: 6px; margin-top: -12px; margin-bottom: 8px; }
+        .scroll-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-color); transition: background 0.3s, transform 0.3s; cursor: pointer; }
+        .scroll-dot.active { background: var(--accent-blue); transform: scale(1.3); }
+
+        /* ===== HERO CARDS ===== */
+        .card-hero { min-width: 300px; width: 300px; height: 420px; border-radius: 20px; overflow: hidden; position: relative; scroll-snap-align: start; cursor: pointer; flex-shrink: 0; box-shadow: var(--card-shadow); transform: translateZ(0); display: block; text-decoration: none; }
+        .card-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.5s ease; }
+        .card-hero:hover .card-hero-bg { transform: scale(1.04); }
+        .card-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.85) 100%); }
+        .card-hero-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; color: white; }
+        .card-hero-tag { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border-radius: 6px; padding: 3px 8px; margin-bottom: 10px; }
+        .card-hero-title { font-size: 19px; font-weight: 700; line-height: 1.25; margin-bottom: 8px; }
+        .card-hero-desc { font-size: 13px; color: rgba(255,255,255,0.72); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        .bg-grad-1 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+        .bg-grad-2 { background: linear-gradient(135deg, #2d1b33 0%, #7b2d8b 100%); }
+        .bg-grad-3 { background: linear-gradient(135deg, #1e3c1e 0%, #2d6a4f 100%); }
+        .bg-grad-4 { background: linear-gradient(135deg, #3d0000 0%, #8b0000 100%); }
+        .bg-grad-5 { background: linear-gradient(135deg, #002147 0%, #0071e3 100%); }
+        .bg-grad-6 { background: linear-gradient(135deg, #1a1a1a 0%, #4a3728 100%); }
+
+        /* ===== WIDE CARDS ===== */
+        .card-wide { min-width: 340px; width: 340px; border-radius: 16px; background: var(--card-bg); box-shadow: var(--card-shadow); border: 1px solid var(--border-color); scroll-snap-align: start; cursor: pointer; overflow: hidden; flex-shrink: 0; transition: transform 0.2s, box-shadow 0.2s; display: block; text-decoration: none; color: inherit; }
+        .card-wide:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
+        .card-wide-thumb { width: 100%; height: 160px; background-size: cover; background-position: center; flex-shrink: 0; }
+        .card-wide-body { padding: 18px; }
+        .card-wide-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-blue); margin-bottom: 6px; }
+        .card-wide-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+        .card-wide-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.4; }
+
+        /* ===== LIST CARDS ===== */
+        .card-list-item { min-width: 300px; background: var(--card-bg); border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 14px; scroll-snap-align: start; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); cursor: pointer; flex-shrink: 0; transition: transform 0.15s; display: block; text-decoration: none; color: inherit; }
+        .card-list-item:hover { transform: scale(1.015); }
+        .card-list-item-inner { display: flex; align-items: center; gap: 14px; }
+        .list-thumb { width: 56px; height: 56px; border-radius: 12px; background-size: cover; background-position: center; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+        .list-info { flex: 1; min-width: 0; }
+        .list-title { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+        .list-desc { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-btn { background: var(--bg-body); border: 1.5px solid var(--border-color); color: var(--accent-blue); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-family: var(--sf-pro); flex-shrink: 0; transition: all 0.15s; display: inline-block; }
+        .card-list-item:hover .list-btn { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+
+        /* ===== GRID 2 ===== */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 24px; }
+        .card-grid { border-radius: 16px; overflow: hidden; position: relative; height: 200px; cursor: pointer; display: block; text-decoration: none; }
+        .card-grid-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.4s ease; }
+        .card-grid:hover .card-grid-bg { transform: scale(1.05); }
+        .card-grid-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.8) 100%); }
+        .card-grid-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; color: white; }
+        .card-grid-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: rgba(255,255,255,0.65); margin-bottom: 4px; }
+        .card-grid-title { font-size: 16px; font-weight: 700; line-height: 1.2; }
+
+        /* ===== CTA BANNER ===== */
+        .cta-banner { margin: 0 24px; border-radius: 18px; padding: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: linear-gradient(135deg, #0071e3 0%, #0a84ff 100%); overflow: hidden; position: relative; cursor: pointer; opacity: 0; transform: translateY(20px); }
+        .cta-banner::before { content: ''; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,0.08); }
+        .cta-banner::after { content: ''; position: absolute; bottom: -60px; right: 60px; width: 140px; height: 140px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+        .cta-text { position: relative; z-index: 1; }
+        .cta-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
+        .cta-title { font-size: 20px; font-weight: 700; color: white; line-height: 1.2; margin-bottom: 6px; }
+        .cta-desc { font-size: 13px; color: rgba(255,255,255,0.8); }
+        .cta-btn { position: relative; z-index: 1; background: white; color: #0071e3; border: none; border-radius: 24px; padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--sf-pro); flex-shrink: 0; white-space: nowrap; transition: transform 0.15s, box-shadow 0.15s; }
+        .cta-btn:hover { transform: scale(1.04); box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
+
+        /* ===== MOBILE TAB BAR ===== */
+        .mobile-tab-bar { display: none; }
+
+        @media (max-width: 768px) {
+            :root { --header-height: 52px; }
+            .mobile-tab-bar {
+                display: flex;
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                z-index: 3000;
+                height: calc(56px + env(safe-area-inset-bottom));
+                padding-bottom: env(safe-area-inset-bottom);
+                background: var(--bg-header);
+                backdrop-filter: saturate(180%) blur(20px);
+                -webkit-backdrop-filter: saturate(180%) blur(20px);
+                border-top: 1px solid var(--border-color);
+                align-items: stretch;
+                justify-content: space-around;
+                transition: background 0.3s, border-color 0.3s;
+            }
+            .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: var(--text-secondary); font-size: 10px; font-weight: 500; font-family: var(--sf-pro); transition: color 0.18s; cursor: pointer; background: none; border: none; padding: 0; height: 56px; }
+            .tab-item.active { color: var(--accent-blue); }
+            .tab-item svg { width: 22px; height: 22px; stroke-width: 1.7; transition: transform 0.12s; }
+            .tab-item.active svg { stroke-width: 2.2; }
+            .tab-item:active svg { transform: scale(0.86); }
+            .mini-switch { position: relative; width: 34px; height: 20px; }
+            .mini-switch input { opacity:0; width:0; height:0; position:absolute; }
+            .mini-slider { position:absolute; inset:0; background:#e9e9ea; border-radius:34px; cursor:pointer; transition:background .3s; }
+            [data-theme="dark"] .mini-slider { background:#39393d; }
+            .mini-slider::before { content:""; position:absolute; height:16px; width:16px; left:2px; top:2px; background:white; border-radius:50%; transition:transform .3s; box-shadow:0 1px 3px rgba(0,0,0,0.25); }
+            .mini-switch input:checked + .mini-slider { background:#30d158; }
+            .mini-switch input:checked + .mini-slider::before { transform:translateX(14px); }
+
+            header { padding: 0 14px; }
+            .header-left { width: auto; flex: 1; }
+            .logo-img { height: 30px; }
+            .header-nav { display: none; }
+            .ios-switch .switch-label { display: none; }
+
+            main { padding-top: calc(var(--header-height) + 16px); padding-bottom: calc(56px + env(safe-area-inset-bottom) + 20px); }
+            .page-title { font-size: 26px; }
+            .card-hero { min-width: 260px; width: 260px; height: 360px; }
+            .card-wide { min-width: 290px; width: 290px; }
+            .grid-2 { grid-template-columns: 1fr; padding: 0 16px; }
+            .cta-banner { flex-direction: column; align-items: flex-start; margin: 0 16px; }
+            .scroll-row { padding: 8px 16px 20px; }
+            .section-header { padding: 0 16px; }
+            .page-header { padding: 0 16px; }
+        }
+        @media (max-width: 400px) {
+            .card-hero { min-width: 230px; width: 230px; height: 310px; }
+            .card-wide { min-width: 260px; width: 260px; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <header id="main-header">
+        <div class="header-left">
+            <div class="header-date">
+                <div class="header-date-day" id="header-weekday"></div>
+                <div class="header-date-num" id="header-daynum"></div>
+            </div>
+            <div style="width:1px;height:28px;background:var(--border-color);flex-shrink:0;"></div>
+            <a href="index.html" class="logo-placeholder">
+                <img src="logohead.png" alt="Logo" class="logo-img"
+                     onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex';">
+                <div id="logo-fallback" class="logo-missing" style="display:none;">Fortal</div>
+            </a>
+        </div>
+
+        <div class="header-nav">
+            <a href="index.html">Mapa</a>
+            <a href="roteiros.html" class="active">Roteiros</a>
+            <a href="sobre.html">Sobre</a>
+            <label class="ios-switch" title="Modo escuro">
+                <input type="checkbox" id="theme-toggle">
+                <span class="switch-track"></span>
+                <span class="switch-label" id="theme-label">Claro</span>
+            </label>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- PAGE HEADER -->
+        <div class="page-header" id="page-header">
+            <div class="page-date" id="current-date"></div>
+            <div class="page-title-row">
+                <div class="page-title">O que temos<br>pra <em>hoje?</em></div>
+                <div class="profile-badge">🌵</div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 1: Destaques -->
+        <div class="section-container" id="sec-1">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <div class="section-eyebrow">Em destaque</div>
+                    <div class="section-title">Rolês que você precisa fazer</div>
+                </div>
+            </div>
+            <div class="scroll-wrap">
+                <div class="scroll-row" id="row-1">
+                    <a class="card-hero" href="roteiro-date.html">
+                        <div class="card-hero-bg bg-grad-1" data-img="midia/hero-date.jpg"></div>
+                        <div class="card-hero-overlay"></div>
+                        <div class="card-hero-content">
+                            <div class="card-hero-tag">💑 Rolê de Casal</div>
+                            <div class="card-hero-title">Onde levar o contatinho no 1º date</div>
+                            <div class="card-hero-desc">Luz baixa, comida que não suja o dente e preço pra quem ainda não tem certeza se vai casar.</div>
+                        </div>
+                    </a>
+                    <a class="card-hero" href="roteiro-benfica.html">
+                        <div class="card-hero-bg bg-grad-2" data-img="midia/hero-benfica.jpg"></div>
+                        <div class="card-hero-overlay"></div>
+                        <div class="card-hero-content">
+                            <div class="card-hero-tag">🎓 Fim de Semana</div>
+                            <div class="card-hero-title">Guia de Sobrevivência: Benfica</div>
+                            <div class="card-hero-desc">Como ir, voltar, não perder o celular e ainda aproveitar a cerveja a R$8. O roteiro definitivo do universitário.</div>
+                        </div>
+                    </a>
+                    <a class="card-hero" href="roteiro-50pila.html">
+                        <div class="card-hero-bg bg-grad-3" data-img="midia/hero-50pila.jpg"></div>
+                        <div class="card-hero-overlay"></div>
+                        <div class="card-hero-content">
+                            <div class="card-hero-tag">💰 Custo Benefício</div>
+                            <div class="card-hero-title">Comendo bem com 50 pila</div>
+                            <div class="card-hero-desc">Sim, é possível sentar num lugar legal em Fortaleza sem deixar as chaves do carro como garantia.</div>
+                        </div>
+                    </a>
+                    <a class="card-hero" href="roteiro-pi-route.html">
+                        <div class="card-hero-bg bg-grad-4" data-img="midia/hero-pi-route.jpg"></div>
+                        <div class="card-hero-overlay"></div>
+                        <div class="card-hero-content">
+                            <div class="card-hero-tag">🌙 Noite Total</div>
+                            <div class="card-hero-title">Da PI ao Route: o percurso da degradação</div>
+                            <div class="card-hero-desc">Um roteiro homérico que começa com chopp artesanal e termina com o orgulho deixado na porta.</div>
+                        </div>
+                    </a>
+                    <a class="card-hero" href="roteiro-pordosol.html">
+                        <div class="card-hero-bg bg-grad-5" data-img="midia/hero-pordosol.jpg"></div>
+                        <div class="card-hero-overlay"></div>
+                        <div class="card-hero-content">
+                            <div class="card-hero-tag">🌅 Pôr do Sol</div>
+                            <div class="card-hero-title">Os melhores couchers de Fortaleza</div>
+                            <div class="card-hero-desc">Orla, Praia Futuro e aquele lugar secreto que só quem mora no bairro conhece. Com drink na mão.</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="scroll-dots" id="dots-1"></div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 2: Novidades -->
+        <div class="section-container" id="sec-2">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <div class="section-eyebrow">Chegando em Fortaleza</div>
+                    <div class="section-title">Novidades na Aldeota</div>
+                </div>
+                <a href="#" class="section-link">Ver tudo</a>
+            </div>
+            <div class="scroll-wrap">
+                <div class="scroll-row" id="row-2">
+                    <a class="card-list-item" href="roteiro-cafe.html">
+                        <div class="card-list-item-inner">
+                            <div class="list-thumb" style="background:linear-gradient(135deg,#ffb6c1,#ff69b4);" data-img="midia/thumb-cafe.jpg">☕</div>
+                            <div class="list-info">
+                                <div class="list-title">Café Hipster #45</div>
+                                <div class="list-desc">Café de coador a 30 reais. Bico da jarra artesanal.</div>
+                            </div>
+                            <span class="list-btn">Ver</span>
+                        </div>
+                    </a>
+                    <a class="card-list-item" href="roteiro-pizza.html">
+                        <div class="card-list-item-inner">
+                            <div class="list-thumb" style="background:linear-gradient(135deg,#add8e6,#4169e1);" data-img="midia/thumb-pizza.jpg">🍕</div>
+                            <div class="list-info">
+                                <div class="list-title">Pizzaria da Esquina</div>
+                                <div class="list-desc">Massa de fermentação de 3 dias.</div>
+                            </div>
+                            <span class="list-btn">Ver</span>
+                        </div>
+                    </a>
+                    <a class="card-list-item" href="roteiro-gin.html">
+                        <div class="card-list-item-inner">
+                            <div class="list-thumb" style="background:linear-gradient(135deg,#90ee90,#2e8b57);" data-img="midia/thumb-gin.jpg">🍸</div>
+                            <div class="list-info">
+                                <div class="list-title">Bar do Zé Gourmet</div>
+                                <div class="list-desc">O Zé descobriu o Gin.</div>
+                            </div>
+                            <span class="list-btn">Ver</span>
+                        </div>
+                    </a>
+                    <a class="card-list-item" href="roteiro-japa.html">
+                        <div class="card-list-item-inner">
+                            <div class="list-thumb" style="background:linear-gradient(135deg,#ffe4b5,#ffa500);" data-img="midia/thumb-japa.jpg">🍣</div>
+                            <div class="list-info">
+                                <div class="list-title">Ômakase do Bairro</div>
+                                <div class="list-desc">Japa minimalista. Sem cardápio.</div>
+                            </div>
+                            <span class="list-btn">Novo</span>
+                        </div>
+                    </a>
+                    <a class="card-list-item" href="roteiro-vinil.html">
+                        <div class="card-list-item-inner">
+                            <div class="list-thumb" style="background:linear-gradient(135deg,#e6e6fa,#9370db);" data-img="midia/thumb-vinil.jpg">🎵</div>
+                            <div class="list-info">
+                                <div class="list-title">Bar do Vinil 2.0</div>
+                                <div class="list-desc">Ressurgiu. Ainda tem bolachão.</div>
+                            </div>
+                            <span class="list-btn">Ver</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="scroll-dots" id="dots-2"></div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 3: Curadoria Grid -->
+        <div class="section-container" id="sec-3">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <div class="section-eyebrow">Curadoria</div>
+                    <div class="section-title">Coleções da Redação</div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <a class="card-grid" href="roteiro-bares-musica.html">
+                    <div class="card-grid-bg bg-grad-1" data-img="midia/grid-bares.jpg"></div>
+                    <div class="card-grid-overlay"></div>
+                    <div class="card-grid-content">
+                        <div class="card-grid-tag">Vida Noturna</div>
+                        <div class="card-grid-title">Bares com Música Boa (de verdade)</div>
+                    </div>
+                </a>
+                <a class="card-grid" href="roteiro-alta-gastro.html">
+                    <div class="card-grid-bg bg-grad-3" data-img="midia/grid-gastro.jpg"></div>
+                    <div class="card-grid-overlay"></div>
+                    <div class="card-grid-content">
+                        <div class="card-grid-tag">Alta Gastronomia</div>
+                        <div class="card-grid-title">Pra gastar o PLR da firma</div>
+                    </div>
+                </a>
+                <a class="card-grid" href="roteiro-underground.html">
+                    <div class="card-grid-bg bg-grad-4" data-img="midia/grid-underground.jpg"></div>
+                    <div class="card-grid-overlay"></div>
+                    <div class="card-grid-content">
+                        <div class="card-grid-tag">Underground</div>
+                        <div class="card-grid-title">Onde a dignidade ainda tem desconto</div>
+                    </div>
+                </a>
+                <a class="card-grid" href="roteiro-praia.html">
+                    <div class="card-grid-bg bg-grad-5" data-img="midia/grid-praia.jpg"></div>
+                    <div class="card-grid-overlay"></div>
+                    <div class="card-grid-content">
+                        <div class="card-grid-tag">Praia</div>
+                        <div class="card-grid-title">Da Beira Mar à Futuro</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 4: Por Tipo de Rolê -->
+        <div class="section-container" id="sec-4">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <div class="section-eyebrow">Organizado por situação</div>
+                    <div class="section-title">Qual é a vibe hoje?</div>
+                </div>
+                <a href="index.html" class="section-link">Ver no mapa</a>
+            </div>
+            <div class="scroll-wrap">
+                <div class="scroll-row" id="row-4">
+                    <a class="card-wide" href="roteiro-carneiros.html">
+                        <div class="card-wide-thumb bg-grad-6" data-img="midia/wide-carneiros.jpg"></div>
+                        <div class="card-wide-body">
+                            <div class="card-wide-tag">🍖 Carne & Tradição</div>
+                            <div class="card-wide-title">Os Carneiros Sagrados de Fortaleza</div>
+                            <div class="card-wide-desc">Ordones, Tércio, Tony do Orós — a santíssima trindade da carne de sol.</div>
+                        </div>
+                    </a>
+                    <a class="card-wide" href="roteiro-rock.html">
+                        <div class="card-wide-thumb bg-grad-2" data-img="midia/wide-rock.jpg"></div>
+                        <div class="card-wide-body">
+                            <div class="card-wide-tag">🎸 Rock & Pub</div>
+                            <div class="card-wide-title">Onde o Rock não morreu</div>
+                            <div class="card-wide-desc">Bulls, Brewstone, Boozer's — pra quem ouve coisa com guitarra de verdade.</div>
+                        </div>
+                    </a>
+                    <a class="card-wide" href="roteiro-praia-drinks.html">
+                        <div class="card-wide-thumb bg-grad-5" data-img="midia/wide-praia.jpg"></div>
+                        <div class="card-wide-body">
+                            <div class="card-wide-tag">🌊 Praia & Drinks</div>
+                            <div class="card-wide-title">Pé na areia, drink na mão</div>
+                            <div class="card-wide-desc">Mercado dos Peixes, Orbita Blue, Santa Praia — o roteiro costeiro definitivo.</div>
+                        </div>
+                    </a>
+                    <a class="card-wide" href="roteiro-forro.html">
+                        <div class="card-wide-thumb bg-grad-3" data-img="midia/wide-forro.jpg"></div>
+                        <div class="card-wide-body">
+                            <div class="card-wide-tag">🎶 Forró & Raiz</div>
+                            <div class="card-wide-title">A sanfona ainda existe</div>
+                            <div class="card-wide-desc">Kukukaya, Arre Égua, Teresa & Jorge — dançar agarradinho continua sendo legal.</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="scroll-dots" id="dots-4"></div>
+            </div>
+        </div>
+
+        <!-- CTA BANNER -->
+        <div class="cta-banner" id="cta-banner">
+            <div class="cta-text">
+                <div class="cta-eyebrow">Quer mais?</div>
+                <div class="cta-title">Explore o mapa completo</div>
+                <div class="cta-desc">+130 locais mapeados com categoria, vibe e como chegar.</div>
+            </div>
+            <button class="cta-btn" onclick="window.location.href='index.html'">Ver o Mapa →</button>
+        </div>
+
+    </main>
+
+    <!-- iOS Bottom Tab Bar -->
+    <nav class="mobile-tab-bar" id="mobile-tab-bar">
+        <a href="index.html" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
+            </svg>
+            <span>Mapa</span>
+        </a>
+        <a href="roteiros.html" class="tab-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span>Roteiros</span>
+        </a>
+        <a href="sobre.html" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <span>Sobre</span>
+        </a>
+        <button class="tab-item" id="tab-theme" aria-label="Alternar Tema">
+            <label class="mini-switch">
+                <input type="checkbox" id="theme-toggle-mobile">
+                <span class="mini-slider"></span>
+            </label>
+            <span id="tab-theme-label">Claro</span>
+        </button>
+    </nav>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Data no header
+        (function(){
+            const now = new Date();
+            const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+            document.getElementById('header-weekday').textContent = days[now.getDay()];
+            document.getElementById('header-daynum').textContent = now.getDate();
+            const opts = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('current-date').textContent =
+                now.toLocaleDateString('pt-BR', opts).toUpperCase();
+        })();
+
+        // Dark mode
+        const toggle = document.getElementById('theme-toggle');
+        const toggleMobile = document.getElementById('theme-toggle-mobile');
+        const tabThemeLabel = document.getElementById('tab-theme-label');
+        const themeLabel = document.getElementById('theme-label');
+
+        function applyTheme(dark, save) {
+            document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
+            toggle.checked = dark;
+            if (toggleMobile) toggleMobile.checked = dark;
+            if (tabThemeLabel) tabThemeLabel.textContent = dark ? 'Escuro' : 'Claro';
+            if (themeLabel) themeLabel.textContent = dark ? 'Escuro' : 'Claro';
+            if (save) localStorage.setItem('frp-theme', dark ? 'dark' : 'light');
+        }
+        toggle.addEventListener('change', e => applyTheme(e.target.checked, true));
+        if (toggleMobile) toggleMobile.addEventListener('change', e => applyTheme(e.target.checked, true));
+        const savedTheme = localStorage.getItem('frp-theme');
+        const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(savedTheme ? savedTheme === 'dark' : sysDark, false);
+
+        // Image lazy load
+        document.querySelectorAll('[data-img]').forEach(el => {
+            const src = el.getAttribute('data-img');
+            const img = new Image();
+            img.onload = () => { el.style.backgroundImage = `url('${src}')`; };
+            img.src = src;
+        });
+
+        // Auto-scroll + dots
+        function setupAutoScroll(rowId, dotsId) {
+            const row = document.getElementById(rowId);
+            const dotsContainer = document.getElementById(dotsId);
+            if (!row) return;
+            const cards = Array.from(row.children);
+            const total = cards.length;
+            if (total === 0) return;
+
+            if (dotsContainer) {
+                cards.forEach((_, i) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'scroll-dot' + (i === 0 ? ' active' : '');
+                    dot.addEventListener('click', () => { clearInterval(timer); goTo(i); resumeTimer(); });
+                    dotsContainer.appendChild(dot);
+                });
+            }
+
+            const dots = dotsContainer ? dotsContainer.querySelectorAll('.scroll-dot') : [];
+            let current = 0, isPaused = false, resumeTimeout;
+
+            function updateDots(idx) { dots.forEach((d,i) => d.classList.toggle('active', i === idx)); }
+            function getCardWidth() {
+                if (!cards[0]) return 0;
+                return cards[0].getBoundingClientRect().width + (parseFloat(getComputedStyle(row).gap) || 16);
+            }
+            function goTo(idx) {
+                current = Math.max(0, Math.min(idx, total - 1));
+                row.scrollTo({ left: current * getCardWidth(), behavior: 'smooth' });
+                updateDots(current);
+            }
+            function advance() { if (!isPaused) goTo((current + 1) % total); }
+            let timer = setInterval(advance, 3500);
+            function pauseTimer() { isPaused = true; clearTimeout(resumeTimeout); }
+            function resumeTimer() { resumeTimeout = setTimeout(() => { isPaused = false; }, 5000); }
+
+            row.addEventListener('touchstart', pauseTimer, { passive: true });
+            row.addEventListener('mousedown', pauseTimer);
+            row.addEventListener('touchend', resumeTimer, { passive: true });
+            row.addEventListener('mouseup', resumeTimer);
+            row.addEventListener('scroll', () => {
+                const cw = getCardWidth();
+                if (cw > 0) { const idx = Math.round(row.scrollLeft / cw); if (idx !== current) { current = idx; updateDots(current); } }
+            }, { passive: true });
+            updateDots(0);
+        }
+
+        setupAutoScroll('row-1', 'dots-1');
+        setupAutoScroll('row-2', 'dots-2');
+        setupAutoScroll('row-4', 'dots-4');
+
+        // GSAP
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        tl.to('#main-header', { opacity: 1, y: 0, duration: 0.55 })
+          .to('#page-header', { opacity: 1, y: 0, duration: 0.5 }, '-=0.3');
+
+        ['#sec-1','#sec-2','#sec-3','#sec-4'].forEach(id => {
+            gsap.to(id, {
+                opacity: 1, y: 0, duration: 0.65, ease: 'power3.out',
+                scrollTrigger: { trigger: id, start: 'top 88%', toggleActions: 'play none none none' }
+            });
+        });
+        gsap.to('#cta-banner', {
+            opacity: 1, y: 0, duration: 0.65, ease: 'power3.out',
+            scrollTrigger: { trigger: '#cta-banner', start: 'top 90%', toggleActions: 'play none none none' }
+        });
+
+        // Nav hover
+        document.querySelectorAll('.header-nav a').forEach(link => {
+            link.addEventListener('mouseenter', () => gsap.to(link, { y: -1, duration: 0.12 }));
+            link.addEventListener('mouseleave', () => gsap.to(link, { y: 0, duration: 0.12 }));
+        });
+
+        // Card click micro-animation
+        document.querySelectorAll('.card-hero, .card-wide, .card-list-item, .card-grid').forEach(card => {
+            card.addEventListener('click', () => {
+                gsap.fromTo(card, { scale: 0.97 }, { scale: 1, duration: 0.25, ease: 'back.out(1.5)' });
+            });
+        });
+    </script>
+</body>
+</html>
