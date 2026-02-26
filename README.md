@@ -2,7 +2,7 @@
 
 > **Uma interface Apple-style para descobrir a alma (e o veneno) de Fortaleza.**
 
-> **Acesse o mapa ao vivo aqui: [Fortal Roleplay](https://ericksmatias.github.io/fortalroleplay)**
+> **Acesse o mapa ao vivo aqui: [Fortal Roleplay](https://ericksmatias.github.io/fortalroleplay/frontend/)**
 > 
 ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Vanilla JS](https://img.shields.io/badge/Vanilla-JS-yellow.svg)
