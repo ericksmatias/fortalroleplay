@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fortal Roleplay — Chegando em Meireles</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <meta name="description" content="O que abriu, o que mudou e o que você não pode perder no bairro mais gastronômico de Fortaleza.">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --sf-pro: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+            --bg-body: #ffffff;
+            --bg-header: rgba(255,255,255,0.88);
+            --bg-card: #ffffff;
+            --bg-subtle: #f5f5f7;
+            --bg-section: #f2f2f7;
+            --border-color: #d2d2d7;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-blue: #0071e3;
+            --card-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            --card-shadow-hover: 0 8px 32px rgba(0,0,0,0.12);
+            --header-height: 56px;
+        }
+        [data-theme="dark"] {
+            --bg-body: #000000;
+            --bg-header: rgba(28,28,30,0.92);
+            --bg-card: #1c1c1e;
+            --bg-subtle: #1c1c1e;
+            --bg-section: #111111;
+            --border-color: #38383a;
+            --text-primary: #f5f5f7;
+            --text-secondary: #98989d;
+            --accent-blue: #2997ff;
+            --card-shadow: 0 2px 12px rgba(0,0,0,0.5);
+            --card-shadow-hover: 0 8px 32px rgba(0,0,0,0.7);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; outline:none; -webkit-tap-highlight-color:transparent; }
+        body {
+            font-family: var(--sf-pro);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ===== HEADER ===== */
+        #main-header {
+            height: var(--header-height);
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px;
+            position: fixed; top:0; left:0; right:0;
+            z-index: 2000;
+            transition: background 0.3s, border-color 0.3s;
+            opacity: 0; transform: translateY(-10px);
+        }
+        .header-left { display:flex; align-items:center; gap:14px; }
+        .header-date { display:flex; flex-direction:column; line-height:1.2; }
+        .header-date-day { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-secondary); }
+        .header-date-num { font-size:22px; font-weight:700; color:var(--text-primary); line-height:1; }
+        .header-divider { width:1px; height:28px; background:var(--border-color); flex-shrink:0; }
+        .logo-placeholder { display:flex; align-items:center; gap:8px; text-decoration:none; transition:opacity 0.2s; }
+        .logo-placeholder:hover { opacity:0.7; }
+        .logo-img { height:34px; width:auto; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        [data-theme="dark"] .logo-img { filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.12)); }
+        .logo-missing { height:30px; padding:0 10px; background:var(--bg-subtle); border:1px dashed var(--text-secondary); border-radius:6px; display:flex; align-items:center; font-size:10px; color:var(--text-secondary); text-transform:uppercase; }
+        .header-nav { display:flex; gap:20px; align-items:center; }
+        .header-nav a { text-decoration:none; font-size:13px; color:var(--text-primary); opacity:0.75; transition:opacity 0.2s, color 0.2s; font-weight:500; position:relative; }
+        .header-nav a:hover { opacity:1; color:var(--accent-blue); }
+        .header-nav a.active { opacity:1; font-weight:600; }
+        .header-nav a.active::after { content:''; position:absolute; bottom:-4px; left:0; right:0; height:2px; background:var(--accent-blue); border-radius:1px; }
+        .ios-switch { position:relative; display:inline-flex; align-items:center; gap:6px; cursor:pointer; }
+        .ios-switch input { position:absolute; opacity:0; width:0; height:0; }
+        .switch-track { width:42px; height:24px; background:#e9e9ea; border-radius:34px; position:relative; transition:background .35s; flex-shrink:0; }
+        [data-theme="dark"] .switch-track { background:#39393d; }
+        .switch-track::before { content:''; position:absolute; height:20px; width:20px; top:2px; left:2px; background:white; border-radius:50%; transition:transform .35s; box-shadow:0 2px 4px rgba(0,0,0,0.18); }
+        .ios-switch input:checked + .switch-track { background:#30d158; }
+        .ios-switch input:checked + .switch-track::before { transform:translateX(18px); }
+        .switch-label { font-size:12px; font-weight:600; color:var(--text-secondary); white-space:nowrap; }
+
+        /* ===== PAGE ===== */
+        main {
+            padding-top: var(--header-height);
+            padding-bottom: 120px;
+        }
+
+        /* ===== HERO SECTION — Apple Developer News style ===== */
+        .page-hero {
+            background: var(--bg-section);
+            border-bottom: 1px solid var(--border-color);
+            padding: 52px 24px 48px;
+            opacity: 0; transform: translateY(16px);
+        }
+        .page-hero-inner {
+            max-width: 980px;
+            margin: 0 auto;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+        }
+        .page-hero-left {}
+        .page-eyebrow {
+            font-size: 12px; font-weight: 700;
+            letter-spacing: 0.07em; text-transform: uppercase;
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-blue); display: inline-block; }
+        .page-title {
+            font-size: clamp(28px, 4vw, 44px);
+            font-weight: 700; letter-spacing: -0.025em; line-height: 1.06;
+            color: var(--text-primary);
+        }
+        .page-subtitle {
+            font-size: 17px; font-weight: 400; line-height: 1.45;
+            color: var(--text-secondary); margin-top: 12px;
+            max-width: 520px;
+        }
+        .page-hero-right {
+            flex-shrink: 0;
+            text-align: right;
+        }
+        .see-all-link {
+            font-size: 15px; font-weight: 600;
+            color: var(--accent-blue); text-decoration: none;
+            display: flex; align-items: center; gap: 4px;
+            transition: opacity 0.18s;
+            white-space: nowrap;
+        }
+        .see-all-link:hover { opacity: 0.7; }
+        .see-all-link svg { width: 14px; height: 14px; }
+
+        /* ===== SEÇÃO DESTAQUE (card grande horizontal — manchete) ===== */
+        .news-section {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 40px 24px 0;
+            opacity: 0; transform: translateY(20px);
+        }
+        .section-label {
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .section-label a {
+            color: var(--accent-blue); text-decoration: none; font-size: 13px;
+            font-weight: 600; letter-spacing: 0;
+        }
+
+        /* Card Hero (manchete grande) */
+        .card-hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            overflow: hidden;
+            text-decoration: none; color: inherit;
+            transition: transform 0.22s, box-shadow 0.22s;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 24px;
+        }
+        .card-hero:hover { transform: scale(1.012); box-shadow: var(--card-shadow-hover); }
+        .card-hero-img {
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            display: block;
+            width: 100%;
+        }
+        .card-hero-body {
+            padding: 32px 32px 32px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .card-tag {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .tag-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+        .card-hero-title {
+            font-size: clamp(20px, 2.5vw, 26px);
+            font-weight: 700; letter-spacing: -0.02em; line-height: 1.15;
+            color: var(--text-primary); margin-bottom: 12px;
+        }
+        .card-hero-desc {
+            font-size: 15px; line-height: 1.55; color: var(--text-secondary);
+            margin-bottom: 20px;
+            display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-cta {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 14px; font-weight: 700; color: var(--accent-blue);
+        }
+        .card-cta svg { width: 14px; height: 14px; transition: transform 0.15s; }
+        .card-hero:hover .card-cta svg { transform: translateX(3px); }
+
+        /* Grid de 3 cards médios */
+        .cards-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .card-med {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px; overflow: hidden;
+            text-decoration: none; color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--card-shadow);
+            display: flex; flex-direction: column;
+        }
+        .card-med:hover { transform: translateY(-3px); box-shadow: var(--card-shadow-hover); }
+        .card-med-img {
+            width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block;
+        }
+        .card-med-body { padding: 16px 18px 20px; flex: 1; display: flex; flex-direction: column; }
+        .card-med-title {
+            font-size: 16px; font-weight: 700; letter-spacing: -0.015em;
+            line-height: 1.25; color: var(--text-primary); margin-bottom: 6px;
+        }
+        .card-med-desc {
+            font-size: 13px; line-height: 1.5; color: var(--text-secondary);
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+            overflow: hidden; flex: 1;
+        }
+        .card-med-footer {
+            margin-top: 12px; padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .card-med-cat {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .card-med-btn {
+            font-size: 12px; font-weight: 700; color: var(--accent-blue);
+            display: flex; align-items: center; gap: 3px;
+        }
+        .card-med-btn svg { width: 11px; height: 11px; }
+
+        /* Row de 2 cards horizontal (list style) */
+        .cards-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .card-list {
+            display: flex; align-items: center; gap: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 16px 18px;
+            text-decoration: none; color: inherit;
+            transition: transform 0.18s, box-shadow 0.18s;
+            box-shadow: var(--card-shadow);
+        }
+        .card-list:hover { transform: translateX(3px); box-shadow: var(--card-shadow-hover); }
+        .card-list-icon {
+            width: 52px; height: 52px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; color: white;
+        }
+        .card-list-body { flex: 1; min-width: 0; }
+        .card-list-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-list-sub { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+        .card-list-badge {
+            background: var(--bg-subtle); border: 1px solid var(--border-color);
+            color: var(--accent-blue); font-size: 12px; font-weight: 700;
+            padding: 5px 12px; border-radius: 980px; flex-shrink: 0; white-space: nowrap;
+        }
+
+        /* ===== DESTAQUE COLORIDO (Breaking / Novidade) ===== */
+        .card-spotlight {
+            border-radius: 18px; overflow: hidden;
+            position: relative; margin-bottom: 24px;
+            text-decoration: none; color: white;
+            display: block;
+            transition: transform 0.22s;
+        }
+        .card-spotlight:hover { transform: scale(1.012); }
+        .card-spotlight-bg {
+            width: 100%; aspect-ratio: 21/8; object-fit: cover;
+            display: block; filter: brightness(0.55);
+        }
+        .card-spotlight-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to right, rgba(0,0,0,0.75) 30%, rgba(0,0,0,0.1) 100%);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 36px 40px;
+        }
+        .spotlight-eyebrow {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.06em; color: rgba(255,255,255,0.65);
+            margin-bottom: 10px;
+        }
+        .spotlight-title {
+            font-size: clamp(22px, 3vw, 34px); font-weight: 700;
+            letter-spacing: -0.02em; line-height: 1.1;
+            color: white; margin-bottom: 10px; max-width: 560px;
+        }
+        .spotlight-desc {
+            font-size: 15px; line-height: 1.5; color: rgba(255,255,255,0.8);
+            max-width: 440px; margin-bottom: 20px;
+        }
+        .spotlight-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: white; color: #1d1d1f;
+            font-size: 14px; font-weight: 700;
+            padding: 10px 20px; border-radius: 980px;
+            width: fit-content;
+            transition: opacity 0.18s;
+        }
+        .spotlight-btn:hover { opacity: 0.88; }
+
+        /* ===== BANNER HAPPY HOUR (destaque especial cor) ===== */
+        .banner-happy-hour {
+            border-radius: 18px;
+            background: linear-gradient(135deg, #1d1d1f 0%, #2c2c2e 100%);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 32px 36px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 24px;
+            align-items: center;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none; color: white;
+            transition: transform 0.2s;
+        }
+        .banner-happy-hour:hover { transform: scale(1.01); }
+        .banner-happy-hour::before {
+            content: '';
+            position: absolute; top: -60px; right: 80px;
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,204,0,0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        [data-theme="dark"] .banner-happy-hour {
+            background: linear-gradient(135deg, #111 0%, #1c1c1e 100%);
+        }
+        .hh-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #ffcc00; color: #1d1d1f;
+            font-size: 11px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 4px 10px; border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        .hh-title { font-size: clamp(22px, 3vw, 30px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 8px; }
+        .hh-desc { font-size: 15px; line-height: 1.5; color: rgba(255,255,255,0.7); max-width: 480px; }
+        .hh-price-block { text-align: center; }
+        .hh-price-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+        .hh-price {
+            font-size: 54px; font-weight: 800; letter-spacing: -0.04em;
+            color: #ffcc00; line-height: 1;
+        }
+        .hh-price span { font-size: 22px; font-weight: 700; vertical-align: super; }
+        .hh-price-each { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5); margin-top: 2px; }
+        .hh-items {
+            display: flex; gap: 10px; margin-top: 16px;
+        }
+        .hh-item {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 8px 14px;
+            font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85);
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        /* ===== SECTION: Artigo longo (estilo developer.apple.com/news/) ===== */
+        .article-section {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 40px 24px 0;
+            opacity: 0; transform: translateY(20px);
+        }
+        .article-full {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px; overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        .article-full-hero {
+            width: 100%; aspect-ratio: 21/8; object-fit: cover; display: block;
+        }
+        .article-full-body { padding: 36px 40px; }
+        .article-kicker {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.06em; color: var(--accent-blue); margin-bottom: 10px;
+        }
+        .article-title {
+            font-size: clamp(22px, 3vw, 32px); font-weight: 700;
+            letter-spacing: -0.02em; line-height: 1.12;
+            color: var(--text-primary); margin-bottom: 14px;
+        }
+        .article-lead {
+            font-size: 18px; font-weight: 500; line-height: 1.5;
+            color: var(--text-primary); margin-bottom: 20px;
+        }
+        .article-body p {
+            font-size: 16px; line-height: 1.65; color: var(--text-primary);
+            margin-bottom: 18px;
+        }
+        .article-body h3 {
+            font-size: 19px; font-weight: 700; letter-spacing: -0.01em;
+            color: var(--text-primary); margin: 32px 0 12px;
+        }
+        .article-divider { border: none; border-top: 1px solid var(--border-color); margin: 28px 0; }
+
+        /* Quote dentro do artigo */
+        .article-quote {
+            border-left: 3px solid var(--accent-blue);
+            padding: 4px 0 4px 22px;
+            margin: 28px 0;
+            font-size: 18px; font-weight: 500; line-height: 1.45;
+            color: var(--text-primary);
+            font-style: italic;
+        }
+
+        /* Info row: endereço / horário */
+        .article-info-row {
+            display: flex; gap: 12px; flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .info-pill {
+            display: flex; align-items: center; gap: 7px;
+            background: var(--bg-subtle); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 8px 14px;
+            font-size: 13px; font-weight: 500; color: var(--text-primary);
+        }
+        .info-pill svg { width: 14px; height: 14px; color: var(--text-secondary); flex-shrink: 0; }
+
+        /* ===== SCROLL HORIZONTAL (App Store style) ===== */
+        .scroll-section {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 40px 0 0;
+            opacity: 0; transform: translateY(20px);
+        }
+        .scroll-section-header {
+            padding: 0 24px;
+            display: flex; align-items: baseline; justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .scroll-section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+        .scroll-section-link { font-size: 15px; font-weight: 600; color: var(--accent-blue); text-decoration: none; }
+        .scroll-row-wrap { overflow-x: auto; padding: 4px 24px 16px; scrollbar-width: none; -ms-overflow-style: none; }
+        .scroll-row-wrap::-webkit-scrollbar { display: none; }
+        .scroll-row { display: flex; gap: 14px; width: max-content; }
+
+        /* Mini card do scroll */
+        .scroll-card {
+            width: 200px; background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px; overflow: hidden;
+            text-decoration: none; color: inherit;
+            transition: transform 0.18s, box-shadow 0.18s;
+            box-shadow: var(--card-shadow);
+            flex-shrink: 0;
+        }
+        .scroll-card:hover { transform: translateY(-3px); box-shadow: var(--card-shadow-hover); }
+        .scroll-card-icon {
+            height: 100px; display: flex; align-items: center; justify-content: center;
+        }
+        .scroll-card-icon svg { width: 36px; height: 36px; color: white; }
+        .scroll-card-body { padding: 12px 14px 16px; }
+        .scroll-card-cat { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-secondary); margin-bottom: 4px; }
+        .scroll-card-name { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 3px; }
+        .scroll-card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* ===== FOOTER CTA ===== */
+        .page-footer-cta {
+            max-width: 980px; margin: 48px auto 0; padding: 0 24px;
+            opacity: 0; transform: translateY(20px);
+        }
+        .footer-cta-inner {
+            background: var(--bg-section); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 36px 40px;
+            display: flex; align-items: center; justify-content: space-between; gap: 24px;
+        }
+        .footer-cta-text {}
+        .footer-cta-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 6px; }
+        .footer-cta-title { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+        .footer-cta-desc { font-size: 15px; color: var(--text-secondary); margin-top: 6px; }
+        .footer-cta-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--text-primary); color: var(--bg-body);
+            font-size: 15px; font-weight: 700; text-decoration: none;
+            padding: 13px 24px; border-radius: 980px;
+            white-space: nowrap; flex-shrink: 0;
+            transition: opacity 0.18s, transform 0.18s;
+        }
+        .footer-cta-btn:hover { opacity: 0.82; transform: scale(1.02); }
+
+        /* GSAP */
+        .gsap-up { opacity: 0; transform: translateY(20px); }
+
+        /* ===== MOBILE TAB BAR ===== */
+        .mobile-tab-bar { display: none; }
+        @media (max-width: 768px) {
+            :root { --header-height: 52px; }
+            .mobile-tab-bar {
+                display: flex; position: fixed;
+                bottom: 0; left: 0; right: 0; z-index: 3000;
+                height: calc(56px + env(safe-area-inset-bottom));
+                padding-bottom: env(safe-area-inset-bottom);
+                background: var(--bg-header);
+                backdrop-filter: saturate(180%) blur(20px);
+                -webkit-backdrop-filter: saturate(180%) blur(20px);
+                border-top: 1px solid var(--border-color);
+                align-items: stretch; justify-content: space-around;
+                transition: background 0.3s, border-color 0.3s;
+            }
+            .tab-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; text-decoration:none; color:var(--text-secondary); font-size:10px; font-weight:500; font-family:var(--sf-pro); transition:color 0.18s; cursor:pointer; background:none; border:none; padding:0; }
+            .tab-item.active { color: var(--accent-blue); }
+            .tab-item svg { width:22px; height:22px; stroke-width:1.7; }
+            .tab-item.active svg { stroke-width:2.2; }
+            .mini-switch { position:relative; width:34px; height:20px; }
+            .mini-switch input { opacity:0; width:0; height:0; position:absolute; }
+            .mini-slider { position:absolute; inset:0; background:#e9e9ea; border-radius:34px; cursor:pointer; transition:background .3s; }
+            [data-theme="dark"] .mini-slider { background:#39393d; }
+            .mini-slider::before { content:""; position:absolute; height:16px; width:16px; left:2px; top:2px; background:white; border-radius:50%; transition:transform .3s; box-shadow:0 1px 3px rgba(0,0,0,0.25); }
+            .mini-switch input:checked + .mini-slider { background:#30d158; }
+            .mini-switch input:checked + .mini-slider::before { transform:translateX(14px); }
+
+            #main-header { padding: 0 14px; }
+            .header-nav { display: none; }
+            main { padding-bottom: calc(56px + env(safe-area-inset-bottom) + 32px); }
+
+            .page-hero { padding: 32px 16px 28px; }
+            .page-hero-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+
+            .news-section { padding: 28px 16px 0; }
+            .card-hero { grid-template-columns: 1fr; }
+            .card-hero-img { aspect-ratio: 16/9; }
+            .card-hero-body { padding: 20px 20px 24px; }
+
+            .cards-grid-3 { grid-template-columns: 1fr; }
+            .cards-row-2 { grid-template-columns: 1fr; }
+
+            .card-spotlight-overlay { padding: 20px 20px 24px; }
+            .card-spotlight-bg { aspect-ratio: 16/9; }
+
+            .banner-happy-hour { grid-template-columns: 1fr; padding: 24px 20px; }
+            .hh-price-block { text-align: left; }
+            .hh-price { font-size: 44px; }
+
+            .article-section { padding: 28px 16px 0; }
+            .article-full-body { padding: 20px 20px 24px; }
+            .article-lead { font-size: 16px; }
+            .article-body p { font-size: 15px; }
+            .article-full-hero { aspect-ratio: 16/9; }
+
+            .scroll-section { padding: 28px 0 0; }
+            .scroll-card { width: 170px; }
+
+            .page-footer-cta { padding: 0 16px; }
+            .footer-cta-inner { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <!-- Header -->
+    <header id="main-header">
+        <div class="header-left">
+            <div class="header-date">
+                <div class="header-date-day" id="header-weekday"></div>
+                <div class="header-date-num" id="header-daynum"></div>
+            </div>
+            <div class="header-divider"></div>
+            <a href="index.html" class="logo-placeholder">
+                <img src="logohead.png" alt="Logo" class="logo-img"
+                     onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex';">
+                <div id="logo-fallback" class="logo-missing" style="display:none;">Fortal</div>
+            </a>
+        </div>
+        <div class="header-nav">
+            <a href="index.html">Mapa</a>
+            <a href="roteiros.html" class="active">Roteiros</a>
+            <a href="sobre.html">Sobre</a>
+            <label class="ios-switch" title="Modo escuro">
+                <input type="checkbox" id="theme-toggle">
+                <span class="switch-track"></span>
+                <span class="switch-label" id="theme-label">Claro</span>
+            </label>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- PAGE HERO -->
+        <div class="page-hero" id="page-hero">
+            <div class="page-hero-inner">
+                <div class="page-hero-left">
+                    <div class="page-eyebrow">
+                        <span class="eyebrow-dot"></span>
+                        Chegando em Fortaleza
+                    </div>
+                    <h1 class="page-title">Novidades no Meireles</h1>
+                    <p class="page-subtitle">O que abriu, o que mudou e o que você não pode perder no bairro mais gastronômico de Fortaleza. Atualizado em <span id="page-date"></span>.</p>
+                </div>
+                <div class="page-hero-right">
+                    <a href="index.html?filtro=elite" class="see-all-link">
+                        Ver todos no mapa
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 1: Manchete + 2 cards lista -->
+        <section class="news-section gsap-up" id="sec-1">
+            <div class="section-label">
+                <span>Em destaque</span>
+                <a href="index.html">Ver mapa completo →</a>
+            </div>
+
+            <!-- Manchete: SIÁ Restaurante -->
+            <a href="index.html?busca=Siá" class="card-hero">
+                <img class="card-hero-img"
+                     src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=900"
+                     alt="Prato fino em restaurante contemporâneo">
+                <div class="card-hero-body">
+                    <div class="card-tag" style="color:#007aff;">
+                        <span class="tag-dot" style="background:#007aff;"></span>
+                        Abertura · Elite
+                    </div>
+                    <h2 class="card-hero-title">O Siá virou o rooftop mais comentado da Beira Mar</h2>
+                    <p class="card-hero-desc">No 12º andar do Hotel Praiano, o chef Ivan Prado — que trabalhou com Alex Atala no D.O.M. — reinventou os clássicos cearenses com técnica internacional. Agnolotti de jerimum, camarão com bisque de coentro e peixe à delícia repaginado. Com menos de um ano, já está na lista dos melhores da cidade.</p>
+                    <span class="card-cta">
+                        Ver no Mapa
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
+                </div>
+            </a>
+
+            <!-- 2 cards em lista -->
+            <div class="cards-row-2 gsap-up">
+                <a href="index.html?busca=NOM+Cozinha" class="card-list">
+                    <div class="card-list-icon" style="background: linear-gradient(135deg, #ff6b35, #f7c59f);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+                    </div>
+                    <div class="card-list-body">
+                        <div class="card-list-title">NOM Cozinha Nômade</div>
+                        <div class="card-list-sub">R. Leonardo Mota, 752 · Meireles<br>Inspirado nos sabores de um jangadeiro que percorreu o mundo. Cardápio autoral que muda com os ingredientes.</div>
+                    </div>
+                    <span class="card-list-badge">Novo</span>
+                </a>
+                <a href="index.html?busca=Ciranda+Brasa" class="card-list">
+                    <div class="card-list-icon" style="background: linear-gradient(135deg, #c0392b, #e74c3c);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                    </div>
+                    <div class="card-list-body">
+                        <div class="card-list-title">Ciranda Brasa Autoral</div>
+                        <div class="card-list-sub">R. Frederico Borges, 372 · Meireles<br>Chef Marco Gil e sommelier Rafael Chuck juntos num projeto de brasa criativa. Terça a domingo.</div>
+                    </div>
+                    <span class="card-list-badge">Quente</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- BANNER HAPPY HOUR — DIVINA PICANHA -->
+        <section class="news-section gsap-up" style="padding-top: 32px;" id="sec-hh">
+            <div class="section-label"><span>Promoção da Semana</span></div>
+
+            <a href="index.html?busca=Divina+Picanha" class="banner-happy-hour">
+                <div>
+                    <div class="hh-badge">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                        Happy Hour · Imperdível
+                    </div>
+                    <h2 class="hh-title">Divina Picanha:<br>a pechincha do Meireles</h2>
+                    <p class="hh-desc">De terça a sexta, das 17h às 20h, o happy hour da Divina Picanha é o segredo mais mal guardado do bairro. Caipirinha artesanal e chopp Brahma gelado por R$5,00 cada. Pra reunir os amigos sem agredir a conta do mês.</p>
+                    <div class="hh-items">
+                        <div class="hh-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+                            Caipirinha R$5
+                        </div>
+                        <div class="hh-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/></svg>
+                            Chopp Brahma R$5
+                        </div>
+                        <div class="hh-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Ter–Sex · 17h–20h
+                        </div>
+                    </div>
+                </div>
+                <div class="hh-price-block">
+                    <div class="hh-price-label">cada bebida</div>
+                    <div class="hh-price"><span>R$</span>5</div>
+                    <div class="hh-price-each">caipirinha ou chopp</div>
+                </div>
+            </a>
+        </section>
+
+        <!-- SEÇÃO 2: Grid 3 cards — outras novidades -->
+        <section class="news-section gsap-up" style="padding-top: 32px;" id="sec-2">
+            <div class="section-label"><span>Mais no bairro</span></div>
+
+            <div class="cards-grid-3">
+                <!-- Moleskine -->
+                <a href="index.html?busca=Moleskine" class="card-med">
+                    <img class="card-med-img"
+                         src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&q=80&w=600"
+                         alt="Bar com drinks e iluminação baixa">
+                    <div class="card-med-body">
+                        <div class="card-tag" style="color:#af52de; margin-bottom: 6px;">
+                            <span class="tag-dot" style="background:#af52de;"></span> Bar & Drinks
+                        </div>
+                        <div class="card-med-title">Moleskine Gastrobar: o andar de cima é a dica</div>
+                        <div class="card-med-desc">O térreo lota rápido. Suba para o segundo andar e ganhe uma mesa mais tranquila, iluminação perfeita e a mesma carta de drinks inventivos. O local virou referência por combinar gastronomia e descontração sem forçar nenhum dos dois.</div>
+                        <div class="card-med-footer">
+                            <span class="card-med-cat" style="color:#af52de;">Elite Cult</span>
+                            <span class="card-med-btn">Ver <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Giz Cozinha Boêmia -->
+                <a href="index.html?busca=Giz" class="card-med">
+                    <img class="card-med-img"
+                         src="https://images.unsplash.com/photo-1516997121675-4c2d1684aa3e?auto=format&fit=crop&q=80&w=600"
+                         alt="Show ao vivo em bar">
+                    <div class="card-med-body">
+                        <div class="card-tag" style="color:#30d158; margin-bottom: 6px;">
+                            <span class="tag-dot" style="background:#30d158;"></span> Música Ao Vivo
+                        </div>
+                        <div class="card-med-title">Giz Cozinha Boêmia venceu "Melhor Programação Musical"</div>
+                        <div class="card-med-desc">Na R. Prof. Dias da Rocha, o Giz levou o prêmio Melhores Sabores da Cidade 2025 na categoria musical. A cozinha acompanha o nível do palco — entrada às 17h durante a semana.</div>
+                        <div class="card-med-footer">
+                            <span class="card-med-cat" style="color:#30d158;">Premiado</span>
+                            <span class="card-med-btn">Ver <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Zelig -->
+                <a href="index.html?busca=Zelig" class="card-med">
+                    <img class="card-med-img"
+                         src="https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&q=80&w=600"
+                         alt="Drink bar escuro e intimista">
+                    <div class="card-med-body">
+                        <div class="card-tag" style="color:#af52de; margin-bottom: 6px;">
+                            <span class="tag-dot" style="background:#af52de;"></span> Bar Cult
+                        </div>
+                        <div class="card-med-title">Zelig Drink Bar: escondido, escuro, impecável</div>
+                        <div class="card-med-desc">O Zelig continua sendo o bar mais cult do Meireles — difícil de achar, difícil de esquecer. Drinks autorais, acústica que permite conversa real e aquela vibe de "bar que só os locais conhecem".</div>
+                        <div class="card-med-footer">
+                            <span class="card-med-cat" style="color:#af52de;">Underground</span>
+                            <span class="card-med-btn">Ver <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- SPOTLIGHT: Matina Brunch -->
+        <section class="news-section gsap-up" style="padding-top: 0;" id="sec-spotlight">
+            <a href="index.html?busca=Matina" class="card-spotlight">
+                <img class="card-spotlight-bg"
+                     src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&q=80&w=1400"
+                     alt="Mesa de brunch com frutas e café">
+                <div class="card-spotlight-overlay">
+                    <div class="spotlight-eyebrow">Em alta · Meireles</div>
+                    <h2 class="spotlight-title">Matina Brunch & Café: o brunch que virou ritual de fim de semana</h2>
+                    <p class="spotlight-desc">Inaugurado no final de 2024, o Matina foi idealizado pela chef Vanessa Viana e já conquistou fila nos sábados. A proposta é simples: brunch honesto, ingredientes frescos, ambiente que convida a ficar mais uma hora do que o planejado.</p>
+                    <div class="spotlight-btn">
+                        Ver no Mapa
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+            </a>
+        </section>
+
+        <!-- ARTIGO LONGO: Illa Mare -->
+        <section class="article-section gsap-up" id="sec-article">
+            <div class="section-label" style="margin-bottom: 16px;">
+                <span>Matéria da Redação</span>
+            </div>
+            <div class="article-full">
+                <img class="article-full-hero"
+                     src="https://images.unsplash.com/photo-1539614474468-f423a2d2270c?auto=format&fit=crop&q=80&w=1400"
+                     alt="Vista panorâmica de restaurante à beira-mar no pôr do sol">
+                <div class="article-full-body">
+                    <div class="article-kicker">Vista & Gastronomia · Meireles</div>
+                    <h2 class="article-title">Illa Mare e a arte de transformar pôr do sol em jantar de três horas</h2>
+                    <p class="article-lead">As mesas da varanda são as mais disputadas de Fortaleza quando o sol começa a despencar na linha do horizonte. O Illa Mare descobriu como transformar essa janela de 40 minutos num ritual gastronômico completo.</p>
+                    <div class="article-body">
+                        <p>Localizado na Av. Beira Mar, 3821, o Illa Mare é o restaurante mais sofisticado da orla do Meireles — e também o que cobra mais caro pela vista, não só pelo prato. Os jangadeiros coloridos compõem o cenário de fundo enquanto você escolhe entre o beijupirá na crosta de rapadura com provolone ou o peito de pato com risoto de laranja.</p>
+
+                        <blockquote class="article-quote">
+                            "As mesas da varanda são disputadas desde o meio da tarde. Reservar com antecedência não é preciosismo, é sobrevivência."
+                        </blockquote>
+
+                        <h3>O que pedir</h3>
+                        <p>A parrilla de frutos do mar para compartilhar é o prato símbolo da casa — chega à mesa ainda sibilando, com lula, camarão e mexilhão na brasa. Para os que preferem ir no seguro, o salmão com crosta de ervas é uma escolha difícil de errar. A carta de vinhos por copo acompanha bem o clima.</p>
+
+                        <hr class="article-divider">
+
+                        <h3>Como ir</h3>
+                        <div class="article-info-row">
+                            <div class="info-pill">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                Av. Beira Mar, 3821 — Meireles
+                            </div>
+                            <div class="info-pill">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                Seg–Dom · 12h–23h
+                            </div>
+                            <div class="info-pill">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                Ticket médio R$150/pessoa
+                            </div>
+                        </div>
+
+                        <p>Dica final da redação: o melhor horário é chegar às 17h30 para a varanda, pedir uma entrada enquanto o sol desce, e ficar para o jantar. O restaurante permite essa transição sem pressa.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCROLL HORIZONTAL: Outros bares do bairro -->
+        <section class="scroll-section gsap-up" id="sec-scroll">
+            <div class="scroll-section-header">
+                <h2 class="scroll-section-title">Mais do Meireles</h2>
+                <a href="index.html" class="scroll-section-link">Ver todos</a>
+            </div>
+            <div class="scroll-row-wrap">
+                <div class="scroll-row">
+                    <a href="index.html?busca=Moleska" class="scroll-card">
+                        <div class="scroll-card-icon" style="background: linear-gradient(135deg, #007aff, #5ac8fa);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        </div>
+                        <div class="scroll-card-body">
+                            <div class="scroll-card-cat">Bar & Cozinha</div>
+                            <div class="scroll-card-name">Moleska</div>
+                            <div class="scroll-card-desc">Culinárias do mundo num só lugar. Qua–Dom.</div>
+                        </div>
+                    </a>
+                    <a href="index.html?busca=Santa+Grelha" class="scroll-card">
+                        <div class="scroll-card-icon" style="background: linear-gradient(135deg, #c0392b, #ff6b6b);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                        </div>
+                        <div class="scroll-card-body">
+                            <div class="scroll-card-cat">Carnes</div>
+                            <div class="scroll-card-name">Santa Grelha</div>
+                            <div class="scroll-card-desc">Cortes na brasa. O mais premiado do bairro.</div>
+                        </div>
+                    </a>
+                    <a href="index.html?busca=Vignoli" class="scroll-card">
+                        <div class="scroll-card-icon" style="background: linear-gradient(135deg, #e8a045, #f5c76a);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 2v10l6.5 6.5"/><circle cx="12" cy="12" r="10"/></svg>
+                        </div>
+                        <div class="scroll-card-body">
+                            <div class="scroll-card-cat">Pizza</div>
+                            <div class="scroll-card-name">Vignoli</div>
+                            <div class="scroll-card-desc">Massa fininha há mais de uma década na Beira Mar.</div>
+                        </div>
+                    </a>
+                    <a href="index.html?busca=Aki+Asian" class="scroll-card">
+                        <div class="scroll-card-icon" style="background: linear-gradient(135deg, #8e4ec6, #c084fc);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/></svg>
+                        </div>
+                        <div class="scroll-card-body">
+                            <div class="scroll-card-cat">Asiático</div>
+                            <div class="scroll-card-name">Aki Asian Kitchen</div>
+                            <div class="scroll-card-desc">Fusão asiática no coração do Meireles.</div>
+                        </div>
+                    </a>
+                    <a href="index.html?busca=Cantina+Napoli" class="scroll-card">
+                        <div class="scroll-card-icon" style="background: linear-gradient(135deg, #1c7c54, #27ae60);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <div class="scroll-card-body">
+                            <div class="scroll-card-cat">Italiano</div>
+                            <div class="scroll-card-name">Cantina di Napoli</div>
+                            <div class="scroll-card-desc">Clássicos italianos desde 2009. Carré de cordeiro inesquecível.</div>
+                        </div>
+                    </a>
+                    <a href="index.html?busca=Vila+Camaleao" class="scroll-card">
+                        <div class="scroll-card-icon" style="background: linear-gradient(135deg, #f39c12, #f1c40f);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                        </div>
+                        <div class="scroll-card-body">
+                            <div class="scroll-card-cat">Samba</div>
+                            <div class="scroll-card-name">Vila Camaleão</div>
+                            <div class="scroll-card-desc">Samba ao vivo na Barão de Studart. Bar que virou ponto de encontro.</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER CTA -->
+        <div class="page-footer-cta gsap-up" id="sec-footer">
+            <div class="footer-cta-inner">
+                <div class="footer-cta-text">
+                    <div class="footer-cta-eyebrow">Quer mais?</div>
+                    <h2 class="footer-cta-title">Explore o mapa completo</h2>
+                    <p class="footer-cta-desc">+130 locais mapeados com categoria, vibe e como chegar. Filtre por bairro, tipo de rolê ou vibe.</p>
+                </div>
+                <a href="index.html" class="footer-cta-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+                    Ver o Mapa →
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Mobile Tab Bar -->
+    <nav class="mobile-tab-bar" id="mobile-tab-bar">
+        <a href="index.html" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
+            </svg>
+            <span>Mapa</span>
+        </a>
+        <a href="roteiros.html" class="tab-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span>Roteiros</span>
+        </a>
+        <a href="sobre.html" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <span>Sobre</span>
+        </a>
+        <button class="tab-item" id="tab-theme" aria-label="Alternar Tema">
+            <label class="mini-switch">
+                <input type="checkbox" id="theme-toggle-mobile">
+                <span class="mini-slider"></span>
+            </label>
+            <span id="tab-theme-label">Claro</span>
+        </button>
+    </nav>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Data
+        (function(){
+            const now = new Date();
+            const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+            document.getElementById('header-weekday').textContent = days[now.getDay()];
+            document.getElementById('header-daynum').textContent  = now.getDate();
+            const opts = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('page-date').textContent = now.toLocaleDateString('pt-BR', opts);
+        })();
+
+        // Dark mode
+        const toggle       = document.getElementById('theme-toggle');
+        const toggleMobile = document.getElementById('theme-toggle-mobile');
+        const tabLabel     = document.getElementById('tab-theme-label');
+        const switchLabel  = document.getElementById('theme-label');
+
+        function applyTheme(dark, save) {
+            document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
+            if (toggle)       toggle.checked = dark;
+            if (toggleMobile) toggleMobile.checked = dark;
+            if (tabLabel)     tabLabel.textContent  = dark ? 'Escuro' : 'Claro';
+            if (switchLabel)  switchLabel.textContent = dark ? 'Escuro' : 'Claro';
+            if (save) localStorage.setItem('frp-theme', dark ? 'dark' : 'light');
+        }
+        if (toggle)       toggle.addEventListener('change', e => applyTheme(e.target.checked, true));
+        if (toggleMobile) toggleMobile.addEventListener('change', e => applyTheme(e.target.checked, true));
+        const saved  = localStorage.getItem('frp-theme');
+        const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(saved ? saved === 'dark' : sysDark, false);
+
+        // GSAP entrada
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        tl.to('#main-header', { opacity: 1, y: 0, duration: 0.5 })
+          .to('#page-hero',   { opacity: 1, y: 0, duration: 0.55 }, '-=0.25');
+
+        // ScrollTrigger pra cada seção
+        document.querySelectorAll('.gsap-up').forEach(el => {
+            gsap.to(el, {
+                opacity: 1, y: 0, duration: 0.6, ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el, start: 'top 90%',
+                    toggleActions: 'play none none none'
+                }
+            });
+        });
+
+        // Nav hover
+        document.querySelectorAll('.header-nav a').forEach(link => {
+            link.addEventListener('mouseenter', () => gsap.to(link, { y: -1, duration: 0.12 }));
+            link.addEventListener('mouseleave', () => gsap.to(link, { y:  0, duration: 0.12 }));
+        });
+
+        // Micro-animação click nos cards
+        document.querySelectorAll('.card-hero, .card-med, .card-list, .scroll-card').forEach(c => {
+            c.addEventListener('click', () => {
+                gsap.fromTo(c, { scale: 0.97 }, { scale: 1, duration: 0.22, ease: 'back.out(2)' });
+            });
+        });
+    </script>
+</body>
+</html>

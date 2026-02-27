@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fortal Roleplay — Onde Levar no Primeiro Date</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <meta name="description" content="Luz baixa, comida que não suja o dente e preço pra quem ainda não tem certeza se o lance vai virar namoro.">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --sf-pro: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+            --bg-body: #ffffff;
+            --bg-header: rgba(255,255,255,0.88);
+            --bg-card: #ffffff;
+            --bg-subtle: #f5f5f7;
+            --border-color: #d2d2d7;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-blue: #0071e3;
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.07);
+            --header-height: 56px;
+            --app-btn-bg: #f0f0f5;
+            --app-btn-text: #0071e3;
+            --quote-border: #d2d2d7;
+        }
+        [data-theme="dark"] {
+            --bg-body: #000000;
+            --bg-header: rgba(28,28,30,0.92);
+            --bg-card: #1c1c1e;
+            --bg-subtle: #1c1c1e;
+            --border-color: #38383a;
+            --text-primary: #f5f5f7;
+            --text-secondary: #98989d;
+            --accent-blue: #2997ff;
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            --app-btn-bg: #2c2c2e;
+            --app-btn-text: #2997ff;
+            --quote-border: #48484a;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; outline:none; -webkit-tap-highlight-color:transparent; }
+        body {
+            font-family: var(--sf-pro);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ===== HEADER ===== */
+        #main-header {
+            height: var(--header-height);
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px;
+            position: fixed; top:0; left:0; right:0;
+            z-index: 2000;
+            transition: background 0.3s, border-color 0.3s;
+            opacity: 0; transform: translateY(-10px);
+        }
+        .header-left { display:flex; align-items:center; gap:14px; }
+        .header-date { display:flex; flex-direction:column; line-height:1.2; }
+        .header-date-day { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-secondary); }
+        .header-date-num { font-size:22px; font-weight:700; color:var(--text-primary); line-height:1; }
+        .header-divider { width:1px; height:28px; background:var(--border-color); flex-shrink:0; }
+        .logo-placeholder { display:flex; align-items:center; gap:8px; text-decoration:none; transition:opacity 0.2s; }
+        .logo-placeholder:hover { opacity:0.7; }
+        .logo-img { height:34px; width:auto; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        [data-theme="dark"] .logo-img { filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.12)); }
+        .logo-missing { height:30px; padding:0 10px; background:var(--bg-subtle); border:1px dashed var(--text-secondary); border-radius:6px; display:flex; align-items:center; font-size:10px; color:var(--text-secondary); text-transform:uppercase; }
+        .header-nav { display:flex; gap:20px; align-items:center; }
+        .header-nav a { text-decoration:none; font-size:13px; color:var(--text-primary); opacity:0.75; transition:opacity 0.2s, color 0.2s; font-weight:500; position:relative; }
+        .header-nav a:hover { opacity:1; color:var(--accent-blue); }
+        .header-nav a.active { opacity:1; font-weight:600; }
+        .header-nav a.active::after { content:''; position:absolute; bottom:-4px; left:0; right:0; height:2px; background:var(--accent-blue); border-radius:1px; }
+        .ios-switch { position:relative; display:inline-flex; align-items:center; gap:6px; cursor:pointer; }
+        .ios-switch input { position:absolute; opacity:0; width:0; height:0; }
+        .switch-track { width:42px; height:24px; background:#e9e9ea; border-radius:34px; position:relative; transition:background .35s; flex-shrink:0; }
+        [data-theme="dark"] .switch-track { background:#39393d; }
+        .switch-track::before { content:''; position:absolute; height:20px; width:20px; top:2px; left:2px; background:white; border-radius:50%; transition:transform .35s; box-shadow:0 2px 4px rgba(0,0,0,0.18); }
+        .ios-switch input:checked + .switch-track { background:#30d158; }
+        .ios-switch input:checked + .switch-track::before { transform:translateX(18px); }
+        .switch-label { font-size:12px; font-weight:600; color:var(--text-secondary); white-space:nowrap; }
+
+        /* ===== NEWSROOM LAYOUT ===== */
+        main {
+            padding-top: calc(var(--header-height) + 64px);
+            padding-bottom: 120px;
+            width: 100%;
+        }
+
+        /* Breadcrumb */
+        .nr-breadcrumb {
+            max-width: 680px;
+            margin: 0 auto 20px;
+            padding: 0 24px;
+            display: flex; align-items: center; gap: 8px;
+            opacity: 0; transform: translateY(10px);
+        }
+        .nr-breadcrumb a { font-size: 13px; color: var(--accent-blue); text-decoration: none; }
+        .nr-breadcrumb a:hover { text-decoration: underline; }
+        .nr-breadcrumb-sep { color: var(--text-secondary); font-size: 13px; }
+        .nr-breadcrumb span { font-size: 13px; color: var(--text-secondary); }
+
+        /* Header do artigo */
+        .nr-header {
+            text-align: center;
+            padding: 0 24px;
+            margin-bottom: 48px;
+            max-width: 800px;
+            margin-left: auto; margin-right: auto;
+            opacity: 0; transform: translateY(20px);
+        }
+        .nr-category {
+            display: inline-block;
+            font-size: 12px; font-weight: 700;
+            letter-spacing: 0.07em; text-transform: uppercase;
+            color: var(--accent-blue);
+            background: rgba(0,113,227,0.08);
+            padding: 4px 12px; border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        [data-theme="dark"] .nr-category { background: rgba(41,151,255,0.12); }
+        .nr-title {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 700; letter-spacing: -0.025em; line-height: 1.04;
+            color: var(--text-primary); margin-bottom: 20px;
+        }
+        .nr-subtitle {
+            font-size: clamp(18px, 2.5vw, 22px); font-weight: 400;
+            line-height: 1.4; color: var(--text-secondary);
+            max-width: 620px; margin: 0 auto;
+        }
+
+        /* Meta linha */
+        .nr-meta {
+            display: flex; align-items: center; justify-content: center;
+            gap: 16px; margin-top: 24px;
+            font-size: 13px; color: var(--text-secondary);
+            opacity: 0; transform: translateY(10px);
+        }
+        .nr-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-secondary); }
+        .nr-meta-tag {
+            background: var(--bg-subtle); border: 1px solid var(--border-color);
+            padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.4px;
+        }
+
+        /* Hero image */
+        .nr-hero {
+            max-width: 1060px; margin: 0 auto 64px; padding: 0 24px;
+            opacity: 0; transform: scale(0.98);
+        }
+        .nr-hero img {
+            width: 100%; aspect-ratio: 16/9; object-fit: cover;
+            border-radius: 20px;
+        }
+        .nr-hero figcaption {
+            font-size: 13px; color: var(--text-secondary);
+            text-align: center; margin-top: 12px; padding: 0 8px;
+            font-style: italic;
+        }
+
+        /* Corpo do artigo */
+        .nr-body { max-width: 680px; margin: 0 auto; padding: 0 24px; }
+        .nr-body p { font-size: 19px; line-height: 1.65; color: var(--text-primary); margin-bottom: 28px; }
+        .nr-body p.lead { font-size: 23px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.35; margin-bottom: 40px; color: var(--text-primary); }
+        .nr-body h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.015em; color: var(--text-primary); margin: 60px 0 20px; }
+        .nr-body h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--text-primary); margin: 40px 0 12px; }
+
+        /* Quote */
+        .nr-quote {
+            border-left: 3px solid var(--accent-blue);
+            padding: 4px 0 4px 24px;
+            margin: 48px 0;
+            font-size: 22px; font-weight: 500; line-height: 1.4;
+            color: var(--text-primary);
+        }
+        .nr-quote-attr {
+            font-size: 13px; font-weight: 600; color: var(--text-secondary);
+            margin-top: 12px; display: block;
+        }
+
+        /* Callout / destaque */
+        .nr-callout {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin: 40px 0;
+            display: flex; align-items: flex-start; gap: 16px;
+        }
+        .nr-callout-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; color: white;
+        }
+        .nr-callout-body { flex: 1; }
+        .nr-callout-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 6px; }
+        .nr-callout-text { font-size: 16px; line-height: 1.55; color: var(--text-primary); }
+
+        /* App Store card — componente de local */
+        .app-store-card {
+            display: flex; align-items: center; gap: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 18px 20px; border-radius: 20px;
+            margin: 32px 0;
+            text-decoration: none; color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+        }
+        .app-store-card:hover { transform: scale(1.015); box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+        .app-card-icon {
+            width: 60px; height: 60px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; color: white;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+        }
+        .app-card-content { flex: 1; min-width: 0; }
+        .app-card-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 3px; }
+        .app-card-title { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .app-card-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .app-card-btn {
+            background: var(--app-btn-bg); color: var(--app-btn-text);
+            font-size: 14px; font-weight: 700;
+            padding: 8px 18px; border-radius: 980px; flex-shrink: 0;
+            transition: opacity 0.2s, transform 0.12s;
+            white-space: nowrap;
+        }
+        .app-store-card:hover .app-card-btn { opacity: 0.8; transform: scale(0.97); }
+
+        /* Mini cards de lista (3 em linha) */
+        .nr-card-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+            margin: 32px 0;
+        }
+        .nr-mini-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 16px 14px;
+            text-decoration: none; color: inherit;
+            transition: transform 0.18s, box-shadow 0.18s;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .nr-mini-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        .nr-mini-dot {
+            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+        }
+        .nr-mini-header { display: flex; align-items: center; gap: 8px; }
+        .nr-mini-name { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+        .nr-mini-vibe { font-size: 11px; color: var(--text-secondary); }
+        .nr-mini-chip {
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 6px; align-self: flex-start;
+            letter-spacing: 0.3px;
+        }
+
+        /* Imagem solta */
+        .nr-figure { margin: 48px 0; }
+        .nr-figure img { width: 100%; height: auto; display: block; border-radius: 16px; }
+        .nr-figure figcaption { font-size: 13px; color: var(--text-secondary); text-align: center; margin-top: 10px; padding: 0 12px; font-style: italic; }
+
+        /* Linha divisória editorial */
+        .nr-rule { border: none; border-top: 1px solid var(--border-color); margin: 56px 0; }
+
+        /* Rating visual */
+        .nr-rating-table { width: 100%; margin: 32px 0; border-collapse: collapse; }
+        .nr-rating-table td { padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 15px; }
+        .nr-rating-table td:first-child { color: var(--text-primary); font-weight: 500; }
+        .nr-rating-table td:last-child { text-align: right; }
+        .nr-rating-table tr:last-child td { border-bottom: none; }
+        .rating-bar-wrap { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+        .rating-bar { height: 6px; border-radius: 3px; background: var(--border-color); width: 100px; overflow: hidden; }
+        .rating-fill { height: 100%; border-radius: 3px; }
+        .rating-num { font-size: 13px; font-weight: 700; color: var(--text-secondary); min-width: 24px; }
+
+        /* Botão final */
+        .nr-footer { text-align: center; margin-top: 80px; padding-bottom: 40px; }
+        .btn-apple {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--text-primary); color: var(--bg-body);
+            font-size: 16px; font-weight: 600; text-decoration: none;
+            padding: 14px 28px; border-radius: 980px;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .btn-apple:hover { opacity: 0.85; transform: scale(1.02); }
+        .btn-apple svg { width: 16px; height: 16px; }
+        .btn-secondary {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--bg-subtle); color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            font-size: 16px; font-weight: 600; text-decoration: none;
+            padding: 14px 28px; border-radius: 980px;
+            transition: transform 0.2s, opacity 0.2s;
+            margin-left: 12px;
+        }
+        .btn-secondary:hover { opacity: 0.75; transform: scale(1.02); }
+
+        /* Progress / Sumário lateral (desktop sticky) */
+        .nr-layout {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 220px;
+            gap: 0 40px;
+            align-items: start;
+            padding: 0 24px;
+        }
+        article.nr-body {
+            grid-column: 1;
+            grid-row: 1;
+            padding: 0;
+            max-width: 100%;
+        }
+        .nr-sidebar-toc {
+            grid-column: 2;
+            grid-row: 1;
+            position: sticky;
+            top: calc(var(--header-height) + 24px);
+            align-self: start;
+            background: var(--bg-subtle); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 20px;
+            font-size: 13px;
+        }
+        .toc-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 12px; }
+        .toc-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .toc-list a { text-decoration: none; color: var(--text-secondary); font-weight: 500; transition: color 0.18s; display: flex; gap: 8px; align-items: baseline; }
+        .toc-list a:hover, .toc-list a.active { color: var(--accent-blue); }
+        .toc-num { font-size: 10px; font-weight: 700; color: var(--border-color); flex-shrink: 0; }
+
+        /* GSAP initial state */
+        .gsap-reveal { opacity: 0; transform: translateY(22px); }
+
+        /* ===== MOBILE TAB BAR ===== */
+        .mobile-tab-bar { display: none; }
+        @media (max-width: 768px) {
+            :root { --header-height: 52px; }
+            .mobile-tab-bar {
+                display: flex; position: fixed;
+                bottom: 0; left: 0; right: 0; z-index: 3000;
+                height: calc(56px + env(safe-area-inset-bottom));
+                padding-bottom: env(safe-area-inset-bottom);
+                background: var(--bg-header);
+                backdrop-filter: saturate(180%) blur(20px);
+                -webkit-backdrop-filter: saturate(180%) blur(20px);
+                border-top: 1px solid var(--border-color);
+                align-items: stretch; justify-content: space-around;
+                transition: background 0.3s, border-color 0.3s;
+            }
+            .tab-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; text-decoration:none; color:var(--text-secondary); font-size:10px; font-weight:500; font-family:var(--sf-pro); transition:color 0.18s; cursor:pointer; background:none; border:none; padding:0; }
+            .tab-item.active { color: var(--accent-blue); }
+            .tab-item svg { width:22px; height:22px; stroke-width:1.7; }
+            .tab-item.active svg { stroke-width:2.2; }
+            .mini-switch { position:relative; width:34px; height:20px; }
+            .mini-switch input { opacity:0; width:0; height:0; position:absolute; }
+            .mini-slider { position:absolute; inset:0; background:#e9e9ea; border-radius:34px; cursor:pointer; transition:background .3s; }
+            [data-theme="dark"] .mini-slider { background:#39393d; }
+            .mini-slider::before { content:""; position:absolute; height:16px; width:16px; left:2px; top:2px; background:white; border-radius:50%; transition:transform .3s; box-shadow:0 1px 3px rgba(0,0,0,0.25); }
+            .mini-switch input:checked + .mini-slider { background:#30d158; }
+            .mini-switch input:checked + .mini-slider::before { transform:translateX(14px); }
+
+            #main-header { padding: 0 14px; }
+            .header-nav { display: none; }
+            main { padding-top: calc(var(--header-height) + 28px); padding-bottom: calc(56px + env(safe-area-inset-bottom) + 48px); }
+            .nr-header { padding: 0 16px; margin-bottom: 28px; }
+            .nr-hero { padding: 0; margin-bottom: 36px; }
+            .nr-hero img { border-radius: 0; }
+            .nr-breadcrumb { padding: 0 16px; }
+            /* grid colapsa pra 1 coluna no mobile */
+            .nr-layout { grid-template-columns: 1fr; padding: 0; }
+            article.nr-body { grid-column: 1; grid-row: 1; padding: 0 16px; }
+            .nr-body p { font-size: 17px; }
+            .nr-body p.lead { font-size: 20px; }
+            .nr-body h2 { font-size: 23px; margin-top: 44px; }
+            .nr-body h3 { font-size: 18px; }
+            .nr-quote { font-size: 19px; padding-left: 18px; margin: 36px 0; }
+            .app-store-card { flex-direction: column; align-items: flex-start; gap: 14px; }
+            .app-card-btn { width: 100%; text-align: center; }
+            .nr-card-row { grid-template-columns: 1fr; }
+            .nr-sidebar-toc { display: none; }
+            .nr-footer { flex-direction: column; gap: 12px; }
+            .btn-secondary { margin-left: 0; margin-top: 10px; display: flex; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <!-- Header -->
+    <header id="main-header">
+        <div class="header-left">
+            <div class="header-date">
+                <div class="header-date-day" id="header-weekday"></div>
+                <div class="header-date-num" id="header-daynum"></div>
+            </div>
+            <div class="header-divider"></div>
+            <a href="index.html" class="logo-placeholder">
+                <img src="logohead.png" alt="Logo" class="logo-img"
+                     onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex';">
+                <div id="logo-fallback" class="logo-missing" style="display:none;">Fortal</div>
+            </a>
+        </div>
+        <div class="header-nav">
+            <a href="index.html">Mapa</a>
+            <a href="roteiros.html" class="active">Roteiros</a>
+            <a href="sobre.html">Sobre</a>
+            <label class="ios-switch" title="Modo escuro">
+                <input type="checkbox" id="theme-toggle">
+                <span class="switch-track"></span>
+                <span class="switch-label" id="theme-label">Claro</span>
+            </label>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- Breadcrumb -->
+        <nav class="nr-breadcrumb" id="nr-breadcrumb">
+            <a href="roteiros.html">Roteiros</a>
+            <span class="nr-breadcrumb-sep">›</span>
+            <span>Rolê de Casal</span>
+        </nav>
+
+        <!-- Cabeçalho do Artigo -->
+        <div class="nr-header" id="nr-header">
+            <div class="nr-category">Rolê de Casal</div>
+            <h1 class="nr-title">Onde levar o contatinho<br>no primeiro date</h1>
+            <p class="nr-subtitle">Luz baixa, comida que não suja o dente e preço pra quem ainda não tem certeza se o lance vai virar namoro.</p>
+            <div class="nr-meta" id="nr-meta">
+                <span>Redação Fortal</span>
+                <span class="nr-meta-dot"></span>
+                <span id="meta-date"></span>
+                <span class="nr-meta-dot"></span>
+                <span class="nr-meta-tag">7 locais</span>
+                <span class="nr-meta-dot"></span>
+                <span class="nr-meta-tag">Leitura: 5 min</span>
+            </div>
+        </div>
+
+        <!-- Hero Image -->
+        <figure class="nr-hero" id="nr-hero">
+            <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1400"
+                 alt="Casal brindando em luz baixa com drinks elegantes">
+            <figcaption>O ambiente certo já faz metade do serviço. A outra metade é não falar do ex.</figcaption>
+        </figure>
+
+        <!-- Corpo do Artigo -->
+        <div class="nr-layout">
+
+            <article class="nr-body">
+
+                <p class="lead gsap-reveal">O primeiro encontro é uma ciência exata disfarçada de improviso. Escolha um lugar muito silencioso e o clima vira entrevista de emprego. Barulhento demais? Vocês passam a noite gritando "O QUÊ?!" um pro outro. O equilíbrio existe. Nós mapeamos ele.</p>
+
+                <!-- SEÇÃO 1 -->
+                <h2 id="sec-regra" class="gsap-reveal">A Ciência do Ambiente</h2>
+
+                <p class="gsap-reveal">Fortaleza não facilita. A cidade é quente, festeira e adora um som alto. Mas existem oásis projetados — propositalmente ou não — para o flerte. Lugares onde a iluminação te deixa 20% mais atraente e o cardápio permite dividir uma entrada sem parecer miserável.</p>
+
+                <blockquote class="nr-quote gsap-reveal">
+                    A regra de ouro do 1º date: nunca peça hambúrguer gigante ou qualquer coisa que exija as duas mãos e manchas de molho. Você ainda não tem essa intimidade.
+                    <span class="nr-quote-attr">— Sabedoria popular do Tinder de Fortaleza</span>
+                </blockquote>
+
+                <p class="gsap-reveal">Três critérios separam o bom encontro do desastre: <strong>acústica</strong> (dá pra conversar sem gritar), <strong>iluminação</strong> (luz amarela morna, nunca branca cirúrgica) e <strong>custo-benefício</strong> (dá pra pagar sem fazer cara de choro na frente do app do banco).</p>
+
+                <div class="nr-callout gsap-reveal">
+                    <div class="nr-callout-icon" style="background: linear-gradient(135deg, #ff9500, #ff3b30);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                    <div class="nr-callout-body">
+                        <div class="nr-callout-label">Alerta Importante</div>
+                        <div class="nr-callout-text">Fugir do shopping no primeiro encontro é quase obrigatório. RioMar e Iguatemi passam a vibe de que sua mãe vai te buscar às 21h. Salvo se for pra um restaurante específico dentro dele — aí tudo bem.</div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 2 -->
+                <h2 id="sec-nivel" class="gsap-reveal">Escolha o Nível Certo</h2>
+
+                <p class="gsap-reveal">Ir num lugar muito caro logo de cara cria uma expectativa difícil de manter. Ir num barato demais diz que você não se esforçou. O ideal é o meio-termo inteligente: lugar com personalidade, preço médio-alto, ambiente que justifique o esforço sem parecer show-off.</p>
+
+                <!-- Rating table -->
+                <table class="nr-rating-table gsap-reveal">
+                    <tbody>
+                        <tr>
+                            <td>Acústica (conversa fácil)</td>
+                            <td>
+                                <div class="rating-bar-wrap">
+                                    <span class="rating-num">9</span>
+                                    <div class="rating-bar"><div class="rating-fill" style="width:90%;background:#30d158;"></div></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Iluminação favorável</td>
+                            <td>
+                                <div class="rating-bar-wrap">
+                                    <span class="rating-num">8</span>
+                                    <div class="rating-bar"><div class="rating-fill" style="width:80%;background:#ff9500;"></div></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Preço justo (sem surpresa)</td>
+                            <td>
+                                <div class="rating-bar-wrap">
+                                    <span class="rating-num">7</span>
+                                    <div class="rating-bar"><div class="rating-fill" style="width:70%;background:#007aff;"></div></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Facilidade de estacionar</td>
+                            <td>
+                                <div class="rating-bar-wrap">
+                                    <span class="rating-num">6</span>
+                                    <div class="rating-bar"><div class="rating-fill" style="width:60%;background:#af52de;"></div></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- SEÇÃO 3: Tarde -->
+                <h2 id="sec-tarde" class="gsap-reveal">Tarde & Café: A Saída Inteligente</h2>
+
+                <p class="gsap-reveal">Se a ideia for algo mais cedo, no final da tarde, um café especial é a saída perfeita. Se o papo fluir, vocês emendam em um bar ou jantar. Se não fluir, acabar um café leva 20 minutos e você está livre. É o date com plano B embutido.</p>
+
+                <a href="index.html?busca=Amika" class="app-store-card gsap-reveal">
+                    <div class="app-card-icon" style="background: linear-gradient(135deg, #8e4ec6, #c084fc);">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                    </div>
+                    <div class="app-card-content">
+                        <div class="app-card-tag">Café Cult · Aldeota</div>
+                        <div class="app-card-title">Amika Coffeehouse</div>
+                        <div class="app-card-desc">Decoração minimalista, cafés premiados e vitrines de doces perfeitas para dividir. Clima calmo, sem gritaria. A conversa flui.</div>
+                    </div>
+                    <div class="app-card-btn">Ver no Mapa</div>
+                </a>
+
+                <a href="index.html?busca=Le+Pain" class="app-store-card gsap-reveal">
+                    <div class="app-card-icon" style="background: linear-gradient(135deg, #e8a045, #f5c76a);">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+                    </div>
+                    <div class="app-card-content">
+                        <div class="app-card-tag">Café Francês · Aldeota</div>
+                        <div class="app-card-title">Le Pain Le Café</div>
+                        <div class="app-card-desc">Croissant, ar condicionado e luz boa. O ambiente afrancesado ajuda demais. Perfeito pra um café da tarde sem parecer forçado.</div>
+                    </div>
+                    <div class="app-card-btn">Ver no Mapa</div>
+                </a>
+
+                <figure class="nr-figure gsap-reveal">
+                    <img src="https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?auto=format&fit=crop&q=80&w=1200" alt="Mesa de café com drinks elegantes e luz suave">
+                    <figcaption>Um café tarde da tarde compra tempo. E tempo bem passado já é uma história.</figcaption>
+                </figure>
+
+                <!-- SEÇÃO 4: Noite -->
+                <h2 id="sec-noite" class="gsap-reveal">Noite & Jantar: O Clássico</h2>
+
+                <p class="gsap-reveal">O jantar é o cenário mais comum e, por isso, o mais perigoso para errar. Dois locais da nossa lista passaram no nosso teste de 4 horas de conversa sem precisar elevar a voz uma única vez.</p>
+
+                <a href="index.html?busca=Moleskine" class="app-store-card gsap-reveal">
+                    <div class="app-card-icon" style="background: linear-gradient(135deg, #007aff, #5ac8fa);">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <div class="app-card-content">
+                        <div class="app-card-tag">Elite Descontraída · Meireles</div>
+                        <div class="app-card-title">Moleskine Gastrobar</div>
+                        <div class="app-card-desc">O som ambiente não atrapalha a conversa e a carta de drinks é um ótimo quebra-gelo. Dica: suba pro andar de cima. Muito melhor.</div>
+                    </div>
+                    <div class="app-card-btn">Ver no Mapa</div>
+                </a>
+
+                <a href="index.html?busca=Santa+Grelha" class="app-store-card gsap-reveal">
+                    <div class="app-card-icon" style="background: linear-gradient(135deg, #ff3b30, #ff6b6b);">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                    </div>
+                    <div class="app-card-content">
+                        <div class="app-card-tag">Carne & Elegância · Aldeota</div>
+                        <div class="app-card-title">Santa Grelha</div>
+                        <div class="app-card-desc">Onde o empresário almoça, mas funciona muito bem à noite. Ambiente adulto, cortes bons e luminosidade exatamente na faixa certa.</div>
+                    </div>
+                    <div class="app-card-btn">Ver no Mapa</div>
+                </a>
+
+                <div class="nr-callout gsap-reveal">
+                    <div class="nr-callout-icon" style="background: linear-gradient(135deg, #30d158, #34c759);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="nr-callout-body">
+                        <div class="nr-callout-label">Dica de Ouro</div>
+                        <div class="nr-callout-text">Ligue antes e pergunte pelos horários de pico. Chegar numa mesa apinhada é o equivalente gastronômico de levar o crush pra uma lotérica numa sexta à tarde.</div>
+                    </div>
+                </div>
+
+                <hr class="nr-rule">
+
+                <!-- SEÇÃO 5: Drinks Depois -->
+                <h2 id="sec-drinks" class="gsap-reveal">Drinks Depois: O Prolongamento</h2>
+
+                <p class="gsap-reveal">O jantar correu bem. O que rola agora? O bar de drinks certo transforma a noite de "foi legal" para "quando a gente se vê de novo?". Aqui a vibe tem que escalar levemente: menos formal, mais próximo, música um pouco mais presente mas ainda conversável.</p>
+
+                <a href="index.html?busca=Zelig" class="app-store-card gsap-reveal">
+                    <div class="app-card-icon" style="background: linear-gradient(135deg, #1c1c1e, #48484a);">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                    </div>
+                    <div class="app-card-content">
+                        <div class="app-card-tag">Bar Cult · Aldeota</div>
+                        <div class="app-card-title">Zelig Drink Bar</div>
+                        <div class="app-card-desc">Escondido e escuro. Parece bar de filme noir. Os drinks são inventivos e o ambiente cria uma intimidade que dificilmente você consegue num lugar comum.</div>
+                    </div>
+                    <div class="app-card-btn">Ver no Mapa</div>
+                </a>
+
+                <!-- 3 mini cards -->
+                <div class="nr-card-row gsap-reveal">
+                    <a href="index.html?busca=Café+Couture" class="nr-mini-card">
+                        <div class="nr-mini-header">
+                            <div class="nr-mini-dot" style="background:#af52de;"></div>
+                            <div class="nr-mini-name">Café Couture</div>
+                        </div>
+                        <div class="nr-mini-vibe">Piano e luz vermelha. Boemia afrancesada.</div>
+                        <span class="nr-mini-chip" style="background:rgba(175,82,222,0.12);color:#af52de;">Jazz</span>
+                    </a>
+                    <a href="index.html?busca=Fuzuê+Bar" class="nr-mini-card">
+                        <div class="nr-mini-header">
+                            <div class="nr-mini-dot" style="background:#af52de;"></div>
+                            <div class="nr-mini-name">Fuzuê Bar</div>
+                        </div>
+                        <div class="nr-mini-vibe">Esquenta do Meireles. Vista e bons drinks.</div>
+                        <span class="nr-mini-chip" style="background:rgba(175,82,222,0.12);color:#af52de;">Cult</span>
+                    </a>
+                    <a href="index.html?busca=Boozer" class="nr-mini-card">
+                        <div class="nr-mini-header">
+                            <div class="nr-mini-dot" style="background:#af52de;"></div>
+                            <div class="nr-mini-name">Boozer's Pub</div>
+                        </div>
+                        <div class="nr-mini-vibe">Gringos, rock clássico. Vibe de viagem.</div>
+                        <span class="nr-mini-chip" style="background:rgba(175,82,222,0.12);color:#af52de;">Rock</span>
+                    </a>
+                </div>
+
+                <hr class="nr-rule">
+
+                <!-- SEÇÃO 6: Erros -->
+                <h2 id="sec-erros" class="gsap-reveal">Os 5 Erros Clássicos do Date em Fortaleza</h2>
+
+                <h3 class="gsap-reveal">1. Escolher lugar por fama, não pelo ambiente</h3>
+                <p class="gsap-reveal">O Coco Bambu é excelente. Mas lotado às 20h de sábado, com filha de médico comemorando 15 anos na mesa do lado, o romance some. Nome bom não é suficiente.</p>
+
+                <h3 class="gsap-reveal">2. Subestimar o trânsito de Fortaleza</h3>
+                <p class="gsap-reveal">Chegar 20 minutos atrasado já dizimou relacionamentos antes de começarem. Saia mais cedo. Sempre. A cidade não te avisa quando vai engarrafar.</p>
+
+                <blockquote class="nr-quote gsap-reveal">
+                    "Cheguei atrasado mas mandei mensagem" não é desculpa. É confissão.
+                </blockquote>
+
+                <h3 class="gsap-reveal">3. Escolher o bar barulhento de sexta</h3>
+                <p class="gsap-reveal">Primeira sexta do mês no Arsenal do Chopp? Excelente. Primeiro date? Desastre. Guarde os lugares animados para quando já tiverem intimidade suficiente pra ficar lado a lado sem falar nada.</p>
+
+                <h3 class="gsap-reveal">4. Não ter plano B</h3>
+                <p class="gsap-reveal">Sempre saiba qual é o próximo passo. "E agora?" dito ao final do jantar é o killer de atmosfera número 1. Já pense: café, drinks ou caminhada na Beira Mar.</p>
+
+                <h3 class="gsap-reveal">5. Selfie demais, presença de menos</h3>
+                <p class="gsap-reveal">Uma foto pro Instagram está liberado. Cinco fotos antes de pedir a entrada é desrespeitoso com o seu próprio date. O celular sai do bolso só quando a comida chegar, pra documentar — e volta pro bolso logo depois.</p>
+
+                <hr class="nr-rule">
+
+                <!-- SEÇÃO 7: Resumo -->
+                <h2 id="sec-resumo" class="gsap-reveal">Resumo: O Roteiro Completo</h2>
+
+                <p class="gsap-reveal">Montamos o roteiro perfeito para dois cenários: o date de tarde (com possibilidade de extensão) e o clássico jantar + drinks.</p>
+
+                <div class="nr-callout gsap-reveal">
+                    <div class="nr-callout-icon" style="background: linear-gradient(135deg, #007aff, #5ac8fa);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="nr-callout-body">
+                        <div class="nr-callout-label">Roteiro Tarde (17h→21h)</div>
+                        <div class="nr-callout-text"><strong>Amika ou Le Pain</strong> para o café → se o papo fluiu: <strong>Fuzuê Bar</strong> para o primeiro drink → jantar no <strong>Moleskine</strong> se ficou tarde. Custo total: ~R$120–180 por pessoa.</div>
+                    </div>
+                </div>
+
+                <div class="nr-callout gsap-reveal">
+                    <div class="nr-callout-icon" style="background: linear-gradient(135deg, #ff9500, #ffcc00);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <div class="nr-callout-body">
+                        <div class="nr-callout-label">Roteiro Noite (19h30→meia-noite)</div>
+                        <div class="nr-callout-text"><strong>Santa Grelha</strong> para o jantar → <strong>Zelig</strong> ou <strong>Café Couture</strong> para drinks. Essa sequência nunca falhou nos nossos testes de campo (e são muitos).</div>
+                    </div>
+                </div>
+
+                <!-- Rodapé do artigo -->
+                <div class="nr-footer gsap-reveal">
+                    <a href="index.html?busca=date" class="btn-apple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+                        Ver todos no Mapa
+                    </a>
+                    <a href="roteiros.html" class="btn-secondary">
+                        ← Mais Roteiros
+                    </a>
+                </div>
+
+            </article>
+
+            <!-- ToC Lateral — posicionado depois do article no DOM, CSS grid coloca à direita -->
+            <aside class="nr-sidebar-toc" id="toc">
+                <div class="toc-label">Neste roteiro</div>
+                <ul class="toc-list">
+                    <li><a href="#sec-regra" id="toc-regra"><span class="toc-num">01</span> A Ciência do Date</a></li>
+                    <li><a href="#sec-nivel" id="toc-nivel"><span class="toc-num">02</span> Escolha o Nível</a></li>
+                    <li><a href="#sec-tarde" id="toc-tarde"><span class="toc-num">03</span> Tarde & Café</a></li>
+                    <li><a href="#sec-noite" id="toc-noite"><span class="toc-num">04</span> Noite & Jantar</a></li>
+                    <li><a href="#sec-drinks" id="toc-drinks"><span class="toc-num">05</span> Drinks Depois</a></li>
+                    <li><a href="#sec-erros" id="toc-erros"><span class="toc-num">06</span> Erros Clássicos</a></li>
+                    <li><a href="#sec-resumo" id="toc-resumo"><span class="toc-num">07</span> Resumo</a></li>
+                </ul>
+            </aside>
+
+        </div>
+    </main>
+
+    <!-- Mobile Tab Bar -->
+    <nav class="mobile-tab-bar" id="mobile-tab-bar">
+        <a href="index.html" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
+            </svg>
+            <span>Mapa</span>
+        </a>
+        <a href="roteiros.html" class="tab-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span>Roteiros</span>
+        </a>
+        <a href="sobre.html" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <span>Sobre</span>
+        </a>
+        <button class="tab-item" id="tab-theme" aria-label="Alternar Tema">
+            <label class="mini-switch">
+                <input type="checkbox" id="theme-toggle-mobile">
+                <span class="mini-slider"></span>
+            </label>
+            <span id="tab-theme-label">Claro</span>
+        </button>
+    </nav>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Data no header e meta
+        (function(){
+            const now = new Date();
+            const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+            document.getElementById('header-weekday').textContent = days[now.getDay()];
+            document.getElementById('header-daynum').textContent = now.getDate();
+            const opts = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('meta-date').textContent = now.toLocaleDateString('pt-BR', opts);
+        })();
+
+        // Dark mode
+        const toggle = document.getElementById('theme-toggle');
+        const toggleMobile = document.getElementById('theme-toggle-mobile');
+        const tabThemeLabel = document.getElementById('tab-theme-label');
+        const themeLabel = document.getElementById('theme-label');
+
+        function applyTheme(dark, save) {
+            document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
+            if (toggle) toggle.checked = dark;
+            if (toggleMobile) toggleMobile.checked = dark;
+            if (tabThemeLabel) tabThemeLabel.textContent = dark ? 'Escuro' : 'Claro';
+            if (themeLabel) themeLabel.textContent = dark ? 'Escuro' : 'Claro';
+            if (save) localStorage.setItem('frp-theme', dark ? 'dark' : 'light');
+        }
+        if (toggle) toggle.addEventListener('change', e => applyTheme(e.target.checked, true));
+        if (toggleMobile) toggleMobile.addEventListener('change', e => applyTheme(e.target.checked, true));
+        const savedTheme = localStorage.getItem('frp-theme');
+        const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(savedTheme ? savedTheme === 'dark' : sysDark, false);
+
+        // ToC scroll spy
+        const sections = ['sec-regra','sec-nivel','sec-tarde','sec-noite','sec-drinks','sec-erros','sec-resumo'];
+        const tocLinks = sections.map(id => document.getElementById('toc-' + id.replace('sec-','')));
+        function updateToc() {
+            let current = 0;
+            sections.forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (el && window.scrollY >= el.offsetTop - 120) current = i;
+            });
+            tocLinks.forEach((a, i) => {
+                if (a) a.classList.toggle('active', i === current);
+            });
+        }
+        window.addEventListener('scroll', updateToc, { passive: true });
+        updateToc();
+
+        // GSAP Animações de entrada
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        tl.to('#main-header',    { opacity: 1, y: 0, duration: 0.5 })
+          .to('#nr-breadcrumb',  { opacity: 1, y: 0, duration: 0.4 }, '-=0.25')
+          .to('#nr-header',      { opacity: 1, y: 0, duration: 0.7 }, '-=0.2')
+          .to('#nr-meta',        { opacity: 1, y: 0, duration: 0.4 }, '-=0.3')
+          .to('#nr-hero',        { opacity: 1, scale: 1, duration: 0.85, ease: 'power2.out' }, '-=0.4');
+
+        // ScrollTrigger para elementos do corpo
+        document.querySelectorAll('.gsap-reveal').forEach(el => {
+            gsap.to(el, {
+                opacity: 1, y: 0, duration: 0.65, ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el, start: 'top 92%',
+                    toggleActions: 'play none none none'
+                }
+            });
+        });
+
+        // Hover do menu
+        document.querySelectorAll('.header-nav a').forEach(link => {
+            link.addEventListener('mouseenter', () => gsap.to(link, { y: -1, duration: 0.12 }));
+            link.addEventListener('mouseleave', () => gsap.to(link, { y: 0, duration: 0.12 }));
+        });
+
+        // Micro-animação nos cards de local ao clicar
+        document.querySelectorAll('.app-store-card, .nr-mini-card').forEach(card => {
+            card.addEventListener('click', () => {
+                gsap.fromTo(card, { scale: 0.97 }, { scale: 1, duration: 0.22, ease: 'back.out(2)' });
+            });
+        });
+    </script>
+</body>
+</html>

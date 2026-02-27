@@ -146,7 +146,7 @@
             border-radius: 1px;
         }
 
-        /* iOS switch (Padrão roteiros.html) */
+        /* iOS switch */
         .ios-switch {
             position: relative;
             display: inline-flex;
@@ -182,6 +182,16 @@
             font-weight: 600;
             color: var(--text-secondary);
             white-space: nowrap;
+        }
+
+        /* Relógio Mobile */
+        .mobile-clock {
+            display: none;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: var(--sf-pro);
+            letter-spacing: 0.5px;
         }
 
         /* ===== LAYOUT ===== */
@@ -357,7 +367,6 @@
             gap: 8px;
         }
         
-        /* Botão de Toggle da Barra Lateral no Mapa */
         .map-controls-left {
             position: absolute;
             left: 16px;
@@ -613,12 +622,12 @@
             :root { --header-height: 52px; }
             body { overflow: hidden; }
             
-            /* Padrão Header roteiros.html Mobile */
             header { padding: 0 14px; }
             .header-left { width: auto; flex: 1; }
             .logo-img { height: 30px; }
             .header-nav { display: none; }
             .ios-switch .switch-label { display: none; }
+            .mobile-clock { display: block; }
 
             main {
                 position: relative;
@@ -671,14 +680,13 @@
             }
             .search-container { padding: 5px 12px 8px; }
             .ios-search { font-size: 14px; padding: 8px 10px 8px 32px; }
-            .filter-bar { padding: 6px 12px; gap: 5px; }
-            .filter-pill { padding: 4px 10px; font-size: 10px; }
+            .filter-bar { padding: 7px 12px 8px; gap: 7px; }
+            .filter-pill { padding: 6px 13px; font-size: 11px; gap: 4px; }
             .place-item { padding: 10px 14px; gap: 10px; }
             .place-content h3 { font-size: 13px; }
             .place-content p { font-size: 11px; }
             .place-icon-badge { width: 32px; height: 32px; font-size: 16px; border-radius: 8px; }
 
-            /* Novidades button mobile */
             .novidades-btn {
                 right: 12px;
                 top: 12px;
@@ -693,16 +701,20 @@
             .novidades-btn:hover { transform: scale(1.04); }
             .novidades-btn:active { transform: scale(0.95); }
 
-            .map-controls-left { left: 12px; top: 12px; }
+            .map-controls-left { display: none; }
             .map-controls {
                 right: 12px;
                 bottom: calc(56px + env(safe-area-inset-bottom) + 130px);
             }
             .terrain-popover {
-                flex-direction: column;
-                right: auto;
-                left: auto;
+                flex-direction: row;
+                flex-wrap: wrap;
+                max-width: 200px;
                 right: 56px;
+                bottom: 0;
+            }
+            .terrain-opt {
+                min-width: 60px;
             }
 
             #toast { bottom: calc(56px + env(safe-area-inset-bottom) + 130px); }
@@ -710,8 +722,94 @@
         }
 
         @media (max-width: 400px) {
-            .filter-pill { padding: 3px 8px; font-size: 9px; }
+            .filter-pill { padding: 5px 11px; font-size: 10px; }
             .place-item { padding: 8px 12px; }
+        }
+
+        /* ===== GREETING POPUP ===== */
+        #greeting-popup {
+            position: fixed;
+            top: calc(var(--header-height) + 12px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            z-index: 8000;
+            pointer-events: none;
+            opacity: 0;
+            transition: none;
+        }
+        #greeting-popup.visible {
+            animation: greetSlideIn 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+        #greeting-popup.hiding {
+            animation: greetSlideOut 0.4s cubic-bezier(0.4,0,1,1) forwards;
+        }
+        @keyframes greetSlideIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-24px) scale(0.88); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+        }
+        @keyframes greetSlideOut {
+            from { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+            to   { opacity: 0; transform: translateX(-50%) translateY(-16px) scale(0.92); }
+        }
+        .greeting-inner {
+            background: var(--bg-header);
+            backdrop-filter: saturate(200%) blur(28px);
+            -webkit-backdrop-filter: saturate(200%) blur(28px);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 14px 20px 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+            min-width: 220px;
+            max-width: 340px;
+        }
+        .greeting-icon {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent-blue), #34c759);
+        }
+        .greeting-icon svg { width: 20px; height: 20px; stroke: white; }
+        .greeting-text { flex: 1; min-width: 0; }
+        .greeting-app { font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.4px; }
+        .greeting-main { font-size: 15px; font-weight: 600; color: var(--text-primary); line-height: 1.3; }
+        .greeting-sub  { font-size: 12px; color: var(--text-secondary); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* ===== PLACE TOAST ===== */
+        #place-toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--bg-header);
+            backdrop-filter: saturate(180%) blur(24px);
+            -webkit-backdrop-filter: saturate(180%) blur(24px);
+            border: 1px solid var(--border-color);
+            padding: 10px 16px 10px 12px;
+            border-radius: 16px;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+            white-space: nowrap;
+            font-family: var(--sf-pro);
+        }
+        .pt-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        }
+        .pt-cat { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+        .pt-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+        @media (max-width: 768px) {
+            #greeting-popup { top: calc(var(--header-height) + 8px); }
+            .greeting-inner { min-width: 180px; max-width: 280px; padding: 12px 16px 12px 12px; }
+            #place-toast { bottom: calc(56px + env(safe-area-inset-bottom) + 16px); }
         }
     </style>
 </head>
@@ -736,7 +834,6 @@
             <a href="index.html" class="active">Mapa</a>
             <a href="roteiros.html">Roteiros</a>
             <a href="sobre.html">Sobre</a>
-            <span id="api-badge" style="font-size:10px;font-weight:600;color:var(--text-secondary);letter-spacing:0.3px;"></span>
             
             <label class="ios-switch" title="Modo escuro">
                 <input type="checkbox" id="theme-toggle">
@@ -744,7 +841,35 @@
                 <span class="switch-label" id="theme-label">Claro</span>
             </label>
         </div>
+        
+        <div class="mobile-clock" id="mobile-clock"></div>
     </header>
+
+
+    <div id="greeting-popup">
+        <div class="greeting-inner">
+            <div class="greeting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                    <line x1="9" y1="3" x2="9" y2="18"/>
+                    <line x1="15" y1="6" x2="15" y2="21"/>
+                </svg>
+            </div>
+            <div class="greeting-text">
+                <div class="greeting-app">Fortal Roleplay</div>
+                <div class="greeting-main" id="greeting-main">Bom dia</div>
+                <div class="greeting-sub" id="greeting-sub">Fortaleza tá te esperando.</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="place-toast">
+        <div class="pt-dot" id="pt-dot"></div>
+        <div>
+            <div class="pt-cat" id="pt-cat"></div>
+            <div class="pt-name" id="pt-name"></div>
+        </div>
+    </div>
 
     <main>
         <aside id="sidebar">
@@ -757,10 +882,10 @@
                 <button class="filter-pill active" data-color="all" style="background:var(--text-primary);border-color:var(--text-primary);color:var(--bg-body);">
                     Todos
                 </button>
-                <button class="filter-pill" data-color="#af52de">
+                <button class="filter-pill" data-color="#8e4ec6">
                     <span class="pill-icon" style="display:inline-flex;align-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span>Cult
                 </button>
-                <button class="filter-pill" data-color="#ff3b30">
+                <button class="filter-pill" data-color="#c0392b">
                     <span class="pill-icon" style="display:inline-flex;align-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span>Underground
                 </button>
                 <button class="filter-pill" data-color="#007aff">
@@ -769,7 +894,7 @@
                 <button class="filter-pill" data-color="#34c759">
                     <span class="pill-icon" style="display:inline-flex;align-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></span>Povão
                 </button>
-                <button class="filter-pill" data-color="#ffcc00">
+                <button class="filter-pill" data-color="#e8a020">
                     <span class="pill-icon" style="display:inline-flex;align-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>Neutros
                 </button>
             </div>
@@ -900,25 +1025,103 @@
             document.getElementById('header-daynum').textContent = now.getDate();
         })();
 
+        // ===== RELÓGIO MOBILE =====
+        (function() {
+            function updateClock() {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const clockEl = document.getElementById('mobile-clock');
+                if(clockEl) clockEl.textContent = timeStr;
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
+        })();
+
+        // ===== GREETING POPUP — Executa 1 vez com som e idioma =====
+        (function() {
+            const h = new Date().getHours();
+            const lang = navigator.language || navigator.userLanguage;
+            const langCode = lang.split('-')[0].toLowerCase();
+            
+            // Textos baseados no idioma do navegador
+            const GREETINGS = {
+                pt: {
+                    morning: { main: 'Bom dia', sub: 'Fortaleza tá te esperando.' },
+                    afternoon: { main: 'Boa tarde', sub: 'Hora de planejar o rolê.' },
+                    evening: { main: 'Boa noite', sub: 'Fortaleza acende agora.' },
+                    latenight: { main: 'Boa madrugada', sub: 'Você e a cidade que não dorme.' }
+                },
+                es: {
+                    morning: { main: 'Buenos días', sub: 'La ciudad te espera.' },
+                    afternoon: { main: 'Buenas tardes', sub: 'Hora de planear la tarde.' },
+                    evening: { main: 'Buenas noches', sub: 'La ciudad se ilumina.' },
+                    latenight: { main: 'Buenas noches', sub: '¿Sigues explorando?' }
+                },
+                en: {
+                    morning: { main: 'Good morning', sub: 'Fortaleza is waiting for you.' },
+                    afternoon: { main: 'Good afternoon', sub: 'Time to plan your day.' },
+                    evening: { main: 'Good evening', sub: 'The city lights up now.' },
+                    latenight: { main: 'Late night', sub: 'Still exploring?' }
+                }
+            };
+
+            const period = h >= 5 && h < 12 ? 'morning'
+                         : h >= 12 && h < 18 ? 'afternoon'
+                         : h >= 18 && h < 22 ? 'evening'
+                         : 'latenight';
+
+            const localeGreetings = GREETINGS[langCode] || GREETINGS['en'];
+            const phrase = localeGreetings[period];
+
+            function showGreeting() {
+                const popup = document.getElementById('greeting-popup');
+                document.getElementById('greeting-main').textContent = phrase.main;
+                document.getElementById('greeting-sub').textContent  = phrase.sub;
+
+                // Tocar som (Browser pode bloquear se não houver interação prévia do usuário)
+                try {
+                    // Áudio royalty-free de notificação suave. Pode ser substituído por um arquivo local ex: 'audio.mp3'
+                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); 
+                    audio.volume = 0.5;
+                    const playPromise = audio.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => console.log('Autoplay do som bloqueado pelo navegador.'));
+                    }
+                } catch (e) {}
+
+                popup.classList.remove('hiding');
+                popup.classList.add('visible');
+                
+                // Auto-dispensar
+                setTimeout(() => {
+                    popup.classList.add('hiding');
+                    popup.classList.remove('visible');
+                }, 4500);
+            }
+
+            // Exibir apenas uma vez 800ms após o carregamento da página
+            setTimeout(showGreeting, 800);
+        })();
+
         // ===== API CONFIG =====
         const API_URL = 'http://localhost:5254/api';
 
         // ===== CATEGORY SVG ICONS =====
         const CAT_SVG = {
-            '#af52de': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>`,
-            '#ff3b30': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
+            '#8e4ec6': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>`,
+            '#c0392b': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
             '#007aff': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
             '#34c759': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>`,
-            '#ffcc00': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+            '#e8a020': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
         };
-        function getCatSVG(color) { return CAT_SVG[color] || CAT_SVG['#ffcc00']; }
+        function getCatSVG(color) { return CAT_SVG[color] || CAT_SVG['#e8a020']; }
 
         const PIN_SVG_PATH = {
-            '#af52de': 'M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22',
-            '#ff3b30': 'M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z',
+            '#8e4ec6': 'M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22',
+            '#c0392b': 'M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z',
             '#007aff': null, 
             '#34c759': 'M3 11l19-9-9 19-2-8-8-2z',
-            '#ffcc00': null, 
+            '#e8a020': null, 
         };
 
         function getPinSVGHtml(color, size) {
@@ -927,7 +1130,7 @@
             if (color === '#007aff') {
                 return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
             }
-            if (color === '#ffcc00') {
+            if (color === '#e8a020') {
                 return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`;
             }
             const d = PIN_SVG_PATH[color] || 'M3 11l19-9-9 19-2-8-8-2z';
@@ -937,80 +1140,70 @@
         // ===== DATABASE =====
         const FALLBACK_DATABASE = [
             // --- CULT / ALTERNATIVO (Roxo) ---
-            { name: "A Quitanda", cat: "Alternativo Chique", color: "#af52de", lat: -3.7378, lon: -38.5109, desc: "Mercado orgânico. Público que curte MPB Lado B." },
-            { name: "Budega do Raul", cat: "Universitário Gourmet", color: "#af52de", lat: -3.7449, lon: -38.5294, desc: "Coxinha gourmet no Benfica. Universitário com mesada." },
-            { name: "Mormaço Bar", cat: "Cool & Vento", color: "#af52de", lat: -3.7218, lon: -38.5106, desc: "Vento na cara, drinks caros e gente falando de cinema." },
-            { name: "Brisa de Fortaleza", cat: "Visual", color: "#af52de", lat: -3.7208, lon: -38.5078, desc: "Vista pro mar pra quem tem iPhone Pro e vota no PSOL." },
-            { name: "Parqland", cat: "Festa Hype", color: "#af52de", lat: -3.7321, lon: -38.5478, desc: "Touro Neon. Gente bonita, suada e muito glitter na Parquelândia." },
-            { name: "Fuzuê Bar", cat: "Esquenta Nobre", color: "#af52de", lat: -3.7260, lon: -38.5041, desc: "Esquenta oficial do Meireles. Gente desconstruída de Uber Black." },
-            { name: "Giz Cozinha Boêmia", cat: "Samba Caviar", color: "#af52de", lat: -3.7299, lon: -38.5036, desc: "Samba de rico. Garçom de gravata e feijoada preço de ouro." },
-            { name: "Teresa & Jorge", cat: "Cult Turístico", color: "#af52de", lat: -3.7195, lon: -38.5142, desc: "Era raiz, virou point turístico. Samba excelente." },
-            { name: "Zelig Drink Bar", cat: "Nova York", color: "#af52de", lat: -3.7305, lon: -38.5045, desc: "Escondido e escuro. Parece bar de filme noir." },
-            { name: "Culinária da Van", cat: "Regional Cult", color: "#af52de", lat: -3.7447, lon: -38.5285, desc: "A chef Van é celebridade. Panelada premiada no Benfica." },
-            { name: "O Mar Menino", cat: "Gastronomia Arte", color: "#af52de", lat: -3.7358, lon: -38.5020, desc: "Comida que parece quadro. Lugar de arquitetos." },
-            { name: "Bulls Beer House", cat: "Rock Pub", color: "#af52de", lat: -3.7381, lon: -38.5073, desc: "Rock e burger na Aldeota. Metaleiros programadores." },
-            { name: "Clandestino", cat: "Jazz & Blues", color: "#af52de", lat: -3.7418, lon: -38.5302, desc: "Jazz no quintal. Vibe intimista no Benfica." },
-            { name: "Hey Joe Food 'n' Bar", cat: "Descolado", color: "#af52de", lat: -3.7342, lon: -38.5088, desc: "Comida saudável e gente tatuada bonita." },
-            { name: "Boozer's Pub", cat: "Hostel Vibe", color: "#af52de", lat: -3.7255, lon: -38.5080, desc: "Gringos e rock clássico. Parece que você tá viajando." },
-            { name: "Cervejaria Capitosa", cat: "Artesanal", color: "#af52de", lat: -3.7355, lon: -38.5002, desc: "Público que discute lúpulo a noite toda." },
-            { name: "Brauhaus", cat: "Alemão", color: "#af52de", lat: -3.7334, lon: -38.5062, desc: "Templo da cerveja importada." },
-            { name: "Mayú", cat: "Alta Gastronomia", color: "#af52de", lat: -3.7335, lon: -38.4969, desc: "Restaurante do Senac. Comida experimental." },
-            { name: "Cinema do Dragão", cat: "Cinefilia", color: "#af52de", lat: -3.7200, lon: -38.5175, desc: "Filmes que ninguém entende e debate sobre semiótica." },
-            { name: "Café Couture", cat: "Jazz & Drinks", color: "#af52de", lat: -3.7342, lon: -38.5050, desc: "Piano e luz vermelha. Boemia afrancesada." },
-            { name: "Brewstone Pub", cat: "Cerveja & Rock", color: "#af52de", lat: -3.7360, lon: -38.5010, desc: "Pub sério. Cerveja própria excelente." },
-            { name: "Amika Coffee", cat: "Café Geek", color: "#af52de", lat: -3.7363, lon: -38.5018, desc: "Café pra trabalhar remoto. Cheio de MacBooks." },
-            { name: "Le Pain Le Café", cat: "Francês", color: "#af52de", lat: -3.7340, lon: -38.4978, desc: "Croissant e ar condicionado. Madames e cults." },
-            { name: "Benévolo", cat: "Gelato", color: "#af52de", lat: -3.7330, lon: -38.4962, desc: "Sorvete e café. Ponto de encontro pós-almoço." },
-            { name: "Museu da Fotografia", cat: "Cultura", color: "#af52de", lat: -3.7210, lon: -38.5170, desc: "Ar condicionado gelado e fotos incríveis." },
-            { name: "Caixa Cultural", cat: "Exposições", color: "#af52de", lat: -3.7193, lon: -38.5184, desc: "Exposições gratuitas na Praia de Iracema." },
+            { name: "A Quitanda", cat: "Alternativo Chique", color: "#8e4ec6", lat: -3.7378, lon: -38.5109, desc: "Mercado orgânico cult da Aldeota. Clientela que compra azeite extravirgem e discute Chico Buarque. O Google Maps chama de 'concorrido e aconchegante'. A clientela chama de lar." },
+            { name: "Budega do Raul", cat: "Universitário Gourmet", color: "#8e4ec6", lat: -3.7449, lon: -38.5294, desc: "Bar universitário no Benfica onde a coxinha custa o dobro do boteco vizinho e ainda assim a fila não para. Reviews lotados de 'melhor da região'. Frequentadores de mestrado pagando preço de doutorado." },
+            { name: "Mormaço Bar", cat: "Cool & Vento", color: "#8e4ec6", lat: -3.7218, lon: -38.5106, desc: "Vista pro mar, ventania permanente e público que fala de cinema europeu enquanto paga R$35 no drinque. Avaliações falam em 'ambiente único de Fortaleza'. Verdade." },
+            { name: "Brisa de Fortaleza", cat: "Visual", color: "#8e4ec6", lat: -3.7208, lon: -38.5078, desc: "Vista pro mar pra quem tem iPhone Pro e vota no PSOL." },
+            { name: "Parqland", cat: "Festa Hype", color: "#8e4ec6", lat: -3.7321, lon: -38.5478, desc: "Touro Neon. Gente bonita, suada e muito glitter na Parquelândia." },
+            { name: "Fuzuê Bar", cat: "Esquenta Nobre", color: "#8e4ec6", lat: -3.7260, lon: -38.5041, desc: "Esquenta oficial do Meireles. Gente desconstruída de Uber Black." },
+            { name: "Giz Cozinha Boêmia", cat: "Samba Caviar", color: "#8e4ec6", lat: -3.7299, lon: -38.5036, desc: "Samba de rico. Garçom de gravata e feijoada preço de ouro." },
+            { name: "Teresa & Jorge", cat: "Cult Turístico", color: "#8e4ec6", lat: -3.7195, lon: -38.5142, desc: "Era raiz, virou point turístico. Samba excelente." },
+            { name: "Zelig Drink Bar", cat: "Nova York", color: "#8e4ec6", lat: -3.7305, lon: -38.5045, desc: "Escondido e escuro. Parece bar de filme noir." },
+            { name: "Culinária da Van", cat: "Regional Cult", color: "#8e4ec6", lat: -3.7447, lon: -38.5285, desc: "A chef Van é celebridade. Panelada premiada no Benfica." },
+            { name: "O Mar Menino", cat: "Gastronomia Arte", color: "#8e4ec6", lat: -3.7358, lon: -38.5020, desc: "Comida que parece quadro. Lugar de arquitetos." },
+            { name: "Bulls Beer House", cat: "Rock Pub", color: "#8e4ec6", lat: -3.7381, lon: -38.5073, desc: "Rock e burger na Aldeota. Metaleiros programadores." },
+            { name: "Clandestino", cat: "Jazz & Blues", color: "#8e4ec6", lat: -3.7418, lon: -38.5302, desc: "Um dos raros bares de jazz de verdade em Fortaleza, escondido no Benfica. Avaliações consistentes de 'experiência única'. Pequeno, quente e completamente fora do radar de quem não é do bairro." },
+            { name: "Hey Joe Food 'n' Bar", cat: "Descolado", color: "#8e4ec6", lat: -3.7342, lon: -38.5088, desc: "Comida saudável e gente tatuada bonita." },
+            { name: "Boozer's Pub", cat: "Hostel Vibe", color: "#8e4ec6", lat: -3.7255, lon: -38.5080, desc: "Gringos e rock clássico. Parece que você tá viajando." },
+            { name: "Cervejaria Capitosa", cat: "Artesanal", color: "#8e4ec6", lat: -3.7355, lon: -38.5002, desc: "Público que discute lúpulo a noite toda." },
+            { name: "Brauhaus", cat: "Alemão", color: "#8e4ec6", lat: -3.7334, lon: -38.5062, desc: "Templo da cerveja importada." },
+            { name: "Mayú", cat: "Alta Gastronomia", color: "#8e4ec6", lat: -3.7335, lon: -38.4969, desc: "Restaurante do Senac. Comida experimental." },
+            { name: "Cinema do Dragão", cat: "Cinefilia", color: "#8e4ec6", lat: -3.7200, lon: -38.5175, desc: "Filmes que ninguém entende e debate sobre semiótica." },
+            { name: "Café Couture", cat: "Jazz & Drinks", color: "#8e4ec6", lat: -3.7342, lon: -38.5050, desc: "Piano e luz vermelha. Boemia afrancesada." },
+            { name: "Brewstone Pub", cat: "Cerveja & Rock", color: "#8e4ec6", lat: -3.7360, lon: -38.5010, desc: "Pub com cerveja própria e cardápio de hambúrguer que aparece em várias listas de 'melhores da cidade'. Ambiente escuro, trilha sonora acertada. Um dos poucos pubs com identidade própria na Aldeota." },
+            { name: "Amika Coffee", cat: "Café Geek", color: "#8e4ec6", lat: -3.7363, lon: -38.5018, desc: "Café que entende o que é trabalho remoto de verdade: Wi-Fi decente, tomadas acessíveis, barulho tolerável. Reviews cheios de 'ótimo lugar pra trabalhar'. O único café da cidade onde o notebook não é enfeite." },
+            { name: "Le Pain Le Café", cat: "Francês", color: "#8e4ec6", lat: -3.7340, lon: -38.4978, desc: "Croissant e ar condicionado. Madames e cults." },
+            { name: "Benévolo", cat: "Gelato", color: "#8e4ec6", lat: -3.7330, lon: -38.4962, desc: "Sorvete e café. Ponto de encontro pós-almoço." },
+            { name: "Museu da Fotografia", cat: "Cultura", color: "#8e4ec6", lat: -3.7210, lon: -38.5170, desc: "Ar condicionado gelado e fotos incríveis." },
+            { name: "Caixa Cultural", cat: "Exposições", color: "#8e4ec6", lat: -3.7193, lon: -38.5184, desc: "Exposições gratuitas na Praia de Iracema." },
             // --- UNDERGROUND / RAIZ (Vermelho) ---
-            { name: "Route Fortaleza", cat: "O Caos", color: "#ff3b30", lat: -3.7192, lon: -38.5162, desc: "O abismo. Onde a dignidade morre às 5 da manhã." },
-            { name: "Fuzuê Club", cat: "Balada Centro", color: "#ff3b30", lat: -3.7194, lon: -38.5155, desc: "Vizinho do Route. Pop, funk e suor." },
-            { name: "Bar do Seu Nonato", cat: "Raiz Intelectual", color: "#ff3b30", lat: -3.7441, lon: -38.5362, desc: "Ovo colorido e panelada. QG dos professores." },
-            { name: "Bar do Vinil", cat: "Hipster Raiz", color: "#ff3b30", lat: -3.7430, lon: -38.5340, desc: "Bolachão na vitrola. Refúgio hipster do Benfica." },
-            { name: "Rap Bar", cat: "Cena Urbana", color: "#ff3b30", lat: -3.7255, lon: -38.5258, desc: "Rima, skate e cerveja barata no Centro." },
-            { name: "Budega dos Pinhões", cat: "Praça", color: "#ff3b30", lat: -3.7215, lon: -38.5197, desc: "Esquenta pro nada. Bebe em pé na praça." },
-            { name: "Vinil Ambientz", cat: "Nostalgia", color: "#ff3b30", lat: -3.7435, lon: -38.5348, desc: "Mais vinil no Benfica." },
-            { name: "Nomads", cat: "Alternativo", color: "#ff3b30", lat: -3.7405, lon: -38.5321, desc: "Gringo perdido e cerveja em copo de plástico." },
-            { name: "Na Toca do Coelho", cat: "Underground", color: "#ff3b30", lat: -3.7452, lon: -38.5380, desc: "Buraco negro alternativo. Entrou, sumiu." },
-            { name: "Boteco do Peixe", cat: "Universitário", color: "#ff3b30", lat: -3.7388, lon: -38.5309, desc: "Cachaça e estudante liso." },
-            { name: "Pitombeira Bar", cat: "Raiz", color: "#ff3b30", lat: -3.7425, lon: -38.5365, desc: "Mesa bamba e garçom amigo íntimo." },
-            { name: "Covil Rock Bar", cat: "Metal", color: "#ff3b30", lat: -3.7431, lon: -38.5338, desc: "Trevas, preto e metal." },
-            { name: "Bar Galola", cat: "Zueira", color: "#ff3b30", lat: -3.7445, lon: -38.5390, desc: "Zueira sem limites e preços baixos." },
-            { name: "Laje Head Shop", cat: "Fumaça", color: "#ff3b30", lat: -3.7435, lon: -38.5343, desc: "A fumaça sobe, o rock toca." },
-            { name: "Mambembe", cat: "Cultural Caos", color: "#ff3b30", lat: -3.7197, lon: -38.5179, desc: "Festa na rua e liberdade total na PI." },
-            { name: "Chopp do Bixiga", cat: "Clássico Dragão", color: "#ff3b30", lat: -3.7196, lon: -38.5168, desc: "Chopp de vinho famoso e perigoso." },
-            { name: "Praça dos Leões", cat: "Rua", color: "#ff3b30", lat: -3.7280, lon: -38.5270, desc: "Underground real. Cerveja de isopor." },
-            { name: "Raimundo dos Queijos", cat: "Patrimônio", color: "#ff3b30", lat: -3.7272, lon: -38.5282, desc: "Domingo de manhã é lei no Centro." },
-            { name: "Leão do Sul", cat: "Azia Boa", color: "#ff3b30", lat: -3.7268, lon: -38.5272, desc: "Pastel com caldo de cana lendário." },
-            { name: "Moto Libre", cat: "Balada Alt", color: "#ff3b30", lat: -3.7298, lon: -38.5085, desc: "Vibe motoqueira e alternativa." },
-            { name: "Praça da Gentilândia", cat: "Benfica Soul", color: "#ff3b30", lat: -3.7420, lon: -38.5352, desc: "Skate, litrão e debate político." },
-            { name: "Serpentina", cat: "Cerveja Raiz", color: "#ff3b30", lat: -3.7248, lon: -38.5252, desc: "Artesanal no Centro, mesa na calçada." },
-            { name: "Gandaia Club", cat: "LGBTQIA+", color: "#ff3b30", lat: -3.7198, lon: -38.5186, desc: "Templo do pop e do suor." },
-            { name: "Haus", cat: "Eletrônico", color: "#ff3b30", lat: -3.7195, lon: -38.5172, desc: "Techno e óculos escuros às 3 da manhã." },
-            { name: "Level", cat: "Balada Drag", color: "#ff3b30", lat: -3.7197, lon: -38.5164, desc: "Shows de Drag Queen e festa até amanhecer." },
-            { name: "Centro Fashion", cat: "Moda & Caos", color: "#ff3b30", lat: -3.7152, lon: -38.5395, desc: "Onde a sacoleira guerreira faz a moda girar." },
-            { name: "Mercado Central", cat: "Turista & Local", color: "#ff3b30", lat: -3.7285, lon: -38.5368, desc: "Labirinto de renda e castanha." },
-            { name: "Mercado São Sebastião", cat: "Café Nordestino", color: "#ff3b30", lat: -3.7295, lon: -38.5352, desc: "Cuscuz, panelada e gritaria." },
-            { name: "Beco da Poeira", cat: "Hardcore", color: "#ff3b30", lat: -3.7278, lon: -38.5298, desc: "Comércio popular extremo." },
-            { name: "Praça do Ferreira", cat: "Marco Zero", color: "#ff3b30", lat: -3.7262, lon: -38.5262, desc: "O coração da cidade." },
-            { name: "Cabaré da Baixa", cat: "Histórico", color: "#ff3b30", lat: -3.7198, lon: -38.5302, desc: "Boemia antiga da zona portuária." },
-            { name: "Bar do Biel", cat: "Sinuca", color: "#ff3b30", lat: -3.7230, lon: -38.5252, desc: "Sinuca e cerveja barata no Centro." },
-            { name: "Assis da Picanha", cat: "Picanha Raiz", color: "#ff3b30", lat: -3.7318, lon: -38.5398, desc: "Picanha boa e barata." },
-            { name: "Churrascaria O Osmar", cat: "Fartura", color: "#ff3b30", lat: -3.7505, lon: -38.5498, desc: "Ponto de taxistas. Comida muita e barata." },
+            { name: "Route Fortaleza", cat: "O Caos", color: "#c0392b", lat: -3.7192, lon: -38.5162, desc: "A balada mais famosa e mais infame de Fortaleza, na Praia de Iracema. Cinco andares de arrependimento preventivo. Reviews no Google divididos entre 'melhor noite da minha vida' e 'nunca mais'. Ambos estão certos." },
+            { name: "Bar do Seu Nonato", cat: "Raiz Intelectual", color: "#c0392b", lat: -3.7441, lon: -38.5362, desc: "Bar de boteco raiz no Benfica, um dos mais antigos da área. Panelada às terças que virou quase ritual. Reviews falam em 'atendimento familiar' e 'preço justo'. Tipo de lugar que não existe mais em Fortaleza — exceto aqui." },
+            { name: "Bar do Vinil", cat: "Hipster Raiz", color: "#c0392b", lat: -3.7430, lon: -38.5340, desc: "Bar de vinil no Benfica que resistiu à era do streaming. Toca LP de verdade em uma vitrola de verdade enquanto serve cerveja barata. Reviews falam em 'experiência nostálgica'. Um dos últimos do tipo na cidade." },
+            { name: "Rap Bar", cat: "Cena Urbana", color: "#c0392b", lat: -3.7255, lon: -38.5258, desc: "Ponto de encontro da cena urbana no Centro. Cerveja em lata no preço que devia ser o padrão. Reviews elogiam o 'ambiente autêntico'. Frequentado por quem ainda acredita que o Centro tem vida." },
+            { name: "Budega dos Pinhões", cat: "Praça", color: "#c0392b", lat: -3.7215, lon: -38.5197, desc: "Esquenta pro nada. Bebe em pé na praça." },
+            { name: "Pitombeira Bar", cat: "Raiz", color: "#c0392b", lat: -3.7425, lon: -38.5365, desc: "Mesa bamba e garçom amigo íntimo." },
+            { name: "Mambembe", cat: "Cultural Caos", color: "#c0392b", lat: -3.7197, lon: -38.5179, desc: "Festa na rua e liberdade total na PI." },
+            { name: "Chopp do Bixiga", cat: "Clássico Dragão", color: "#c0392b", lat: -3.7196, lon: -38.5168, desc: "Chopp de vinho famoso e perigoso." },
+            { name: "Praça dos Leões", cat: "Rua", color: "#c0392b", lat: -3.7280, lon: -38.5270, desc: "Underground real. Cerveja de isopor." },
+            { name: "Raimundo dos Queijos", cat: "Patrimônio", color: "#c0392b", lat: -3.7272, lon: -38.5282, desc: "Domingo de manhã é lei no Centro." },
+            { name: "Leão do Sul", cat: "Azia Boa", color: "#c0392b", lat: -3.7268, lon: -38.5272, desc: "Pastel com caldo de cana lendário." },
+            { name: "Praça da Gentilândia", cat: "Benfica Soul", color: "#c0392b", lat: -3.7420, lon: -38.5352, desc: "Skate, litrão e debate político." },
+            { name: "Serpentina", cat: "Cerveja Raiz", color: "#c0392b", lat: -3.7248, lon: -38.5252, desc: "Artesanal no Centro, mesa na calçada." },
+            { name: "Gandaia Club", cat: "LGBTQIA+", color: "#c0392b", lat: -3.7198, lon: -38.5186, desc: "Templo do pop e do suor." },
+            { name: "Haus", cat: "Eletrônico", color: "#c0392b", lat: -3.7195, lon: -38.5172, desc: "Balada de música eletrônica na Praia de Iracema, uma das poucas da cidade com curadoria musical consistente. Reviews elogiam o som e criticam a fila. Frequentado por quem sabe o nome do DJ." },
+            { name: "Level", cat: "Balada Drag", color: "#c0392b", lat: -3.7197, lon: -38.5164, desc: "Shows de Drag Queen e festa até amanhecer." },
+            { name: "Centro Fashion", cat: "Moda & Caos", color: "#c0392b", lat: -3.7152, lon: -38.5395, desc: "Onde a sacoleira guerreira faz a moda girar." },
+            { name: "Mercado Central", cat: "Turista & Local", color: "#c0392b", lat: -3.7285, lon: -38.5368, desc: "O mercado de artesanato mais famoso de Fortaleza, com mais de 600 boxes. Reviews de turistas entusiasmados e fortalezenses que foram 'uma vez e nunca mais'. Renda, cajuína, bordado e aquela sensação de labirinto que nunca termina." },
+            { name: "Mercado São Sebastião", cat: "Café Nordestino", color: "#c0392b", lat: -3.7295, lon: -38.5352, desc: "Cuscuz, panelada e gritaria." },
+            { name: "Beco da Poeira", cat: "Hardcore", color: "#c0392b", lat: -3.7278, lon: -38.5298, desc: "Comércio popular extremo." },
+            { name: "Praça do Ferreira", cat: "Marco Zero", color: "#c0392b", lat: -3.7262, lon: -38.5262, desc: "A praça mais central de Fortaleza, patrimônio histórico com o famoso Galo do Sobral. Reviews de turistas encantados e moradores saudosos. Palco de manifestações, encontros e toda a vida pública que ainda existe no Centro." },
+            { name: "Bar do Biel", cat: "Sinuca", color: "#c0392b", lat: -3.7230, lon: -38.5252, desc: "Sinuca e cerveja barata no Centro." },
+            { name: "Assis da Picanha", cat: "Picanha Raiz", color: "#c0392b", lat: -3.7318, lon: -38.5398, desc: "Picanha boa e barata." },
+            { name: "Churrascaria O Osmar", cat: "Fartura", color: "#c0392b", lat: -3.7505, lon: -38.5498, desc: "Ponto de taxistas. Comida muita e barata." },
             // --- ELITE / PREMIUM (Azul) ---
-            { name: "Moleskine / Moleska", cat: "Elite", color: "#007aff", lat: -3.7323, lon: -38.4930, desc: "QG da Elite. Fecha contrato milionário." },
-            { name: "Hoots Gastropub", cat: "Rock de Rico", color: "#007aff", lat: -3.7338, lon: -38.4952, desc: "Rock pra quem anda de blindado." },
-            { name: "Austin Pub", cat: "Sertanejo Elite", color: "#007aff", lat: -3.7345, lon: -38.4902, desc: "Templo do Sapatênis e paquera." },
+            { name: "Moleskine / Moleska", cat: "Elite", color: "#007aff", lat: -3.7323, lon: -38.4930, desc: "O bar mais discretamente exclusivo da Aldeota. Iluminação baixa, clientela alta. Reviews no Google são escassos — quem vai lá não posta. Presença de empresários e políticos numa noite comum." },
+            { name: "Hoots Gastropub", cat: "Rock de Rico", color: "#007aff", lat: -3.7338, lon: -38.4952, desc: "Gastropub na Aldeota com cardápio de carne nobre e rock setentista no fundo. Reviews consistentes de 'ótimo hambúrguer' e 'ambiente agradável'. Tiozão que ouve Led Zeppelin pagando bem para ouvir Led Zeppelin." },
+            { name: "Austin Pub", cat: "Sertanejo Elite", color: "#007aff", lat: -3.7345, lon: -38.4902, desc: "O pub sertanejo mais frequentado da Aldeota, com décadas de história. Reviews falando em 'boa música ao vivo' e 'ambiente animado'. Território do sertanejo universitário e da paquera explícita às quintas." },
             { name: "Cervejaria Turatti", cat: "Família Rica", color: "#007aff", lat: -3.7352, lon: -38.4858, desc: "Disney de Bêbado Rico." },
             { name: "Bang's Sul", cat: "Faroeste Gourmet", color: "#007aff", lat: -3.7812, lon: -38.4812, desc: "Carne defumada cara na Zona Sul." },
             { name: "Floresta Complexo", cat: "Cover", color: "#007aff", lat: -3.7368, lon: -38.4992, desc: "Rock dos anos 80 pra tiozões." },
             { name: "Donkey Head", cat: "Cervejeiro", color: "#007aff", lat: -3.7375, lon: -38.5008, desc: "Cerveja boa na Aldeota." },
             { name: "Boteco do Ciço", cat: "Fake Raiz", color: "#007aff", lat: -3.7372, lon: -38.5025, desc: "Parece pobre, mas fica no m² mais caro." },
             { name: "Colosso Fortaleza", cat: "Super Elite", color: "#007aff", lat: -3.7555, lon: -38.4878, desc: "Wakeboard e combo de vodka caro no Edson Queiroz." },
-            { name: "Zoi Restaurante", cat: "Jantar de Negócios", color: "#007aff", lat: -3.7558, lon: -38.4895, desc: "Mediterrâneo pra impressionar." },
-            { name: "Iate Clube", cat: "Old Money", color: "#007aff", lat: -3.7210, lon: -38.4820, desc: "Donos da cidade estacionam seus barcos." },
-            { name: "Coco Bambu (Frutos)", cat: "Embaixada", color: "#007aff", lat: -3.7305, lon: -38.4958, desc: "A catedral do camarão." },
+            { name: "Zoi Restaurante", cat: "Jantar de Negócios", color: "#007aff", lat: -3.7558, lon: -38.4895, desc: "Restaurante sofisticado no Edson Queiroz, frequentemente em listas de 'melhores de Fortaleza'. Reviews elogiam o risoto e a carta de vinhos. Jantar de negócios, aniversário de 50 anos, pedido de casamento — tudo acontece aqui." },
+            { name: "Iate Clube", cat: "Old Money", color: "#007aff", lat: -3.7210, lon: -38.4820, desc: "O clube náutico mais antigo de Fortaleza, fundado em 1903. Reviews raros — acesso restrito a sócios. Vista para o mar, ambiente histórico e uma distinção que o dinheiro recente ainda não conseguiu comprar." },
+            { name: "Coco Bambu (Frutos)", cat: "Embaixada", color: "#007aff", lat: -3.7305, lon: -38.4958, desc: "Uma das unidades mais movimentadas da rede, famosa pelo camarão e pelas filas imensas no fim de semana. Reviews divididos entre 'melhor da rede' e 'demora absurda'. Cardápio que funciona como religião para boa parte de Fortaleza." },
             { name: "Santa Grelha", cat: "Carne de Ouro", color: "#007aff", lat: -3.7345, lon: -38.4985, desc: "Onde o empresário almoça." },
             { name: "Ryori Sushi", cat: "Japa de Rico", color: "#007aff", lat: -3.7355, lon: -38.4928, desc: "Sushi com trufa branca." },
             { name: "Ponza Frutos do Mar", cat: "Sofisticação", color: "#007aff", lat: -3.7332, lon: -38.4965, desc: "Ambiente azul e comida chique." },
@@ -1030,27 +1223,25 @@
             // --- POVÃO / POPULAR (Verde) ---
             { name: "Divina Picanha", cat: "Família Tradicional", color: "#34c759", lat: -3.7705, lon: -38.4855, desc: "Almoço de domingo na Sul." },
             { name: "Paraíba Raiz", cat: "Butequeiro", color: "#34c759", lat: -3.7438, lon: -38.5355, desc: "Foco é beber litrão barato." },
-            { name: "Bar do Railson", cat: "Bairro", color: "#34c759", lat: -3.7502, lon: -38.5405, desc: "Sinuca e emoção no Benfica." },
             { name: "Kosmika Club", cat: "Pop Glitter", color: "#34c759", lat: -3.7242, lon: -38.5198, desc: "Pop e glitter no Centro." },
             { name: "Sr. Petisco", cat: "Comida", color: "#34c759", lat: -3.7550, lon: -38.5512, desc: "Comida de boteco honesta." },
             { name: "Bar do Seu Carlos", cat: "Lenda", color: "#34c759", lat: -3.7598, lon: -38.5598, desc: "Lenda do Montese." },
             { name: "Bar do Animaw", cat: "Bicho Solto", color: "#34c759", lat: -3.7585, lon: -38.5550, desc: "Cerveja trincando e zero etiqueta." },
-            { name: "Tony Do Orós", cat: "Carne de Sol", color: "#34c759", lat: -3.7658, lon: -38.5710, desc: "Melhor carne de sol da galáxia." },
-            { name: "Bar da Loura", cat: "Centro Raiz", color: "#34c759", lat: -3.7252, lon: -38.5282, desc: "Puro suco do Centro." },
-            { name: "Carneiro do Ordones", cat: "Fartura", color: "#34c759", lat: -3.7355, lon: -38.5558, desc: "Catedral da carne na Parquelândia." },
+            { name: "Tony Do Orós", cat: "Carne de Sol", color: "#34c759", lat: -3.7658, lon: -38.5710, desc: "Restaurante simples com fama desproporcional ao visual. A carne de sol do Tony acumula reviews apaixonados há anos. 'Melhor da cidade' aparece em quase toda avaliação. Filas comuns no almoço de domingo." },
+            { name: "Bar da Loura", cat: "Centro Raiz", color: "#34c759", lat: -3.7252, lon: -38.5282, desc: "Bar de bairro no Centro sem pose alguma. Mesinha na calçada, clientela fixa, cerveja fria. Reviews breves e diretos: 'bom e barato'. A definição de boteco que sumiu do resto da cidade." },
+            { name: "Carneiro do Ordones", cat: "Fartura", color: "#34c759", lat: -3.7355, lon: -38.5558, desc: "Carneiro assado que virou ponto de peregrinação na Parquelândia. Reviews falam em 'imperdível' e 'deu vontade de voltar no mesmo dia'. Porções enormes, preço justo, atendimento caótico de tão cheio." },
             { name: "Bar do Mincharia", cat: "Praia Raiz", color: "#34c759", lat: -3.7202, lon: -38.5108, desc: "Pé na areia na PI." },
             { name: "Cantinho do Frango", cat: "Patrimônio", color: "#34c759", lat: -3.7362, lon: -38.5048, desc: "Frango desossado e vinil." },
             { name: "Kina do Feijão Verde", cat: "Regional", color: "#34c759", lat: -3.7305, lon: -38.5155, desc: "O melhor feijão verde." },
             { name: "Carneiro do Tércio", cat: "Zona Sul", color: "#34c759", lat: -3.7798, lon: -38.4902, desc: "Carneiro gigante na Sul." },
             { name: "Rei da Panelada", cat: "Cura Ressaca", color: "#34c759", lat: -3.7498, lon: -38.5205, desc: "A cura está aqui." },
-            { name: "Colher de Pau", cat: "Turista Raiz", color: "#34c759", lat: -3.7358, lon: -38.4882, desc: "Baião de dois sério na Varjota." },
+            { name: "Colher de Pau", cat: "Turista Raiz", color: "#34c759", lat: -3.7358, lon: -38.4882, desc: "Um dos restaurantes de comida regional mais bem avaliados da Varjota. Reviews elogiam o baião de dois e a galinha caipira. Ambiente simples, sabor que não é simples. Turista e fortalezense no mesmo cardápio." },
             { name: "Arre Égua", cat: "Forró Antigo", color: "#34c759", lat: -3.7368, lon: -38.4855, desc: "Vila sertaneja turística." },
             { name: "Kukukaya", cat: "Forró Raiz", color: "#34c759", lat: -3.7448, lon: -38.5252, desc: "Dançar agarradinho." },
-            { name: "Pirata Bar", cat: "Segunda-feira", color: "#34c759", lat: -3.7191, lon: -38.5166, desc: "Segunda mais louca do mundo." },
+            { name: "Pirata Bar", cat: "Segunda-feira", color: "#34c759", lat: -3.7191, lon: -38.5166, desc: "A lenda é real: a segunda-feira do Pirata Bar na Praia de Iracema é um dos eventos mais famosos de Fortaleza há décadas. Reviews de turistas em êxtase. Uma das poucas coisas em Fortaleza que supera a reputação." },
             { name: "Lupus Bier", cat: "Humor", color: "#34c759", lat: -3.7212, lon: -38.5158, desc: "Show de humor e Rossicléa." },
-            { name: "Chico do Caranguejo", cat: "Praia Futuro", color: "#34c759", lat: -3.7542, lon: -38.4440, desc: "Caranguejo e show." },
-            { name: "Crocobeach", cat: "Resort", color: "#34c759", lat: -3.7405, lon: -38.4308, desc: "Hotel na areia na Praia do Futuro." },
-            { name: "Mercado dos Peixes", cat: "Pôr do Sol", color: "#34c759", lat: -3.7215, lon: -38.4798, desc: "Camarão fresco na hora." },
+            { name: "Chico do Caranguejo", cat: "Praia Futuro", color: "#34c759", lat: -3.7542, lon: -38.4440, desc: "Restaurante icônico da Praia do Futuro especializado em caranguejo. Reviews elogiam a 'experiência completa' — comer, sujar a mão, ouvir forró ao vivo. Um dos destinos turísticos mais autênticos da cidade." },
+            { name: "Mercado dos Peixes", cat: "Pôr do Sol", color: "#34c759", lat: -3.7215, lon: -38.4798, desc: "Mercado de peixe com restaurante anexo próximo à Praia do Futuro. Reviews falam em 'camarão fresquíssimo' e 'experiência autêntica'. Um dos poucos lugares onde o peixe ainda chega direto do mar para o prato." },
             { name: "Orbita Blue", cat: "Praia Hype", color: "#34c759", lat: -3.7315, lon: -38.4650, desc: "Eletrônica e gente bonita na PF." },
             { name: "Santa Praia", cat: "Beach Tennis", color: "#34c759", lat: -3.7322, lon: -38.4632, desc: "Suar e beber." },
             { name: "Pastel na Hora", cat: "Lanche", color: "#34c759", lat: -3.7348, lon: -38.5052, desc: "Pastel gigante." },
@@ -1060,28 +1251,26 @@
             { name: "Tatu Bola", cat: "Balada Sertaneja", color: "#34c759", lat: -3.7338, lon: -38.4935, desc: "Paquera na semana." },
             { name: "Boteco Praia", cat: "Vista", color: "#34c759", lat: -3.7222, lon: -38.4948, desc: "Prédio na orla com vista." },
             { name: "Alpendre", cat: "Cultural", color: "#34c759", lat: -3.7278, lon: -38.5128, desc: "Cerveja de garrafa na calçada." },
-            { name: "Pasto & Pizza", cat: "Rodízio", color: "#34c759", lat: -3.7352, lon: -38.4948, desc: "Pizza infinita." },
             { name: "Náutico Clube", cat: "Clube", color: "#34c759", lat: -3.7232, lon: -38.4918, desc: "Clube da orla." },
             { name: "Círculo Militar", cat: "Clube", color: "#34c759", lat: -3.7252, lon: -38.4948, desc: "Eventos militares e vista." },
-            { name: "AABB", cat: "Clube", color: "#34c759", lat: -3.7462, lon: -38.5020, desc: "Churrasco de domingo." },
             { name: "BNB Clube", cat: "Clube", color: "#34c759", lat: -3.7480, lon: -38.5012, desc: "Festas juninas épicas." },
             { name: "Parque do Cocó", cat: "Natureza", color: "#34c759", lat: -3.7468, lon: -38.4825, desc: "Piquenique e trilha." },
             { name: "Padaria Costa Mendes", cat: "Montese", color: "#34c759", lat: -3.7598, lon: -38.5402, desc: "Pão de coco lendário." },
             { name: "Empório Delitália", cat: "Padaria Rica", color: "#34c759", lat: -3.7362, lon: -38.4948, desc: "Presunto de Parma às 22h." },
             // --- NEUTROS & MALLS (Amarelo) ---
-            { name: "Boteco do Lee", cat: "Neutro", color: "#ffcc00", lat: -3.7305, lon: -38.5210, desc: "O purgatório." },
-            { name: "Bar da Tetê", cat: "Indefinido", color: "#ffcc00", lat: -3.7321, lon: -38.5225, desc: "Ninguém define o público." },
-            { name: "Relativo Bar", cat: "Depende", color: "#ffcc00", lat: -3.7315, lon: -38.5218, desc: "Tudo é relativo." },
-            { name: "Shopping Iguatemi", cat: "O Mall", color: "#ffcc00", lat: -3.7554, lon: -38.4873, desc: "Onde todo mundo se encontra." },
-            { name: "Shopping RioMar", cat: "O Novo Rico", color: "#ffcc00", lat: -3.7410, lon: -38.4718, desc: "Gigante e frio." },
-            { name: "North Shopping", cat: "O do Povo", color: "#ffcc00", lat: -3.7112, lon: -38.5818, desc: "Formigueiro na Bezerra." },
-            { name: "Shopping Benfica", cat: "Diversidade", color: "#ffcc00", lat: -3.7420, lon: -38.5378, desc: "Otakus e vovós." },
-            { name: "Shopping Del Paseo", cat: "Compacto", color: "#ffcc00", lat: -3.7350, lon: -38.4982, desc: "Shopping de rico velho." },
-            { name: "Via Sul Shopping", cat: "Zona Sul", color: "#ffcc00", lat: -3.8298, lon: -38.5210, desc: "Shopping da Seis Bocas." },
-            { name: "Grand Shopping", cat: "Messejana", color: "#ffcc00", lat: -3.8218, lon: -38.4902, desc: "Salvou Messejana." },
-            { name: "Pão de Açúcar Náutico", cat: "Meeting Point", color: "#ffcc00", lat: -3.7238, lon: -38.4928, desc: "Ponto de encontro." },
-            { name: "Feirinha da Beira Mar", cat: "Turismo", color: "#ffcc00", lat: -3.7255, lon: -38.4965, desc: "Artesanato e castanha." },
-            { name: "Estátua de Iracema", cat: "Foto", color: "#ffcc00", lat: -3.7196, lon: -38.5148, desc: "A guardiã da praia." }
+            { name: "Boteco do Lee", cat: "Neutro", color: "#e8a020", lat: -3.7305, lon: -38.5210, desc: "O purgatório." },
+            { name: "Bar da Tetê", cat: "Indefinido", color: "#e8a020", lat: -3.7321, lon: -38.5225, desc: "Ninguém define o público." },
+            { name: "Relativo Bar", cat: "Depende", color: "#e8a020", lat: -3.7315, lon: -38.5218, desc: "Tudo é relativo." },
+            { name: "Shopping Iguatemi", cat: "O Mall", color: "#e8a020", lat: -3.7554, lon: -38.4873, desc: "O shopping mais tradicional de Fortaleza, inaugurado em 1982. Reviews falam em 'praça de alimentação boa' e 'Cinema UCI excelente'. Território da classe média-alta consolidada que não precisa migrar para o RioMar." },
+            { name: "Shopping RioMar", cat: "O Novo Rico", color: "#e8a020", lat: -3.7410, lon: -38.4718, desc: "O maior shopping de Fortaleza em área construída, com mais de 400 lojas. Reviews elogiam a variedade e criticam o estacionamento impossível no fim de semana. A âncora do vetor leste de expansão da cidade." },
+            { name: "North Shopping", cat: "O do Povo", color: "#e8a020", lat: -3.7112, lon: -38.5818, desc: "Formigueiro na Bezerra." },
+            { name: "Shopping Benfica", cat: "Diversidade", color: "#e8a020", lat: -3.7420, lon: -38.5378, desc: "Otakus e vovós." },
+            { name: "Shopping Del Paseo", cat: "Compacto", color: "#e8a020", lat: -3.7350, lon: -38.4982, desc: "Shopping de rico velho." },
+            { name: "Via Sul Shopping", cat: "Zona Sul", color: "#e8a020", lat: -3.8298, lon: -38.5210, desc: "Shopping da Seis Bocas." },
+            { name: "Grand Shopping", cat: "Messejana", color: "#e8a020", lat: -3.8218, lon: -38.4902, desc: "Salvou Messejana." },
+            { name: "Pão de Açúcar Náutico", cat: "Meeting Point", color: "#e8a020", lat: -3.7238, lon: -38.4928, desc: "Ponto de encontro." },
+            { name: "Feirinha da Beira Mar", cat: "Turismo", color: "#e8a020", lat: -3.7255, lon: -38.4965, desc: "Feira de artesanato na orla da Beira Mar, funcionando há décadas. Reviews de turistas encantados com a renda cearense e a cajuína. Aberta nas noites dos finais de semana — uma das poucas programações gratuitas e genuínas da cidade." },
+            { name: "Estátua de Iracema", cat: "Foto", color: "#e8a020", lat: -3.7196, lon: -38.5148, desc: "A estátua de Iracema Guardiã, na Praia de Iracema, é um dos símbolos mais fotografados de Fortaleza. Reviews de turistas com fotos ao pôr do sol. Ponto de encontro, de chegada e de despedida da cidade." }
         ];
 
         let database = [...FALLBACK_DATABASE];
@@ -1090,7 +1279,6 @@
         const map = L.map('map', { zoomControl: false }).setView([-3.7327, -38.5270], 13);
         window._leafletMap = map;
         let currentTileLayer;
-        let currentZoom = 13;
 
         const TILES = {
             light:     { url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', attr: '© OpenStreetMap © Carto' },
@@ -1117,7 +1305,6 @@
         const savedTerrain = localStorage.getItem('frp-terrain') || (initDark ? 'dark' : 'light');
         setMapTiles(savedTerrain);
 
-        // Terrain popover toggle
         const terrainPopover = document.getElementById('terrain-popover');
         const terrainToggleBtn = document.getElementById('terrain-toggle-btn');
 
@@ -1154,31 +1341,21 @@
             if (window.innerWidth > 768) {
                 const sidebar = document.getElementById('sidebar');
                 isSidebarVisibleDesktop = !isSidebarVisibleDesktop;
-                
                 if (!isSidebarVisibleDesktop) {
-                    gsap.to(sidebar, { 
-                        marginLeft: -380, 
-                        opacity: 0, 
-                        duration: 0.45, 
-                        ease: "power3.inOut",
-                        onUpdate: () => window._leafletMap.invalidateSize()
+                    gsap.to(sidebar, {
+                        marginLeft: -380, opacity: 0, duration: 0.42, ease: 'power3.inOut',
+                        onUpdate: () => window._leafletMap && window._leafletMap.invalidateSize()
                     });
                 } else {
-                    gsap.to(sidebar, { 
-                        marginLeft: 0, 
-                        opacity: 1, 
-                        duration: 0.45, 
-                        ease: "power3.inOut",
-                        onUpdate: () => window._leafletMap.invalidateSize()
+                    gsap.to(sidebar, {
+                        marginLeft: 0, opacity: 1, duration: 0.42, ease: 'power3.inOut',
+                        onUpdate: () => window._leafletMap && window._leafletMap.invalidateSize()
                     });
                 }
             } else {
                 if (typeof window.setMobileSheetState === 'function') {
-                    if (window.mobileSheetState === 3) {
-                        window.setMobileSheetState(0, true);
-                    } else {
-                        window.setMobileSheetState(3, true);
-                    }
+                    const hidden = document.getElementById('sidebar').classList.contains('sheet-hidden');
+                    window.setMobileSheetState(hidden ? 0 : 3, true);
                 }
             }
         });
@@ -1231,6 +1408,21 @@
                 { opacity: 0, y: 20, x: '-50%' },
                 { opacity: 1, y: 0, x: '-50%', duration: 0.28, ease: 'power2.out',
                   onComplete: () => gsap.to(toast, { opacity: 0, y: -8, x: '-50%', duration: 0.35, delay: 2.2 })
+                }
+            );
+        }
+
+        function showPlaceToast(place) {
+            const toast = document.getElementById('place-toast');
+            document.getElementById('pt-dot').style.background  = place.color;
+            document.getElementById('pt-cat').style.color       = place.color;
+            document.getElementById('pt-cat').textContent       = place.cat;
+            document.getElementById('pt-name').textContent      = place.name;
+            gsap.killTweensOf(toast);
+            gsap.fromTo(toast,
+                { opacity: 0, y: 28, x: '-50%' },
+                { opacity: 1, y: 0, x: '-50%', duration: 0.32, ease: 'back.out(1.8)',
+                  onComplete: () => gsap.to(toast, { opacity: 0, y: -10, x: '-50%', duration: 0.3, delay: 2.5 })
                 }
             );
         }
@@ -1296,7 +1488,7 @@
                     item.classList.add('active');
                     map.flyTo([place.lat, place.lon], 16, { duration: 1.1, easeLinearity: 0.5 });
                     marker.openPopup();
-                    showToast(place.name);
+                    showPlaceToast(place);
                     gsap.fromTo(item, { scale: 0.98 }, { scale: 1, duration: 0.2, ease: 'back.out(2)' });
                 });
 
@@ -1316,7 +1508,6 @@
 
         async function carregarLocais() {
             const spinner = document.getElementById('list-spinner');
-            const apiBadge = document.getElementById('api-badge');
             if (spinner) spinner.style.display = 'flex';
 
             try {
@@ -1331,17 +1522,84 @@
                         id: d.id, name: d.name, cat: d.cat, color: d.color,
                         lat: parseFloat(d.lat), lon: parseFloat(d.lon), desc: d.desc
                     }));
-                    if (apiBadge) { apiBadge.textContent = 'API Online'; }
                 } else throw new Error('Vazio');
             } catch (e) {
                 database = [...FALLBACK_DATABASE];
-                if (apiBadge) { apiBadge.textContent = 'Modo Offline'; }
             } finally {
                 if (spinner) spinner.style.display = 'none';
                 render(database);
             }
         }
         carregarLocais();
+
+        // ===== URL PARAMS — integração com roteiros (?busca=Nome ou ?filtro=#cor) =====
+        // Os links dos roteiros usam: index.html?busca=NomeDoLocal
+        // Aguarda o database carregar (carregarLocais é async) e então aplica o filtro.
+        (function handleURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            const busca  = params.get('busca');
+            const filtro = params.get('filtro');
+            if (!busca && !filtro) return;
+
+            function tryApply(attempts) {
+                if (attempts <= 0) return;
+                // Espera o database estar populado
+                if (!database || database.length === 0) {
+                    setTimeout(() => tryApply(attempts - 1), 200);
+                    return;
+                }
+
+                if (busca) {
+                    // Preenche o campo de busca e anima o foco
+                    if (searchBox) {
+                        searchBox.value = busca;
+                        gsap.fromTo(searchBox,
+                            { boxShadow: '0 0 0 0px rgba(0,113,227,0)' },
+                            { boxShadow: '0 0 0 3px rgba(0,113,227,0.3)', duration: 0.45,
+                              yoyo: true, repeat: 1, ease: 'power2.inOut' }
+                        );
+                    }
+
+                    const term = busca.toLowerCase();
+                    let filtered = database.filter(p =>
+                        p.name.toLowerCase().includes(term) ||
+                        p.desc.toLowerCase().includes(term) ||
+                        p.cat.toLowerCase().includes(term)
+                    );
+
+                    render(filtered);
+
+                    // Se achou 1 resultado exato, voa direto pro marcador no mapa
+                    if (filtered.length === 1) {
+                        const place = filtered[0];
+                        setTimeout(() => {
+                            map.flyTo([place.lat, place.lon], 16, { duration: 1.2 });
+                            // Abre o popup do marcador correspondente
+                            const entry = markers.find(m => m.place.name === place.name);
+                            if (entry) setTimeout(() => entry.marker.openPopup(), 1200);
+                        }, 450);
+                    }
+
+                    // Toast de contexto
+                    const n = filtered.length;
+                    if (n > 0) {
+                        setTimeout(() => showToast(
+                            n === 1 ? `"${filtered[0].name}" encontrado` : `${n} locais para "${busca}"`
+                        ), 900);
+                    }
+                }
+
+                if (filtro) {
+                    const pill = document.querySelector(`.filter-pill[data-color="${filtro}"]`);
+                    if (pill) pill.click();
+                }
+
+                // Remove params da URL sem recarregar
+                window.history.replaceState({}, '', window.location.pathname);
+            }
+
+            tryApply(25); // tenta por ~5s
+        })();
 
         let searchTimeout;
         searchBox.addEventListener('input', (e) => {
@@ -1426,7 +1684,7 @@
           .to('#sidebar', { opacity: 1, x: 0, duration: 0.45 }, '-=0.3')
           .from('#map-wrapper', { opacity: 0, duration: 0.6, ease: 'power2.inOut' }, '-=0.35');
 
-        // ===== BOTTOM SHEET (mobile) com Trava Anti-Fuga =====
+        // ===== BOTTOM SHEET (mobile) =====
         (function() {
             if (window.innerWidth > 768) return;
             const sheet = document.getElementById('sidebar');
@@ -1462,9 +1720,9 @@
             sheet.addEventListener('touchstart', e => {
                 const touch = e.touches[0];
                 const rect = sheet.getBoundingClientRect();
-                if (touch.clientY - rect.top > 60 && currentState === 2) return;
-                if (currentState === 3) return; 
-                
+                const hitFromTop = touch.clientY - rect.top;
+                if (hitFromTop > 44 && currentState === 2) return;
+                if (document.getElementById('sidebar').classList.contains('sheet-hidden')) return;
                 isDragging = true;
                 startY = touch.clientY;
                 currentY = getTranslateY();
