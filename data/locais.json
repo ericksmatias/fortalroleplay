@@ -1,0 +1,1018 @@
+[
+  {
+    "name": "A Quitanda",
+    "cat": "Alternativo Chique",
+    "color": "#8e4ec6",
+    "lat": -3.7378,
+    "lon": -38.5109,
+    "desc": "Mercado orgânico cult da Aldeota. Clientela que compra azeite extravirgem e discute Chico Buarque. O Google Maps chama de 'concorrido e aconchegante'. A clientela chama de lar."
+  },
+  {
+    "name": "Budega do Raul",
+    "cat": "Universitário Gourmet",
+    "color": "#8e4ec6",
+    "lat": -3.7449,
+    "lon": -38.5294,
+    "desc": "Bar universitário no Benfica onde a coxinha custa o dobro do boteco vizinho e ainda assim a fila não para. Reviews lotados de 'melhor da região'. Frequentadores de mestrado pagando preço de doutorado."
+  },
+  {
+    "name": "Mormaço Bar",
+    "cat": "Cool & Vento",
+    "color": "#8e4ec6",
+    "lat": -3.7218,
+    "lon": -38.5106,
+    "desc": "Vista pro mar, ventania permanente e público que fala de cinema europeu enquanto paga R$35 no drinque. Avaliações falam em 'ambiente único de Fortaleza'. Verdade."
+  },
+  {
+    "name": "Brisa de Fortaleza",
+    "cat": "Visual",
+    "color": "#8e4ec6",
+    "lat": -3.7208,
+    "lon": -38.5078,
+    "desc": "Vista pro mar pra quem tem iPhone Pro e vota no PSOL."
+  },
+  {
+    "name": "Parqland",
+    "cat": "Festa Hype",
+    "color": "#8e4ec6",
+    "lat": -3.7321,
+    "lon": -38.5478,
+    "desc": "Touro Neon. Gente bonita, suada e muito glitter na Parquelândia."
+  },
+  {
+    "name": "Fuzuê Bar",
+    "cat": "Esquenta Nobre",
+    "color": "#8e4ec6",
+    "lat": -3.726,
+    "lon": -38.5041,
+    "desc": "Esquenta oficial do Meireles. Gente desconstruída de Uber Black."
+  },
+  {
+    "name": "Giz Cozinha Boêmia",
+    "cat": "Samba Caviar",
+    "color": "#8e4ec6",
+    "lat": -3.7299,
+    "lon": -38.5036,
+    "desc": "Samba de rico. Garçom de gravata e feijoada preço de ouro."
+  },
+  {
+    "name": "Teresa & Jorge",
+    "cat": "Cult Turístico",
+    "color": "#8e4ec6",
+    "lat": -3.7195,
+    "lon": -38.5142,
+    "desc": "Era raiz, virou point turístico. Samba excelente."
+  },
+  {
+    "name": "Zelig Drink Bar",
+    "cat": "Nova York",
+    "color": "#8e4ec6",
+    "lat": -3.7305,
+    "lon": -38.5045,
+    "desc": "Escondido e escuro. Parece bar de filme noir."
+  },
+  {
+    "name": "Culinária da Van",
+    "cat": "Regional Cult",
+    "color": "#8e4ec6",
+    "lat": -3.7447,
+    "lon": -38.5285,
+    "desc": "A chef Van é celebridade. Panelada premiada no Benfica."
+  },
+  {
+    "name": "O Mar Menino",
+    "cat": "Gastronomia Arte",
+    "color": "#8e4ec6",
+    "lat": -3.7358,
+    "lon": -38.502,
+    "desc": "Comida que parece quadro. Lugar de arquitetos."
+  },
+  {
+    "name": "Bulls Beer House",
+    "cat": "Rock Pub",
+    "color": "#8e4ec6",
+    "lat": -3.7381,
+    "lon": -38.5073,
+    "desc": "Rock e burger na Aldeota. Metaleiros programadores."
+  },
+  {
+    "name": "Clandestino",
+    "cat": "Jazz & Blues",
+    "color": "#8e4ec6",
+    "lat": -3.7418,
+    "lon": -38.5302,
+    "desc": "Um dos raros bares de jazz de verdade em Fortaleza, escondido no Benfica. Avaliações consistentes de 'experiência única'. Pequeno, quente e completamente fora do radar de quem não é do bairro."
+  },
+  {
+    "name": "Hey Joe Food 'n' Bar",
+    "cat": "Descolado",
+    "color": "#8e4ec6",
+    "lat": -3.7342,
+    "lon": -38.5088,
+    "desc": "Comida saudável e gente tatuada bonita."
+  },
+  {
+    "name": "Boozer's Pub",
+    "cat": "Hostel Vibe",
+    "color": "#8e4ec6",
+    "lat": -3.7255,
+    "lon": -38.508,
+    "desc": "Gringos e rock clássico. Parece que você tá viajando."
+  },
+  {
+    "name": "Cervejaria Capitosa",
+    "cat": "Artesanal",
+    "color": "#8e4ec6",
+    "lat": -3.7355,
+    "lon": -38.5002,
+    "desc": "Público que discute lúpulo a noite toda."
+  },
+  {
+    "name": "Brauhaus",
+    "cat": "Alemão",
+    "color": "#8e4ec6",
+    "lat": -3.7334,
+    "lon": -38.5062,
+    "desc": "Templo da cerveja importada."
+  },
+  {
+    "name": "Mayú",
+    "cat": "Alta Gastronomia",
+    "color": "#8e4ec6",
+    "lat": -3.7335,
+    "lon": -38.4969,
+    "desc": "Restaurante do Senac. Comida experimental."
+  },
+  {
+    "name": "Cinema do Dragão",
+    "cat": "Cinefilia",
+    "color": "#8e4ec6",
+    "lat": -3.72,
+    "lon": -38.5175,
+    "desc": "Filmes que ninguém entende e debate sobre semiótica."
+  },
+  {
+    "name": "Café Couture",
+    "cat": "Jazz & Drinks",
+    "color": "#8e4ec6",
+    "lat": -3.7342,
+    "lon": -38.505,
+    "desc": "Piano e luz vermelha. Boemia afrancesada."
+  },
+  {
+    "name": "Brewstone Pub",
+    "cat": "Cerveja & Rock",
+    "color": "#8e4ec6",
+    "lat": -3.736,
+    "lon": -38.501,
+    "desc": "Pub com cerveja própria e cardápio de hambúrguer que aparece em várias listas de 'melhores da cidade'. Ambiente escuro, trilha sonora acertada. Um dos poucos pubs com identidade própria na Aldeota."
+  },
+  {
+    "name": "Amika Coffee",
+    "cat": "Café Geek",
+    "color": "#8e4ec6",
+    "lat": -3.7363,
+    "lon": -38.5018,
+    "desc": "Café que entende o que é trabalho remoto de verdade: Wi-Fi decente, tomadas acessíveis, barulho tolerável. Reviews cheios de 'ótimo lugar pra trabalhar'. O único café da cidade onde o notebook não é enfeite."
+  },
+  {
+    "name": "Le Pain Le Café",
+    "cat": "Francês",
+    "color": "#8e4ec6",
+    "lat": -3.734,
+    "lon": -38.4978,
+    "desc": "Croissant e ar condicionado. Madames e cults."
+  },
+  {
+    "name": "Benévolo",
+    "cat": "Gelato",
+    "color": "#8e4ec6",
+    "lat": -3.733,
+    "lon": -38.4962,
+    "desc": "Sorvete e café. Ponto de encontro pós-almoço."
+  },
+  {
+    "name": "Museu da Fotografia",
+    "cat": "Cultura",
+    "color": "#8e4ec6",
+    "lat": -3.721,
+    "lon": -38.517,
+    "desc": "Ar condicionado gelado e fotos incríveis."
+  },
+  {
+    "name": "Caixa Cultural",
+    "cat": "Exposições",
+    "color": "#8e4ec6",
+    "lat": -3.7193,
+    "lon": -38.5184,
+    "desc": "Exposições gratuitas na Praia de Iracema."
+  },
+  {
+    "name": "Route Fortaleza",
+    "cat": "O Caos",
+    "color": "#c0392b",
+    "lat": -3.7192,
+    "lon": -38.5162,
+    "desc": "A balada mais famosa e mais infame de Fortaleza, na Praia de Iracema. Cinco andares de arrependimento preventivo. Reviews no Google divididos entre 'melhor noite da minha vida' e 'nunca mais'. Ambos estão certos."
+  },
+  {
+    "name": "Bar do Seu Nonato",
+    "cat": "Raiz Intelectual",
+    "color": "#c0392b",
+    "lat": -3.7441,
+    "lon": -38.5362,
+    "desc": "Bar de boteco raiz no Benfica, um dos mais antigos da área. Panelada às terças que virou quase ritual. Reviews falam em 'atendimento familiar' e 'preço justo'. Tipo de lugar que não existe mais em Fortaleza — exceto aqui."
+  },
+  {
+    "name": "Bar do Vinil",
+    "cat": "Hipster Raiz",
+    "color": "#c0392b",
+    "lat": -3.743,
+    "lon": -38.534,
+    "desc": "Bar de vinil no Benfica que resistiu à era do streaming. Toca LP de verdade em uma vitrola de verdade enquanto serve cerveja barata. Reviews falam em 'experiência nostálgica'. Um dos últimos do tipo na cidade."
+  },
+  {
+    "name": "Rap Bar",
+    "cat": "Cena Urbana",
+    "color": "#c0392b",
+    "lat": -3.7255,
+    "lon": -38.5258,
+    "desc": "Ponto de encontro da cena urbana no Centro. Cerveja em lata no preço que devia ser o padrão. Reviews elogiam o 'ambiente autêntico'. Frequentado por quem ainda acredita que o Centro tem vida."
+  },
+  {
+    "name": "Budega dos Pinhões",
+    "cat": "Praça",
+    "color": "#c0392b",
+    "lat": -3.7215,
+    "lon": -38.5197,
+    "desc": "Esquenta pro nada. Bebe em pé na praça."
+  },
+  {
+    "name": "Pitombeira Bar",
+    "cat": "Raiz",
+    "color": "#c0392b",
+    "lat": -3.7425,
+    "lon": -38.5365,
+    "desc": "Mesa bamba e garçom amigo íntimo."
+  },
+  {
+    "name": "Mambembe",
+    "cat": "Cultural Caos",
+    "color": "#c0392b",
+    "lat": -3.7197,
+    "lon": -38.5179,
+    "desc": "Festa na rua e liberdade total na PI."
+  },
+  {
+    "name": "Chopp do Bixiga",
+    "cat": "Clássico Dragão",
+    "color": "#c0392b",
+    "lat": -3.7196,
+    "lon": -38.5168,
+    "desc": "Chopp de vinho famoso e perigoso."
+  },
+  {
+    "name": "Praça dos Leões",
+    "cat": "Rua",
+    "color": "#c0392b",
+    "lat": -3.728,
+    "lon": -38.527,
+    "desc": "Underground real. Cerveja de isopor."
+  },
+  {
+    "name": "Raimundo dos Queijos",
+    "cat": "Patrimônio",
+    "color": "#c0392b",
+    "lat": -3.7272,
+    "lon": -38.5282,
+    "desc": "Domingo de manhã é lei no Centro."
+  },
+  {
+    "name": "Leão do Sul",
+    "cat": "Azia Boa",
+    "color": "#c0392b",
+    "lat": -3.7268,
+    "lon": -38.5272,
+    "desc": "Pastel com caldo de cana lendário."
+  },
+  {
+    "name": "Praça da Gentilândia",
+    "cat": "Benfica Soul",
+    "color": "#c0392b",
+    "lat": -3.742,
+    "lon": -38.5352,
+    "desc": "Skate, litrão e debate político."
+  },
+  {
+    "name": "Serpentina",
+    "cat": "Cerveja Raiz",
+    "color": "#c0392b",
+    "lat": -3.7248,
+    "lon": -38.5252,
+    "desc": "Artesanal no Centro, mesa na calçada."
+  },
+  {
+    "name": "Gandaia Club",
+    "cat": "LGBTQIA+",
+    "color": "#c0392b",
+    "lat": -3.7198,
+    "lon": -38.5186,
+    "desc": "Templo do pop e do suor."
+  },
+  {
+    "name": "Haus",
+    "cat": "Eletrônico",
+    "color": "#c0392b",
+    "lat": -3.7195,
+    "lon": -38.5172,
+    "desc": "Balada de música eletrônica na Praia de Iracema, uma das poucas da cidade com curadoria musical consistente. Reviews elogiam o som e criticam a fila. Frequentado por quem sabe o nome do DJ."
+  },
+  {
+    "name": "Level",
+    "cat": "Balada Drag",
+    "color": "#c0392b",
+    "lat": -3.7197,
+    "lon": -38.5164,
+    "desc": "Shows de Drag Queen e festa até amanhecer."
+  },
+  {
+    "name": "Centro Fashion",
+    "cat": "Moda & Caos",
+    "color": "#c0392b",
+    "lat": -3.7152,
+    "lon": -38.5395,
+    "desc": "Onde a sacoleira guerreira faz a moda girar."
+  },
+  {
+    "name": "Mercado Central",
+    "cat": "Turista & Local",
+    "color": "#c0392b",
+    "lat": -3.7285,
+    "lon": -38.5368,
+    "desc": "O mercado de artesanato mais famoso de Fortaleza, com mais de 600 boxes. Reviews de turistas entusiasmados e fortalezenses que foram 'uma vez e nunca mais'. Renda, cajuína, bordado e aquela sensação de labirinto que nunca termina."
+  },
+  {
+    "name": "Mercado São Sebastião",
+    "cat": "Café Nordestino",
+    "color": "#c0392b",
+    "lat": -3.7295,
+    "lon": -38.5352,
+    "desc": "Cuscuz, panelada e gritaria."
+  },
+  {
+    "name": "Beco da Poeira",
+    "cat": "Hardcore",
+    "color": "#c0392b",
+    "lat": -3.7278,
+    "lon": -38.5298,
+    "desc": "Comércio popular extremo."
+  },
+  {
+    "name": "Praça do Ferreira",
+    "cat": "Marco Zero",
+    "color": "#c0392b",
+    "lat": -3.7262,
+    "lon": -38.5262,
+    "desc": "A praça mais central de Fortaleza, patrimônio histórico com o famoso Galo do Sobral. Reviews de turistas encantados e moradores saudosos. Palco de manifestações, encontros e toda a vida pública que ainda existe no Centro."
+  },
+  {
+    "name": "Bar do Biel",
+    "cat": "Sinuca",
+    "color": "#c0392b",
+    "lat": -3.723,
+    "lon": -38.5252,
+    "desc": "Sinuca e cerveja barata no Centro."
+  },
+  {
+    "name": "Assis da Picanha",
+    "cat": "Picanha Raiz",
+    "color": "#c0392b",
+    "lat": -3.7318,
+    "lon": -38.5398,
+    "desc": "Picanha boa e barata."
+  },
+  {
+    "name": "Churrascaria O Osmar",
+    "cat": "Fartura",
+    "color": "#c0392b",
+    "lat": -3.7505,
+    "lon": -38.5498,
+    "desc": "Ponto de taxistas. Comida muita e barata."
+  },
+  {
+    "name": "Moleskine / Moleska",
+    "cat": "Elite",
+    "color": "#007aff",
+    "lat": -3.7323,
+    "lon": -38.493,
+    "desc": "O bar mais discretamente exclusivo da Aldeota. Iluminação baixa, clientela alta. Reviews no Google são escassos — quem vai lá não posta. Presença de empresários e políticos numa noite comum."
+  },
+  {
+    "name": "Hoots Gastropub",
+    "cat": "Rock de Rico",
+    "color": "#007aff",
+    "lat": -3.7338,
+    "lon": -38.4952,
+    "desc": "Gastropub na Aldeota com cardápio de carne nobre e rock setentista no fundo. Reviews consistentes de 'ótimo hambúrguer' e 'ambiente agradável'. Tiozão que ouve Led Zeppelin pagando bem para ouvir Led Zeppelin."
+  },
+  {
+    "name": "Austin Pub",
+    "cat": "Sertanejo Elite",
+    "color": "#007aff",
+    "lat": -3.7345,
+    "lon": -38.4902,
+    "desc": "O pub sertanejo mais frequentado da Aldeota, com décadas de história. Reviews falando em 'boa música ao vivo' e 'ambiente animado'. Território do sertanejo universitário e da paquera explícita às quintas."
+  },
+  {
+    "name": "Cervejaria Turatti",
+    "cat": "Família Rica",
+    "color": "#007aff",
+    "lat": -3.7352,
+    "lon": -38.4858,
+    "desc": "Disney de Bêbado Rico."
+  },
+  {
+    "name": "Bang's Sul",
+    "cat": "Faroeste Gourmet",
+    "color": "#007aff",
+    "lat": -3.7812,
+    "lon": -38.4812,
+    "desc": "Carne defumada cara na Zona Sul."
+  },
+  {
+    "name": "Floresta Complexo",
+    "cat": "Cover",
+    "color": "#007aff",
+    "lat": -3.7368,
+    "lon": -38.4992,
+    "desc": "Rock dos anos 80 pra tiozões."
+  },
+  {
+    "name": "Donkey Head",
+    "cat": "Cervejeiro",
+    "color": "#007aff",
+    "lat": -3.7375,
+    "lon": -38.5008,
+    "desc": "Cerveja boa na Aldeota."
+  },
+  {
+    "name": "Boteco do Ciço",
+    "cat": "Fake Raiz",
+    "color": "#007aff",
+    "lat": -3.7372,
+    "lon": -38.5025,
+    "desc": "Parece pobre, mas fica no m² mais caro."
+  },
+  {
+    "name": "Colosso Fortaleza",
+    "cat": "Super Elite",
+    "color": "#007aff",
+    "lat": -3.7555,
+    "lon": -38.4878,
+    "desc": "Wakeboard e combo de vodka caro no Edson Queiroz."
+  },
+  {
+    "name": "Zoi Restaurante",
+    "cat": "Jantar de Negócios",
+    "color": "#007aff",
+    "lat": -3.7558,
+    "lon": -38.4895,
+    "desc": "Restaurante sofisticado no Edson Queiroz, frequentemente em listas de 'melhores de Fortaleza'. Reviews elogiam o risoto e a carta de vinhos. Jantar de negócios, aniversário de 50 anos, pedido de casamento — tudo acontece aqui."
+  },
+  {
+    "name": "Iate Clube",
+    "cat": "Old Money",
+    "color": "#007aff",
+    "lat": -3.721,
+    "lon": -38.482,
+    "desc": "O clube náutico mais antigo de Fortaleza, fundado em 1903. Reviews raros — acesso restrito a sócios. Vista para o mar, ambiente histórico e uma distinção que o dinheiro recente ainda não conseguiu comprar."
+  },
+  {
+    "name": "Coco Bambu (Frutos)",
+    "cat": "Embaixada",
+    "color": "#007aff",
+    "lat": -3.7305,
+    "lon": -38.4958,
+    "desc": "Uma das unidades mais movimentadas da rede, famosa pelo camarão e pelas filas imensas no fim de semana. Reviews divididos entre 'melhor da rede' e 'demora absurda'. Cardápio que funciona como religião para boa parte de Fortaleza."
+  },
+  {
+    "name": "Santa Grelha",
+    "cat": "Carne de Ouro",
+    "color": "#007aff",
+    "lat": -3.7345,
+    "lon": -38.4985,
+    "desc": "Onde o empresário almoça."
+  },
+  {
+    "name": "Ryori Sushi",
+    "cat": "Japa de Rico",
+    "color": "#007aff",
+    "lat": -3.7355,
+    "lon": -38.4928,
+    "desc": "Sushi com trufa branca."
+  },
+  {
+    "name": "Ponza Frutos do Mar",
+    "cat": "Sofisticação",
+    "color": "#007aff",
+    "lat": -3.7332,
+    "lon": -38.4965,
+    "desc": "Ambiente azul e comida chique."
+  },
+  {
+    "name": "Vibe do Lago",
+    "cat": "Lago Jacarey",
+    "color": "#007aff",
+    "lat": -3.795,
+    "lon": -38.4845,
+    "desc": "O point da Zona Sul. Famílias ricas."
+  },
+  {
+    "name": "Cabaña del Primo",
+    "cat": "Argentino",
+    "color": "#007aff",
+    "lat": -3.7362,
+    "lon": -38.4912,
+    "desc": "Parrilla porteña no Jardins Open Mall."
+  },
+  {
+    "name": "Geppos Italiano",
+    "cat": "Jardins Open Mall",
+    "color": "#007aff",
+    "lat": -3.7358,
+    "lon": -38.4908,
+    "desc": "Massa e vinho. Fingir que tá na Europa."
+  },
+  {
+    "name": "Illa Mare",
+    "cat": "Beira Mar Elite",
+    "color": "#007aff",
+    "lat": -3.7235,
+    "lon": -38.4875,
+    "desc": "Restaurante flutuante com preço pra turista."
+  },
+  {
+    "name": "Vignoli",
+    "cat": "Pizza de Rico",
+    "color": "#007aff",
+    "lat": -3.7372,
+    "lon": -38.4948,
+    "desc": "Pizza fina. Coma com luvas."
+  },
+  {
+    "name": "Samba do Vila",
+    "cat": "Pagode de Elite",
+    "color": "#007aff",
+    "lat": -3.7382,
+    "lon": -38.4985,
+    "desc": "Pagode pra quem usa sapatênis."
+  },
+  {
+    "name": "Living",
+    "cat": "Balada Playba",
+    "color": "#007aff",
+    "lat": -3.7338,
+    "lon": -38.4942,
+    "desc": "Eletrônico e funk na Aldeota."
+  },
+  {
+    "name": "Soho",
+    "cat": "Asiático",
+    "color": "#007aff",
+    "lat": -3.7405,
+    "lon": -38.4715,
+    "desc": "Japa moderno no RioMar."
+  },
+  {
+    "name": "Medit",
+    "cat": "Alta Gastronomia",
+    "color": "#007aff",
+    "lat": -3.735,
+    "lon": -38.4902,
+    "desc": "Um dos melhores da cidade."
+  },
+  {
+    "name": "L'Ô Restaurante",
+    "cat": "Eventos",
+    "color": "#007aff",
+    "lat": -3.7248,
+    "lon": -38.5155,
+    "desc": "Oásis de riqueza no Dragão."
+  },
+  {
+    "name": "Ideal Clube",
+    "cat": "Tradicional",
+    "color": "#007aff",
+    "lat": -3.7278,
+    "lon": -38.5048,
+    "desc": "Clube da alta sociedade."
+  },
+  {
+    "name": "Misaki",
+    "cat": "Japa Fusion",
+    "color": "#007aff",
+    "lat": -3.7368,
+    "lon": -38.4918,
+    "desc": "Lagosta e ouro."
+  },
+  {
+    "name": "Picanha do Cowboy",
+    "cat": "Clássico",
+    "color": "#007aff",
+    "lat": -3.7352,
+    "lon": -38.5005,
+    "desc": "Picanha honesta em área nobre."
+  },
+  {
+    "name": "Divina Picanha",
+    "cat": "Família Tradicional",
+    "color": "#34c759",
+    "lat": -3.7705,
+    "lon": -38.4855,
+    "desc": "Almoço de domingo na Sul."
+  },
+  {
+    "name": "Paraíba Raiz",
+    "cat": "Butequeiro",
+    "color": "#34c759",
+    "lat": -3.7438,
+    "lon": -38.5355,
+    "desc": "Foco é beber litrão barato."
+  },
+  {
+    "name": "Kosmika Club",
+    "cat": "Pop Glitter",
+    "color": "#34c759",
+    "lat": -3.7242,
+    "lon": -38.5198,
+    "desc": "Pop e glitter no Centro."
+  },
+  {
+    "name": "Sr. Petisco",
+    "cat": "Comida",
+    "color": "#34c759",
+    "lat": -3.755,
+    "lon": -38.5512,
+    "desc": "Comida de boteco honesta."
+  },
+  {
+    "name": "Bar do Seu Carlos",
+    "cat": "Lenda",
+    "color": "#34c759",
+    "lat": -3.7598,
+    "lon": -38.5598,
+    "desc": "Lenda do Montese."
+  },
+  {
+    "name": "Bar do Animaw",
+    "cat": "Bicho Solto",
+    "color": "#34c759",
+    "lat": -3.7585,
+    "lon": -38.555,
+    "desc": "Cerveja trincando e zero etiqueta."
+  },
+  {
+    "name": "Tony Do Orós",
+    "cat": "Carne de Sol",
+    "color": "#34c759",
+    "lat": -3.7658,
+    "lon": -38.571,
+    "desc": "Restaurante simples com fama desproporcional ao visual. A carne de sol do Tony acumula reviews apaixonados há anos. 'Melhor da cidade' aparece em quase toda avaliação. Filas comuns no almoço de domingo."
+  },
+  {
+    "name": "Bar da Loura",
+    "cat": "Centro Raiz",
+    "color": "#34c759",
+    "lat": -3.7252,
+    "lon": -38.5282,
+    "desc": "Bar de bairro no Centro sem pose alguma. Mesinha na calçada, clientela fixa, cerveja fria. Reviews breves e diretos: 'bom e barato'. A definição de boteco que sumiu do resto da cidade."
+  },
+  {
+    "name": "Carneiro do Ordones",
+    "cat": "Fartura",
+    "color": "#34c759",
+    "lat": -3.7355,
+    "lon": -38.5558,
+    "desc": "Carneiro assado que virou ponto de peregrinação na Parquelândia. Reviews falam em 'imperdível' e 'deu vontade de voltar no mesmo dia'. Porções enormes, preço justo, atendimento caótico de tão cheio."
+  },
+  {
+    "name": "Bar do Mincharia",
+    "cat": "Praia Raiz",
+    "color": "#34c759",
+    "lat": -3.7202,
+    "lon": -38.5108,
+    "desc": "Pé na areia na PI."
+  },
+  {
+    "name": "Cantinho do Frango",
+    "cat": "Patrimônio",
+    "color": "#34c759",
+    "lat": -3.7362,
+    "lon": -38.5048,
+    "desc": "Frango desossado e vinil."
+  },
+  {
+    "name": "Kina do Feijão Verde",
+    "cat": "Regional",
+    "color": "#34c759",
+    "lat": -3.7305,
+    "lon": -38.5155,
+    "desc": "O melhor feijão verde."
+  },
+  {
+    "name": "Carneiro do Tércio",
+    "cat": "Zona Sul",
+    "color": "#34c759",
+    "lat": -3.7798,
+    "lon": -38.4902,
+    "desc": "Carneiro gigante na Sul."
+  },
+  {
+    "name": "Rei da Panelada",
+    "cat": "Cura Ressaca",
+    "color": "#34c759",
+    "lat": -3.7498,
+    "lon": -38.5205,
+    "desc": "A cura está aqui."
+  },
+  {
+    "name": "Colher de Pau",
+    "cat": "Turista Raiz",
+    "color": "#34c759",
+    "lat": -3.7358,
+    "lon": -38.4882,
+    "desc": "Um dos restaurantes de comida regional mais bem avaliados da Varjota. Reviews elogiam o baião de dois e a galinha caipira. Ambiente simples, sabor que não é simples. Turista e fortalezense no mesmo cardápio."
+  },
+  {
+    "name": "Arre Égua",
+    "cat": "Forró Antigo",
+    "color": "#34c759",
+    "lat": -3.7368,
+    "lon": -38.4855,
+    "desc": "Vila sertaneja turística."
+  },
+  {
+    "name": "Kukukaya",
+    "cat": "Forró Raiz",
+    "color": "#34c759",
+    "lat": -3.7448,
+    "lon": -38.5252,
+    "desc": "Dançar agarradinho."
+  },
+  {
+    "name": "Pirata Bar",
+    "cat": "Segunda-feira",
+    "color": "#34c759",
+    "lat": -3.7191,
+    "lon": -38.5166,
+    "desc": "A lenda é real: a segunda-feira do Pirata Bar na Praia de Iracema é um dos eventos mais famosos de Fortaleza há décadas. Reviews de turistas em êxtase. Uma das poucas coisas em Fortaleza que supera a reputação."
+  },
+  {
+    "name": "Lupus Bier",
+    "cat": "Humor",
+    "color": "#34c759",
+    "lat": -3.7212,
+    "lon": -38.5158,
+    "desc": "Show de humor e Rossicléa."
+  },
+  {
+    "name": "Chico do Caranguejo",
+    "cat": "Praia Futuro",
+    "color": "#34c759",
+    "lat": -3.7542,
+    "lon": -38.444,
+    "desc": "Restaurante icônico da Praia do Futuro especializado em caranguejo. Reviews elogiam a 'experiência completa' — comer, sujar a mão, ouvir forró ao vivo. Um dos destinos turísticos mais autênticos da cidade."
+  },
+  {
+    "name": "Mercado dos Peixes",
+    "cat": "Pôr do Sol",
+    "color": "#34c759",
+    "lat": -3.7215,
+    "lon": -38.4798,
+    "desc": "Mercado de peixe com restaurante anexo próximo à Praia do Futuro. Reviews falam em 'camarão fresquíssimo' e 'experiência autêntica'. Um dos poucos lugares onde o peixe ainda chega direto do mar para o prato."
+  },
+  {
+    "name": "Orbita Blue",
+    "cat": "Praia Hype",
+    "color": "#34c759",
+    "lat": -3.7315,
+    "lon": -38.465,
+    "desc": "Eletrônica e gente bonita na PF."
+  },
+  {
+    "name": "Santa Praia",
+    "cat": "Beach Tennis",
+    "color": "#34c759",
+    "lat": -3.7322,
+    "lon": -38.4632,
+    "desc": "Suar e beber."
+  },
+  {
+    "name": "Pastel na Hora",
+    "cat": "Lanche",
+    "color": "#34c759",
+    "lat": -3.7348,
+    "lon": -38.5052,
+    "desc": "Pastel gigante."
+  },
+  {
+    "name": "Beira Mar Grill",
+    "cat": "Churrasco",
+    "color": "#34c759",
+    "lat": -3.7252,
+    "lon": -38.4902,
+    "desc": "Rodízio na orla."
+  },
+  {
+    "name": "Coco Bambu Sul",
+    "cat": "Evento",
+    "color": "#34c759",
+    "lat": -3.785,
+    "lon": -38.48,
+    "desc": "Maior restaurante do Brasil."
+  },
+  {
+    "name": "Ordones Sandry",
+    "cat": "Variação",
+    "color": "#34c759",
+    "lat": -3.736,
+    "lon": -38.5545,
+    "desc": "Versão premium do Ordones."
+  },
+  {
+    "name": "Tatu Bola",
+    "cat": "Balada Sertaneja",
+    "color": "#34c759",
+    "lat": -3.7338,
+    "lon": -38.4935,
+    "desc": "Paquera na semana."
+  },
+  {
+    "name": "Boteco Praia",
+    "cat": "Vista",
+    "color": "#34c759",
+    "lat": -3.7222,
+    "lon": -38.4948,
+    "desc": "Prédio na orla com vista."
+  },
+  {
+    "name": "Alpendre",
+    "cat": "Cultural",
+    "color": "#34c759",
+    "lat": -3.7278,
+    "lon": -38.5128,
+    "desc": "Cerveja de garrafa na calçada."
+  },
+  {
+    "name": "Náutico Clube",
+    "cat": "Clube",
+    "color": "#34c759",
+    "lat": -3.7232,
+    "lon": -38.4918,
+    "desc": "Clube da orla."
+  },
+  {
+    "name": "Círculo Militar",
+    "cat": "Clube",
+    "color": "#34c759",
+    "lat": -3.7252,
+    "lon": -38.4948,
+    "desc": "Eventos militares e vista."
+  },
+  {
+    "name": "BNB Clube",
+    "cat": "Clube",
+    "color": "#34c759",
+    "lat": -3.748,
+    "lon": -38.5012,
+    "desc": "Festas juninas épicas."
+  },
+  {
+    "name": "Parque do Cocó",
+    "cat": "Natureza",
+    "color": "#34c759",
+    "lat": -3.7468,
+    "lon": -38.4825,
+    "desc": "Piquenique e trilha."
+  },
+  {
+    "name": "Padaria Costa Mendes",
+    "cat": "Montese",
+    "color": "#34c759",
+    "lat": -3.7598,
+    "lon": -38.5402,
+    "desc": "Pão de coco lendário."
+  },
+  {
+    "name": "Empório Delitália",
+    "cat": "Padaria Rica",
+    "color": "#34c759",
+    "lat": -3.7362,
+    "lon": -38.4948,
+    "desc": "Presunto de Parma às 22h."
+  },
+  {
+    "name": "Boteco do Lee",
+    "cat": "Neutro",
+    "color": "#e8a020",
+    "lat": -3.7305,
+    "lon": -38.521,
+    "desc": "O purgatório."
+  },
+  {
+    "name": "Bar da Tetê",
+    "cat": "Indefinido",
+    "color": "#e8a020",
+    "lat": -3.7321,
+    "lon": -38.5225,
+    "desc": "Ninguém define o público."
+  },
+  {
+    "name": "Relativo Bar",
+    "cat": "Depende",
+    "color": "#e8a020",
+    "lat": -3.7315,
+    "lon": -38.5218,
+    "desc": "Tudo é relativo."
+  },
+  {
+    "name": "Shopping Iguatemi",
+    "cat": "O Mall",
+    "color": "#e8a020",
+    "lat": -3.7554,
+    "lon": -38.4873,
+    "desc": "O shopping mais tradicional de Fortaleza, inaugurado em 1982. Reviews falam em 'praça de alimentação boa' e 'Cinema UCI excelente'. Território da classe média-alta consolidada que não precisa migrar para o RioMar."
+  },
+  {
+    "name": "Shopping RioMar",
+    "cat": "O Novo Rico",
+    "color": "#e8a020",
+    "lat": -3.741,
+    "lon": -38.4718,
+    "desc": "O maior shopping de Fortaleza em área construída, com mais de 400 lojas. Reviews elogiam a variedade e criticam o estacionamento impossível no fim de semana. A âncora do vetor leste de expansão da cidade."
+  },
+  {
+    "name": "North Shopping",
+    "cat": "O do Povo",
+    "color": "#e8a020",
+    "lat": -3.7112,
+    "lon": -38.5818,
+    "desc": "Formigueiro na Bezerra."
+  },
+  {
+    "name": "Shopping Benfica",
+    "cat": "Diversidade",
+    "color": "#e8a020",
+    "lat": -3.742,
+    "lon": -38.5378,
+    "desc": "Otakus e vovós."
+  },
+  {
+    "name": "Shopping Del Paseo",
+    "cat": "Compacto",
+    "color": "#e8a020",
+    "lat": -3.735,
+    "lon": -38.4982,
+    "desc": "Shopping de rico velho."
+  },
+  {
+    "name": "Via Sul Shopping",
+    "cat": "Zona Sul",
+    "color": "#e8a020",
+    "lat": -3.8298,
+    "lon": -38.521,
+    "desc": "Shopping da Seis Bocas."
+  },
+  {
+    "name": "Grand Shopping",
+    "cat": "Messejana",
+    "color": "#e8a020",
+    "lat": -3.8218,
+    "lon": -38.4902,
+    "desc": "Salvou Messejana."
+  },
+  {
+    "name": "Pão de Açúcar Náutico",
+    "cat": "Meeting Point",
+    "color": "#e8a020",
+    "lat": -3.7238,
+    "lon": -38.4928,
+    "desc": "Ponto de encontro."
+  },
+  {
+    "name": "Feirinha da Beira Mar",
+    "cat": "Turismo",
+    "color": "#e8a020",
+    "lat": -3.7255,
+    "lon": -38.4965,
+    "desc": "Feira de artesanato na orla da Beira Mar, funcionando há décadas. Reviews de turistas encantados com a renda cearense e a cajuína. Aberta nas noites dos finais de semana — uma das poucas programações gratuitas e genuínas da cidade."
+  },
+  {
+    "name": "Estátua de Iracema",
+    "cat": "Foto",
+    "color": "#e8a020",
+    "lat": -3.7196,
+    "lon": -38.5148,
+    "desc": "A estátua de Iracema Guardiã, na Praia de Iracema, é um dos símbolos mais fotografados de Fortaleza. Reviews de turistas com fotos ao pôr do sol. Ponto de encontro, de chegada e de despedida da cidade."
+  }
+]
